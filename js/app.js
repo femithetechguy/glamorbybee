@@ -101,13 +101,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const serviceLocationField = document.getElementById('service-location-field');
 
     function updateServiceLocation(mode) {
+        // Hide field by default
+        serviceLocationField.style.display = 'none';
+        
         let fieldHTML = '';
         if (mode === 'home') {
             fieldHTML = `
                 <label for="address">Service Location (additional charge applies) *</label>
                 <input type="text" id="address" name="address" required
+                       class="address-autocomplete"
                        placeholder="Please provide your service address">
             `;
+            // Show field only for home service
+            serviceLocationField.style.display = 'block';
         } else if (mode === 'salon') {
             const selectedContact = document.querySelector('input[name="contact_method"]:checked');
             fieldHTML = `
@@ -122,14 +128,15 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }
         serviceLocationField.innerHTML = fieldHTML;
+        
+        // Initialize autocomplete if home service
+        if (mode === 'home') {
+            setTimeout(initializeAutocomplete, 100);
+        }
     }
-
-    // Show salon message initially
-    updateServiceLocation('salon');
 
     serviceModes.forEach(radio => {
         radio.addEventListener('change', (e) => {
-            serviceLocationField.style.display = e.target.value === 'home' ? 'block' : 'none';
             updateServiceLocation(e.target.value);
         });
     });

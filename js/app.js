@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateServiceLocation(mode) {
         // Hide field by default
-        serviceLocationField.style.display = 'none';
+        serviceLocationField.style.display = 'block'; // Changed to always show the container
         
         let fieldHTML = '';
         if (mode === 'home') {
@@ -111,24 +111,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 <input type="text" id="address" name="address" required
                        placeholder="Please provide your service address">
             `;
-            // Show field only for home service
-            serviceLocationField.style.display = 'block';
         } else if (mode === 'salon') {
             const selectedContact = document.querySelector('input[name="contact_method"]:checked');
             fieldHTML = `
                 <div class="salon-info">
-                    <i class="fas fa-info-circle"></i>
-                    <p class="info-text">
-                        Our salon location will be sent to your 
-                        <span class="highlight">${selectedContact ? selectedContact.value : 'preferred'}</span> 
-                        contact method.
-                    </p>
+                    <i class="fas fa-location-dot"></i>
+                    <div class="info-content">
+                        <p class="info-text">
+                            Our salon location will be sent to your 
+                            <span class="contact-method-highlight">
+                                ${selectedContact ? selectedContact.value : 'preferred'} 
+                            </span>
+                        </p>
+                        <p class="info-subtext">You'll receive the details shortly after booking</p>
+                    </div>
                 </div>
             `;
         }
         serviceLocationField.innerHTML = fieldHTML;
     }
 
+    // Set initial service mode message
+    const initialServiceMode = document.querySelector('input[name="service_mode"]:checked');
+    if (initialServiceMode) {
+        updateServiceLocation(initialServiceMode.value);
+    }
+
+    // Update when service mode changes
     serviceModes.forEach(radio => {
         radio.addEventListener('change', (e) => {
             updateServiceLocation(e.target.value);

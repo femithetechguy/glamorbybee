@@ -124,9 +124,12 @@ document.addEventListener('DOMContentLoaded', () => {
         serviceLocationField.innerHTML = fieldHTML;
     }
 
-    // Add event listeners for service mode changes
+    // Show salon message initially
+    updateServiceLocation('salon');
+
     serviceModes.forEach(radio => {
         radio.addEventListener('change', (e) => {
+            serviceLocationField.style.display = e.target.value === 'home' ? 'block' : 'none';
             updateServiceLocation(e.target.value);
         });
     });

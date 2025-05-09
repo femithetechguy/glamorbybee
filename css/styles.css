@@ -33,6 +33,14 @@ html {
   }
 }
 
+/* Mobile typography */
+@media (max-width: 768px) {
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    section { padding: 1rem; }
+    .hero { padding: 2rem 1rem; }
+}
+
 /* Header styles */
 .top-bar {
   background-color: var(--primary-color);
@@ -163,6 +171,43 @@ nav a:hover {
   .hamburger.active .hamburger-bar:nth-child(3) {
     transform: rotate(-45deg) translate(7px, -5px);
   }
+}
+
+/* Improve touch targets for mobile */
+@media (max-width: 768px) {
+    .nav-menu a,
+    .contact-icons a {
+        padding: 1rem;
+        min-height: 44px;
+        min-width: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .form-group input[type="radio"] + label {
+        padding: 0.5rem;
+    }
+
+    select {
+        height: 44px;
+    }
+}
+
+/* Mobile form improvements */
+@media (max-width: 768px) {
+    #appointment-form {
+        padding: 1rem;
+    }
+
+    .radio-group {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    input, select, textarea {
+        font-size: 16px; /* Prevents iOS zoom */
+    }
 }
 
 /* Main content */

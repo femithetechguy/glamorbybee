@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p class="info-text">
                             Our salon location will be sent to your 
                             <span class="contact-method-highlight">
-                                ${selectedContact ? selectedContact.value : 'preferred'} 
+                                ${selectedContact ? selectedContact.value : 'preferred contact'} 
                             </span>
                         </p>
                         <p class="info-subtext">You'll receive the details shortly after booking</p>

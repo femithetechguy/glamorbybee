@@ -503,36 +503,61 @@ select {
 .salon-info {
     background-color: #fff3f9;
     border-left: 4px solid var(--primary-color);
-    padding: 1rem 1.5rem;
-    border-radius: 4px;
-    margin-top: 0.5rem;
+    padding: 1.25rem;
+    border-radius: 8px;
+    margin-top: 1rem;
     display: flex;
     align-items: flex-start;
     gap: 1rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px rgba(255, 105, 180, 0.1);
+    transition: all 0.3s ease;
+}
+
+.salon-info:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.15);
 }
 
 .salon-info i {
     color: var(--primary-color);
-    font-size: 1.2rem;
-    margin-top: 0.2rem;
+    font-size: 1.4rem;
+    padding-top: 0.2rem;
+}
+
+.info-content {
+    flex: 1;
 }
 
 .info-text {
     color: var(--text-color);
-    font-size: 1rem;
+    font-size: 1.1rem;
     margin: 0;
     line-height: 1.5;
 }
 
-.highlight {
+.info-subtext {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0.5rem 0 0;
+    font-style: italic;
+}
+
+.contact-method-highlight {
     color: var(--primary-color);
     font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    background-color: rgba(255, 105, 180, 0.1);
+    border-radius: 4px;
+    display: inline-block;
 }
 
 @media (max-width: 768px) {
     .salon-info {
         padding: 1rem;
+    }
+    
+    .info-text {
+        font-size: 1rem;
     }
 }
 

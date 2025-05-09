@@ -179,4 +179,39 @@ document.addEventListener('DOMContentLoaded', () => {
         option.textContent = timeString;
         serviceTimeSelect.appendChild(option);
     }
+
+    function initializeAutocomplete() {
+        const addressInput = document.getElementById('address');
+        if (!addressInput) return;
+
+        const autocomplete = new google.maps.places.Autocomplete(addressInput, {
+            componentRestrictions: { country: 'us' },
+            fields: ['formatted_address'],
+            types: ['address']
+        });
+
+        // Update the input when a place is selected
+        autocomplete.addListener('place_changed', function() {
+            const place = autocomplete.getPlace();
+            if (place.formatted_address) {
+                addressInput.value = place.formatted_address;
+            }
+        });
+
+        // Prevent form submission on enter (for better UX)
+        addressInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && document.activeElement === addressInput) {
+                e.preventDefault();
+            }
+        });
+    }
+
+    // Initialize autocomplete when service mode changes to 'home'
+    serviceModes.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            if (e.target.value === 'home') {
+                setTimeout(initializeAutocomplete, 100); // Wait for DOM update
+            }
+        });
+    });
 });

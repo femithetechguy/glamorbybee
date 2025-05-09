@@ -210,6 +210,69 @@ nav a:hover {
     }
 }
 
+/* Mobile Responsive Fixes */
+@media (max-width: 768px) {
+    /* Fix form layout */
+    #appointment-form {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    /* Fix input fields */
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    select {
+        width: 100%;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        font-size: 16px; /* Prevents iOS zoom */
+    }
+
+    /* Fix radio buttons layout */
+    .radio-group {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    /* Improve touch targets */
+    .nav-menu a,
+    .contact-icons a,
+    button,
+    .radio-group label {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 0.8rem;
+    }
+
+    /* Fix date-time selection */
+    .datetime-wrapper {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    /* Fix gallery grid */
+    .gallery-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    /* Fix service cards */
+    .services-grid {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+}
+
+/* Fix iOS specific issues */
+@supports (-webkit-touch-callout: none) {
+    .nav-menu,
+    select,
+    input {
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
 /* Main content */
 main {
   max-width: 1200px;

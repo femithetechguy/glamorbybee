@@ -111,6 +111,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <input type="text" id="address" name="address" required
                        placeholder="Please provide your service address"
                        aria-required="true" aria-label="Service Location">
+                <div id="home-service-warning" style="margin-top:8px;color:#a8071a;background:#fff1f0;border-left:4px solid #ff4d4f;padding:8px 12px;border-radius:6px;font-weight:500;font-size:1rem;">
+                    <ion-icon name="${siteNotices.homeService.icon}" style="color:#ff4d4f; font-size:1.2em; vertical-align:middle; margin-right:6px;"></ion-icon>
+                    ${siteNotices.homeService.title} ${siteNotices.homeService.message}
+                </div>
             `;
         } else if (mode === 'studio') {
             const selectedContact = document.querySelector('input[name="contact_method"]:checked');

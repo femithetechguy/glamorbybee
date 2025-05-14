@@ -13,5 +13,10 @@ const siteNotices = {
     icon: "close-circle-outline",
     title: "Cancellation:",
     message: "If you have booked and you cancel within 12hrs of your bookings then your deposit will be refunded.<br>However, if your booking is past the cancellation time, unfortunately you will not be refunded as our policy does not agree to that.",
+  },
+  homeService: {
+    icon: "alert-circle-outline",
+    title: "NB:",
+    message: "Luxury Home Service is not Free<br>You will be charged according to your Distance."
   }
 };

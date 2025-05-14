@@ -267,4 +267,54 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         `;
     }
+
+    // Fttg Solutions Modal Logic
+    const fttgLink = document.getElementById('fttg-link');
+    const fttgModal = document.getElementById('fttg-modal');
+    const fttgIframe = document.getElementById('fttg-iframe');
+    const fttgClose = document.querySelector('.fttg-modal-close');
+
+    if (fttgLink && fttgModal && fttgIframe && fttgClose) {
+        fttgLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            fttgIframe.src = "https://fttgsolutions.com/";
+            fttgModal.style.display = "flex";
+            document.body.style.overflow = "hidden";
+        });
+
+        fttgClose.addEventListener('click', function() {
+            fttgModal.style.display = "none";
+            fttgIframe.src = "";
+            document.body.style.overflow = "";
+        });
+
+        // Optional: Close modal on backdrop click
+        fttgModal.addEventListener('click', function(e) {
+            if (e.target === fttgModal) {
+                fttgModal.style.display = "none";
+                fttgIframe.src = "";
+                document.body.style.overflow = "";
+            }
+        });
+    }
+
+    // Render About Section from about.js
+    if (typeof aboutContent !== "undefined") {
+        const aboutDiv = document.getElementById('about-content');
+        if (aboutDiv) {
+            aboutDiv.innerHTML = `
+                <h2>${aboutContent.heading}</h2>
+                <div class="about-content">
+                    <img
+                        src="${aboutContent.image.src}"
+                        alt="${aboutContent.image.alt}"
+                        class="about-image"
+                    />
+                    <div class="about-text">
+                        ${aboutContent.paragraphs.map(p => `<p>${p}</p>`).join('')}
+                    </div>
+                </div>
+            `;
+        }
+    }
 });

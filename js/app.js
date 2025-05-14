@@ -297,4 +297,24 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Render About Section from about.js
+    if (typeof aboutContent !== "undefined") {
+        const aboutDiv = document.getElementById('about-content');
+        if (aboutDiv) {
+            aboutDiv.innerHTML = `
+                <h2>${aboutContent.heading}</h2>
+                <div class="about-content">
+                    <img
+                        src="${aboutContent.image.src}"
+                        alt="${aboutContent.image.alt}"
+                        class="about-image"
+                    />
+                    <div class="about-text">
+                        ${aboutContent.paragraphs.map(p => `<p>${p}</p>`).join('')}
+                    </div>
+                </div>
+            `;
+        }
+    }
 });

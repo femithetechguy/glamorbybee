@@ -741,3 +741,63 @@ img {
   0%   { transform: translateY(0);}
   100% { transform: translateY(-8px) scale(1.12);}
 }
+
+/* Modal styles for Fttg Solutions */
+.fttg-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0; top: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.65);
+  align-items: center;
+  justify-content: center;
+}
+.fttg-modal-content {
+  position: relative;
+  width: 70vw;
+  height: 70vh;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+@media (max-width: 900px) {
+  .fttg-modal-content {
+    width: 70vw;
+    height: 70vh;
+    min-width: 0;
+    min-height: 0;
+  }
+}
+@media (max-width: 600px) {
+  .fttg-modal-content {
+    width: 70vw;
+    height: 70vh;
+  }
+}
+.fttg-modal-close {
+  position: absolute;
+  top: 12px; right: 12px;
+  background: #fff;
+  border: none;
+  border-radius: 50%;
+  font-size: 2rem;
+  color: #ff4081;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  width: 40px; height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.fttg-modal-close:hover {
+  background: #ffe4ef;
+}
+@media (max-width: 900px) {
+  .fttg-modal-content { width: 98vw; height: 90vh; }
+}

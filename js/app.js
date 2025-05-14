@@ -267,4 +267,34 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         `;
     }
+
+    // Fttg Solutions Modal Logic
+    const fttgLink = document.getElementById('fttg-link');
+    const fttgModal = document.getElementById('fttg-modal');
+    const fttgIframe = document.getElementById('fttg-iframe');
+    const fttgClose = document.querySelector('.fttg-modal-close');
+
+    if (fttgLink && fttgModal && fttgIframe && fttgClose) {
+        fttgLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            fttgIframe.src = "https://fttgsolutions.com/";
+            fttgModal.style.display = "flex";
+            document.body.style.overflow = "hidden";
+        });
+
+        fttgClose.addEventListener('click', function() {
+            fttgModal.style.display = "none";
+            fttgIframe.src = "";
+            document.body.style.overflow = "";
+        });
+
+        // Optional: Close modal on backdrop click
+        fttgModal.addEventListener('click', function(e) {
+            if (e.target === fttgModal) {
+                fttgModal.style.display = "none";
+                fttgIframe.src = "";
+                document.body.style.overflow = "";
+            }
+        });
+    }
 });

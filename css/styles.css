@@ -500,7 +500,7 @@ select {
 }
 
 /* Add to existing form styles */
-.salon-info {
+.studio-info {
     background-color: #fff3f9;
     border-left: 4px solid var(--primary-color);
     padding: 1.25rem;
@@ -513,12 +513,12 @@ select {
     transition: all 0.3s ease;
 }
 
-.salon-info:hover {
+.studio-info:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(255, 105, 180, 0.15);
 }
 
-.salon-info i {
+.studio-info i {
     color: var(--primary-color);
     font-size: 1.4rem;
     padding-top: 0.2rem;
@@ -552,7 +552,7 @@ select {
 }
 
 @media (max-width: 768px) {
-    .salon-info {
+    .studio-info {
         padding: 1rem;
     }
     
@@ -717,4 +717,27 @@ img {
 
 #back-to-top.visible {
     display: flex;
+}
+
+/* FYI Deposit styles */
+.fyi-deposit {
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(255, 179, 0, 0.12);
+  letter-spacing: 0.01em;
+  transition: box-shadow 0.3s;
+  animation-delay: 0.2s;
+}
+
+.fyi-deposit:hover {
+  box-shadow: 0 8px 32px rgba(255, 179, 0, 0.18);
+  background: #fff8e1;
+}
+
+.fyi-icon {
+  filter: drop-shadow(0 2px 6px #ffe082);
+}
+
+@keyframes fyiIconBounce {
+  0%   { transform: translateY(0);}
+  100% { transform: translateY(-8px) scale(1.12);}
 }

@@ -73,17 +73,19 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'sms':
             case 'phone':
                 fieldHTML = `
-                    <label for="phone_number">Phone Number *</label>
+                    <label for="phone_number">Phone Number * <span class="sr-only">(required)</span></label>
                     <input type="tel" id="phone_number" name="phone_number" 
                            pattern="[0-9]{10}" required
-                           placeholder="770-648-4939">
+                           placeholder="770-648-4939"
+                           aria-required="true" aria-label="Phone Number">
                 `;
                 break;
             case 'email':
                 fieldHTML = `
-                    <label for="email">Email Address *</label>
+                    <label for="email">Email Address * <span class="sr-only">(required)</span></label>
                     <input type="email" id="email" name="email" required
-                           placeholder="your@email.com">
+                           placeholder="your@email.com"
+                           aria-required="true" aria-label="Email Address">
                 `;
                 break;
         }
@@ -101,24 +103,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const serviceLocationField = document.getElementById('service-location-field');
 
     function updateServiceLocation(mode) {
-        // Hide field by default
-        serviceLocationField.style.display = 'block'; // Changed to always show the container
-        
+        serviceLocationField.style.display = 'block';
         let fieldHTML = '';
         if (mode === 'home') {
             fieldHTML = `
-                <label for="address">Service Location (additional charge applies) *</label>
+                <label for="address">Service Location (additional charge applies) * <span class="sr-only">(required)</span></label>
                 <input type="text" id="address" name="address" required
-                       placeholder="Please provide your service address">
+                       placeholder="Please provide your service address"
+                       aria-required="true" aria-label="Service Location">
             `;
-        } else if (mode === 'salon') {
+        } else if (mode === 'studio') {
             const selectedContact = document.querySelector('input[name="contact_method"]:checked');
             fieldHTML = `
-                <div class="salon-info">
-                    <i class="fas fa-location-dot"></i>
+                <div class="studio-info" aria-live="polite">
+                    <ion-icon name="location" aria-hidden="true"></ion-icon>
                     <div class="info-content">
                         <p class="info-text">
-                            Our salon location will be sent to your 
+                            Our studio location will be sent to your 
                             <span class="contact-method-highlight">
                                 ${selectedContact ? selectedContact.value : 'preferred contact'} 
                             </span>
@@ -144,12 +145,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Update salon message when contact method changes
+    // Update studio message when contact method changes
     contactMethods.forEach(radio => {
         radio.addEventListener('change', (e) => {
             const serviceMode = document.querySelector('input[name="service_mode"]:checked');
-            if (serviceMode && serviceMode.value === 'salon') {
-                updateServiceLocation('salon');
+            if (serviceMode && serviceMode.value === 'studio') {
+                updateServiceLocation('studio');
             }
         });
     });
@@ -161,8 +162,6 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 1; i <= 30; i++) {
         const date = new Date(today);
         date.setDate(today.getDate() + i);
-        
-        // Skip Sundays (0 is Sunday in getDay())
         if (date.getDay() !== 0) {
             const option = document.createElement('option');
             option.value = date.toISOString().split('T')[0];
@@ -183,13 +182,85 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let hour = startHour; hour <= endHour; hour++) {
         const option = document.createElement('option');
         option.value = `${hour.toString().padStart(2, '0')}:00`;
-        
-        // Format time string (AM/PM)
         const timeString = hour < 12 
             ? `${hour}:00 AM`
             : `${hour === 12 ? 12 : hour - 12}:00 PM`;
-        
         option.textContent = timeString;
         serviceTimeSelect.appendChild(option);
+    }
+
+    // Render services dynamically
+    if (typeof makeupServices !== "undefined") {
+        const servicesGrid = document.getElementById('services-grid');
+        if (servicesGrid) {
+            servicesGrid.innerHTML = makeupServices.map(service => `
+                <div class="service-card">
+                    <img src="${service.image}" alt="${service.name}" />
+                    <h3>${service.name}</h3>
+                    <p>Starting at $${service.price}</p>
+                    <ul>
+                        ${service.features.map(f => `<li>${f}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('');
+        }
+    }
+
+    // Populate service types dynamically from makeupServices
+    const serviceTypeSelect = document.getElementById('service-type');
+    if (serviceTypeSelect && typeof makeupServices !== "undefined") {
+        serviceTypeSelect.innerHTML = makeupServices.map(service => `
+            <option value="${service.name}">${service.name}</option>
+        `).join('');
+    }
+
+    // Render FYI Notice
+    const fyiContainer = document.getElementById('fyi-notice-container');
+    if (fyiContainer && siteNotices?.fyi) {
+        fyiContainer.innerHTML = `
+        <div class="container my-4">
+          <div class="alert alert-warning fyi-deposit animate__animated animate__pulse animate__repeat-3" role="alert" style="font-size:1.2rem; font-weight:600; border-left:6px solid #ffb300; background: #fffbe6; display: flex; align-items: center; justify-content: center;">
+            <ion-icon name="${siteNotices.fyi.icon}" class="fyi-icon" style="font-size:2.2rem; color:#ffb300; margin-right:16px; animation: fyiIconBounce 1.2s infinite alternate;"></ion-icon>
+            <span>
+              <span style="color:#d48806; font-size:1.25rem; font-weight:700; letter-spacing:0.02em;">${siteNotices.fyi.title}</span>
+              <span style="margin-left:10px; color:#333;">
+                ${siteNotices.fyi.message}
+              </span>
+            </span>
+          </div>
+        </div>
+        `;
+    }
+
+    // Render Booking Notice
+    const bookingContainer = document.getElementById('booking-notice-container');
+    if (bookingContainer && siteNotices?.booking) {
+        bookingContainer.innerHTML = `
+        <div class="alert alert-info booking-notice" role="alert" style="margin: 2rem auto 1rem auto; max-width: 700px; font-size:1.1rem; background: #e6f7ff; border-left: 6px solid #1890ff; color: #0050b3; display: flex; align-items: flex-start;">
+          <ion-icon name="${siteNotices.booking.icon}" style="font-size:2rem; color:#1890ff; margin-right:14px; margin-top:2px;"></ion-icon>
+          <div>
+            <strong>${siteNotices.booking.title}</strong>
+            <span style="margin-left:6px;">
+              ${siteNotices.booking.message}
+            </span>
+          </div>
+        </div>
+        `;
+    }
+
+    // Render Cancellation Notice
+    const cancellationContainer = document.getElementById('cancellation-notice-container');
+    if (cancellationContainer && siteNotices?.cancellation) {
+        cancellationContainer.innerHTML = `
+        <div class="alert alert-danger cancellation-notice" role="alert" style="margin: 1.5rem auto 0 auto; max-width: 700px; font-size:1.1rem; background: #fff1f0; border-left: 6px solid #ff4d4f; color: #a8071a; display: flex; align-items: flex-start;">
+          <ion-icon name="${siteNotices.cancellation.icon}" style="font-size:2rem; color:#ff4d4f; margin-right:14px; margin-top:2px;"></ion-icon>
+          <div>
+            <strong>${siteNotices.cancellation.title}</strong>
+            <span style="margin-left:6px;">
+              ${siteNotices.cancellation.message}
+            </span>
+          </div>
+        </div>
+        `;
     }
 });

@@ -57,9 +57,11 @@ const makeupServices = [
   },
   {
     name: "Luxury Home Service",
-    price: 550,
+    price: 150,
     features: [
-      "Lightweight feel",
+      "Additional charge for distance",
+        "Comfort of your home",
+        "Professional service",
       "Enhances natural beauty",
       "Quick application",
     ],

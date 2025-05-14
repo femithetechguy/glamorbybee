@@ -2,13 +2,20 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta
+      name="viewport"
+      content="width=width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    />
     <title>GlamorByBee</title>
     <link href="css/styles.css" rel="stylesheet" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
-    />
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+    ></script>
     <!-- <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script> -->
   </head>
   <body>
@@ -16,18 +23,17 @@
     <header class="top-bar">
       <div class="contact-icons">
         <a href="tel:+16786005287" aria-label="Phone">
-          <i class="fas fa-phone"></i>
+          <ion-icon name="call"></ion-icon>
         </a>
-
         <a
           href="http://instagram.com/glamor_bybee/"
           target="_blank"
           aria-label="Instagram"
         >
-          <i class="fab fa-instagram"></i>
+          <ion-icon name="logo-instagram"></ion-icon>
         </a>
         <a href="mailto:contact@glamorbybee.com" aria-label="Email">
-          <i class="fas fa-envelope"></i>
+          <ion-icon name="mail"></ion-icon>
         </a>
       </div>
     </header>
@@ -48,6 +54,12 @@
         <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
+
+    <!-- FYI Deposit Alert -->
+    <div id="fyi-notice-container"></div>
+
+    <!-- Booking Notice -->
+    <div id="booking-notice-container"></div>
 
     <!-- SPA Sections -->
     <main>
@@ -83,47 +95,7 @@
 
       <section id="services">
         <h2>Our Services</h2>
-        <div class="services-grid">
-          <div class="service-card">
-            <img
-              src="https://picsum.photos/seed/bridal/300/200"
-              alt="Bridal Makeup"
-            />
-            <h3>Bridal Makeup</h3>
-            <p>Starting at $150</p>
-            <ul>
-              <li>Consultation included</li>
-              <li>Long-lasting products</li>
-              <li>Touch-up kit provided</li>
-            </ul>
-          </div>
-          <div class="service-card">
-            <img
-              src="https://picsum.photos/seed/party/300/200"
-              alt="Party Makeup"
-            />
-            <h3>Party Makeup</h3>
-            <p>Starting at $75</p>
-            <ul>
-              <li>Trendy looks</li>
-              <li>Premium products</li>
-              <li>2-3 hours wear test</li>
-            </ul>
-          </div>
-          <div class="service-card">
-            <img
-              src="https://picsum.photos/seed/photo/300/200"
-              alt="Photoshoot Makeup"
-            />
-            <h3>Photoshoot Makeup</h3>
-            <p>Starting at $100</p>
-            <ul>
-              <li>Camera-ready finish</li>
-              <li>Multiple looks available</li>
-              <li>HD-friendly products</li>
-            </ul>
-          </div>
-        </div>
+        <div class="services-grid" id="services-grid"></div>
       </section>
 
       <section id="gallery">
@@ -197,17 +169,10 @@
           <!-- Dynamic contact field (will be shown/hidden via JS) -->
           <div class="form-group" id="contact-field"></div>
 
-          <!-- Service type -->
+          <!-- Service Type Dropdown -->
           <div class="form-group">
-            <label for="service">Service Type *</label>
-            <select id="service" name="service" required>
-              <option value="">Select a service</option>
-              <option value="bridal">Bridal Makeup</option>
-              <option value="party">Party Makeup</option>
-              <option value="photoshoot">Photoshoot Makeup</option>
-              <option value="natural">Natural Makeup</option>
-              <option value="evening">Evening Glam</option>
-            </select>
+            <label for="service-type">Service Type *</label>
+            <select id="service-type" name="service_type" required></select>
           </div>
 
           <!-- Service Date and Time -->
@@ -247,12 +212,12 @@
             <div class="radio-group">
               <input
                 type="radio"
-                id="salon"
+                id="studio"
                 name="service_mode"
-                value="salon"
+                value="studio"
                 checked
               />
-              <label for="salon">Salon</label>
+              <label for="studio">Studio</label>
 
               <input type="radio" id="home" name="service_mode" value="home" />
               <label for="home">Home</label>
@@ -260,27 +225,40 @@
           </div>
 
           <!-- Dynamic service location field -->
-          <div class="form-group" id="service-location-field" style="display: none;">
-            <label for="address">Service Location (additional charge applies) *</label>
-            <input 
-                type="text" 
-                id="address" 
-                name="address" 
-                class="address-autocomplete"
-                placeholder="Please provide your service address"
-                required
+          <div
+            class="form-group"
+            id="service-location-field"
+            style="display: none"
+          >
+            <label for="address"
+              >Service Location (additional charge applies) *</label
             >
+            <input
+              type="text"
+              id="address"
+              name="address"
+              class="address-autocomplete"
+              placeholder="Please provide your service address"
+              required
+            />
           </div>
 
           <button type="submit" class="submit-btn">Request Appointment</button>
         </form>
+
+        <!-- Cancellation Notice -->
+        <div id="cancellation-notice-container"></div>
       </section>
 
       <section id="contact">
         <h2>Contact Us</h2>
         <p>
-          Email us at <a href="mailto:contact@glamorbybee.com" class="contact-link">contact@glamorbybee.com</a> 
-          or call <a href="tel:+16786005287" class="contact-link">(678) 600-5287</a>.
+          Email us at
+          <a href="mailto:contact@glamorbybee.com" class="contact-link"
+            >contact@glamorbybee.com</a
+          >
+          or call
+          <a href="tel:+16786005287" class="contact-link">(678) 600-5287</a>.
         </p>
       </section>
     </main>
@@ -289,17 +267,17 @@
     <footer class="footer-bar">
       <div class="contact-icons">
         <a href="tel:+16786005287" aria-label="Phone">
-          <i class="fas fa-phone"></i>
+          <ion-icon name="call"></ion-icon>
         </a>
         <a
           href="http://instagram.com/glamor_bybee/"
           target="_blank"
           aria-label="Instagram"
         >
-          <i class="fab fa-instagram"></i>
+          <ion-icon name="logo-instagram"></ion-icon>
         </a>
         <a href="mailto:contact@glamorbybee.com" aria-label="Email">
-          <i class="fas fa-envelope"></i>
+          <ion-icon name="mail"></ion-icon>
         </a>
       </div>
       <div class="copyright">
@@ -311,9 +289,11 @@
     </footer>
 
     <button id="back-to-top" aria-label="Back to top">
-      <i class="fas fa-arrow-up"></i>
+      <ion-icon name="arrow-up"></ion-icon>
     </button>
 
+    <script src="js/notices.js"></script>
+    <script src="js/services.js"></script>
     <script src="js/app.js"></script>
   </body>
 </html>

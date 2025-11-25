@@ -498,10 +498,56 @@ function showErrorAlert(message) {
     
     alertContainer.appendChild(alert);
     
+    
     // Auto-remove after 5 seconds
     setTimeout(() => {
         alert.remove();
     }, 5000);
+}
+
+// Handle Instagram Embed Links - Open in Native App or Website
+function setupInstagramEmbedHandler() {
+    const instagramFrame = document.getElementById('instagramFrame');
+    
+    if (!instagramFrame) return;
+    
+    // Wait for Instagram embed script to load and attach click handlers
+    const checkAndAttachHandlers = () => {
+        const embedLinks = document.querySelectorAll('[data-instgrm-permalink]');
+        
+        embedLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const postUrl = link.getAttribute('href') || link.getAttribute('data-instgrm-permalink');
+                
+                if (postUrl) {
+                    // Check if on mobile
+                    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                    
+                    if (isMobile) {
+                        // Try to open native Instagram app first
+                        const username = postUrl.match(/instagram\.com\/([^\/]+)/)?.[1];
+                        if (username) {
+                            window.location.href = `instagram://user?username=${username}`;
+                            // Fallback to web after 500ms if app doesn't exist
+                            setTimeout(() => {
+                                window.open(postUrl, '_blank');
+                            }, 500);
+                        } else {
+                            window.open(postUrl, '_blank');
+                        }
+                    } else {
+                        // Desktop - just open in new tab
+                        window.open(postUrl, '_blank');
+                    }
+                }
+            });
+        });
+    };
+    
+    // Check immediately and also after a delay for dynamically loaded content
+    checkAndAttachHandlers();
+    setTimeout(checkAndAttachHandlers, 2000);
 }
 
 // Smooth Scroll Navigation
@@ -514,3 +560,9 @@ document.addEventListener('click', (e) => {
         }
     }
 });
+
+// Initialize Instagram embed handlers when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(setupInstagramEmbedHandler, 1000);
+});
+

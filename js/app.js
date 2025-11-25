@@ -289,12 +289,44 @@ function populateTimeSlots() {
 
     timeSelect.innerHTML = '<option value="">Select a time...</option>';
     
+    // Get current hour
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinutes = now.getMinutes();
+    
     appData.booking.timeSlots.forEach(time => {
         const option = document.createElement('option');
         option.value = time;
         option.textContent = time;
         timeSelect.appendChild(option);
     });
+    
+    // Find and select the closest time slot
+    let closestTime = null;
+    let closestDiff = Infinity;
+    
+    appData.booking.timeSlots.forEach(time => {
+        const [timeStr, period] = time.split(' ');
+        let [hours] = timeStr.split(':').map(Number);
+        
+        // Convert to 24-hour format
+        if (period === 'PM' && hours !== 12) hours += 12;
+        if (period === 'AM' && hours === 12) hours = 0;
+        
+        // Calculate difference in minutes
+        const timeDiff = (hours * 60) - (currentHour * 60 + currentMinutes);
+        
+        // Find closest time that's at least current time or later
+        if (timeDiff >= 0 && timeDiff < closestDiff) {
+            closestDiff = timeDiff;
+            closestTime = time;
+        }
+    });
+    
+    // Set default time if found
+    if (closestTime) {
+        timeSelect.value = closestTime;
+    }
 }
 
 // Populate Gallery
@@ -505,6 +537,7 @@ function setMinDate() {
 
     const today = new Date().toISOString().split('T')[0];
     dateInput.min = today;
+    dateInput.value = today;
 }
 
 // Validate Email

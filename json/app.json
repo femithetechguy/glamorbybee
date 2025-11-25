@@ -80,6 +80,8 @@
     "balanceDue": "Balance due upon completion of service",
     "cancellationPolicy": "12-hour cancellation policy: cancel within 12 hours for refund, after 12 hours no refund",
     "timeSlots": [
+      "7:00 AM",
+      "8:00 AM",
       "9:00 AM",
       "10:00 AM",
       "11:00 AM",
@@ -89,7 +91,8 @@
       "3:00 PM",
       "4:00 PM",
       "5:00 PM",
-      "6:00 PM"
+      "6:00 PM",
+      "7:00 PM"
     ]
   },
   "gallery": {

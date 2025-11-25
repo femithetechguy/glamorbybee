@@ -97,5 +97,34 @@
     "description": "Follow our latest work on Instagram",
     "instagram": "https://www.instagram.com/glamor_bybee/",
     "embedUrl": "https://www.instagram.com/glamor_bybee/embed/igphoto/"
-  }
+  },
+  "team": [
+    {
+      "name": "Beauty",
+      "role": "CEO",
+      "image": "img/team-beauty.jpg"
+    },
+    {
+      "name": "Paul",
+      "role": "Logistics",
+      "image": "img/team-paul.jpg"
+    }
+  ],
+  "testimonials": [
+    {
+      "name": "Sarah Johnson",
+      "text": "Absolutely stunning! Beauty did my makeup for my wedding and I felt like a queen. The attention to detail was incredible.",
+      "rating": 5
+    },
+    {
+      "name": "Amaka Williams",
+      "text": "Best makeup artist in Atlanta! She transformed my look for my birthday party. Everyone was asking who did my makeup!",
+      "rating": 5
+    },
+    {
+      "name": "Jennifer Davis",
+      "text": "Professional, talented, and so friendly! My photoshoot makeup came out flawless. Highly recommend GlamorByBee!",
+      "rating": 5
+    }
+  ]
 }

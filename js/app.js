@@ -498,10 +498,24 @@ function showErrorAlert(message) {
     
     alertContainer.appendChild(alert);
     
+    
     // Auto-remove after 5 seconds
     setTimeout(() => {
         alert.remove();
     }, 5000);
+}
+
+// Handle Instagram Embed - Note: Instagram iframe is cross-origin, so clicks open in new tabs
+function setupInstagramEmbedHandler() {
+    console.log('🔍 setupInstagramEmbedHandler called');
+    
+    // Instagram embed script will handle everything
+    if (window.instgrm) {
+        console.log('📲 Instagram embed script found, processing embeds');
+        window.instgrm.Embeds.process();
+    }
+    
+    console.log('ℹ️ Instagram embed ready. Clicks on posts will open Instagram in new tabs.');
 }
 
 // Smooth Scroll Navigation
@@ -514,3 +528,9 @@ document.addEventListener('click', (e) => {
         }
     }
 });
+
+// Initialize Instagram embed handlers when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(setupInstagramEmbedHandler, 1000);
+});
+

@@ -171,17 +171,17 @@
             <h2 id="galleryTitle">Our Work</h2>
             <p id="galleryDescription" class="text-center text-muted mb-4"></p>
             <div class="gallery-wrapper">
-                <div class="instagram-embed-container">
-                    <iframe id="instagramFrame" 
-                            src="https://www.instagram.com/glamor_bybee/embed/" 
-                            width="400" 
-                            height="600" 
-                            frameborder="0" 
-                            scrolling="no"
-                            allowtransparency="true">
-                    </iframe>
+                <div class="instagram-embed-info">
+                    <p class="instagram-note" id="instagramNote">💡 Click on any post to view on Instagram (opens in new tab)</p>
+                </div>
+                <div class="instagram-embed-container" id="instagramContainer">
+                    <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/glamor_bybee/" data-instgrm-version="14">
+                        <p>Loading Instagram...</p>
+                    </blockquote>
                 </div>
             </div>
+            
+            <script async src="https://www.instagram.com/embed.js"></script>
             <div class="text-center mt-4">
                 <a href="https://www.instagram.com/glamor_bybee/" target="_blank" class="btn btn-primary">
                     <i class="bi bi-instagram"></i> See More on Instagram
@@ -246,6 +246,16 @@
     <button id="backToTop" class="back-to-top" aria-label="Back to home">
         <i class="bi bi-house-fill"></i>
     </button>
+
+    <!-- Image Lightbox Modal -->
+    <div id="imageLightbox" class="image-lightbox">
+        <div class="lightbox-content">
+            <button class="lightbox-close" id="lightboxClose" aria-label="Close lightbox">
+                <i class="bi bi-x-lg"></i>
+            </button>
+            <img id="lightboxImage" src="" alt="Enlarged view">
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/app.js"></script>

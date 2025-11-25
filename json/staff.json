@@ -1,0 +1,28 @@
+{
+  "staff": [
+    {
+      "staff_id": "STAFF001",
+      "first_name": "Beauty",
+      "last_name": "Bee",
+      "role": "CEO / Lead Makeup Artist",
+      "email": "beauty@glamorbybee.com",
+      "phone": "(214) 555-0001",
+      "hire_date": "2023-01-15",
+      "is_active": true,
+      "specialties": "Bridal, Special FX, Editorial",
+      "hourly_rate": 75.0
+    },
+    {
+      "staff_id": "STAFF002",
+      "first_name": "Paul",
+      "last_name": "Logistics",
+      "role": "Operations Manager",
+      "email": "paul@glamorbybee.com",
+      "phone": "(214) 555-0002",
+      "hire_date": "2023-02-01",
+      "is_active": true,
+      "specialties": "Scheduling, Inventory, Client Relations",
+      "hourly_rate": 45.0
+    }
+  ]
+}

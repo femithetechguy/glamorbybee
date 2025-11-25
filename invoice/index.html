@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice System - GlamorByBee</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/invoice.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="invoice-header">
+        <div class="container-fluid">
+            <div class="header-content">
+                <div class="brand">
+                    <i class="bi bi-receipt"></i>
+                    <span>GlamorByBee Invoicing</span>
+                </div>
+                <div class="header-actions">
+                    <a href="../admin/index.html" class="btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Admin
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <div class="invoice-container">
+        <div class="container-lg">
+            <!-- INVOICE FORM -->
+            <div class="invoice-builder">
+                <h1>Create Invoice</h1>
+                <p class="text-muted">Generate professional invoices for your clients</p>
+
+                <form id="invoiceForm" class="invoice-form">
+                    <!-- CLIENT INFORMATION -->
+                    <div class="form-section">
+                        <h3><i class="bi bi-person"></i> Client Information</h3>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="clientName" class="form-label">Client Name *</label>
+                                <input type="text" id="clientName" class="form-control form-control-lg" placeholder="Enter client name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="clientEmail" class="form-label">Email Address *</label>
+                                <input type="email" id="clientEmail" class="form-control form-control-lg" placeholder="client@email.com" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="clientPhone" class="form-label">Phone Number</label>
+                                <input type="tel" id="clientPhone" class="form-control form-control-lg" placeholder="(214) 111-1111">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="invoiceDate" class="form-label">Invoice Date *</label>
+                                <input type="date" id="invoiceDate" class="form-control form-control-lg" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SERVICE DETAILS -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h3><i class="bi bi-palette"></i> Service Details</h3>
+                            <button type="button" id="addServiceBtn" class="btn-add">
+                                <i class="bi bi-plus-circle"></i> Add Service
+                            </button>
+                        </div>
+                        
+                        <div id="servicesContainer">
+                            <div class="service-item">
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-md-5">
+                                        <label class="form-label">Service *</label>
+                                        <select class="form-select form-select-lg service-select" required>
+                                            <option value="">Select service</option>
+                                            <option value="Bridal Glam" data-price="300">Bridal Glam</option>
+                                            <option value="Natural Beat" data-price="150">Natural Beat</option>
+                                            <option value="Evening Elegance" data-price="200">Evening Elegance</option>
+                                            <option value="Special FX" data-price="250">Special FX</option>
+                                            <option value="Photo Ready" data-price="175">Photo Ready</option>
+                                            <option value="Glam Squad Package" data-price="400">Glam Squad Package</option>
+                                            <option value="Makeup Lesson" data-price="125">Makeup Lesson</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Quantity *</label>
+                                        <input type="number" class="form-control form-control-lg service-quantity" value="1" min="1" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Price ($) *</label>
+                                        <input type="number" class="form-control form-control-lg service-price" placeholder="0.00" step="0.01" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn-remove" title="Remove service">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PAYMENT DETAILS -->
+                    <div class="form-section">
+                        <h3><i class="bi bi-currency-dollar"></i> Payment Details</h3>
+                        <div class="payment-summary">
+                            <div class="summary-row">
+                                <span>Subtotal:</span>
+                                <span id="subtotal">$0.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>
+                                    <label for="taxRate">Tax Rate (%):</label>
+                                    <input type="number" id="taxRate" class="tax-input" value="8.25" step="0.01" min="0">
+                                </span>
+                                <span id="taxAmount">$0.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>
+                                    <label for="discountAmount">Discount ($):</label>
+                                    <input type="number" id="discountAmount" class="discount-input" value="0" step="0.01" min="0">
+                                </span>
+                                <span id="discountTotal">-$0.00</span>
+                            </div>
+                            <div class="summary-row total-row">
+                                <span>Total:</span>
+                                <span id="totalAmount">$0.00</span>
+                            </div>
+                            <div class="summary-row deposit-row">
+                                <span>Deposit Paid (30%):</span>
+                                <span id="depositAmount">$0.00</span>
+                            </div>
+                            <div class="summary-row balance-row">
+                                <span>Balance Due:</span>
+                                <span id="balanceAmount">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NOTES -->
+                    <div class="form-section">
+                        <h3><i class="bi bi-pencil"></i> Additional Notes</h3>
+                        <textarea id="invoiceNotes" class="form-control" rows="3" placeholder="Add any additional notes or terms..."></textarea>
+                    </div>
+
+                    <!-- ACTIONS -->
+                    <div class="form-actions">
+                        <button type="button" id="previewBtn" class="btn-preview">
+                            <i class="bi bi-eye"></i> Preview Invoice
+                        </button>
+                        <button type="submit" class="btn-generate">
+                            <i class="bi bi-download"></i> Generate PDF
+                        </button>
+                        <button type="button" id="sendEmailBtn" class="btn-send">
+                            <i class="bi bi-send"></i> Send via Email
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- INVOICE PREVIEW -->
+            <div class="invoice-preview" id="invoicePreview">
+                <div class="preview-header">
+                    <h2>Invoice Preview</h2>
+                    <button type="button" id="closePreview" class="btn-close-preview">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+
+                <div class="invoice-document" id="invoiceDocument">
+                    <div class="invoice-header-content">
+                        <div class="invoice-logo">
+                            <h2>GlamorByBee</h2>
+                            <p>Professional Makeup Artistry</p>
+                        </div>
+                        <div class="invoice-meta">
+                            <h3>INVOICE</h3>
+                            <p><strong>Invoice #:</strong> <span id="previewInvoiceNumber">INV-001</span></p>
+                            <p><strong>Date:</strong> <span id="previewDate">Nov 25, 2025</span></p>
+                        </div>
+                    </div>
+
+                    <div class="invoice-parties">
+                        <div class="party-info">
+                            <h4>From:</h4>
+                            <p><strong>GlamorByBee</strong></p>
+                            <p>Dallas, TX</p>
+                            <p>contact@glamorbybee.com</p>
+                        </div>
+                        <div class="party-info">
+                            <h4>Bill To:</h4>
+                            <p><strong id="previewClientName">Client Name</strong></p>
+                            <p id="previewClientEmail">client@email.com</p>
+                            <p id="previewClientPhone"></p>
+                        </div>
+                    </div>
+
+                    <div class="invoice-items">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="previewItems">
+                                <!-- Services will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="invoice-totals">
+                        <div class="totals-row">
+                            <span>Subtotal:</span>
+                            <span id="previewSubtotal">$0.00</span>
+                        </div>
+                        <div class="totals-row">
+                            <span>Tax (<span id="previewTaxRate">8.25</span>%):</span>
+                            <span id="previewTax">$0.00</span>
+                        </div>
+                        <div class="totals-row">
+                            <span>Discount:</span>
+                            <span id="previewDiscount">-$0.00</span>
+                        </div>
+                        <div class="totals-row total">
+                            <span>Total:</span>
+                            <span id="previewTotal">$0.00</span>
+                        </div>
+                        <div class="totals-row deposit">
+                            <span>Deposit Paid:</span>
+                            <span id="previewDeposit">$0.00</span>
+                        </div>
+                        <div class="totals-row balance">
+                            <span>Balance Due:</span>
+                            <span id="previewBalance">$0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="invoice-notes" id="previewNotesSection">
+                        <h4>Notes:</h4>
+                        <p id="previewNotes"></p>
+                    </div>
+
+                    <div class="invoice-footer">
+                        <p>Thank you for your business!</p>
+                        <p class="small">Payment is due within 15 days. Please make checks payable to GlamorByBee.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/invoice.js"></script>
+</body>
+</html>

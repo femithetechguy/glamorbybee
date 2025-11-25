@@ -20,6 +20,35 @@
     "website": "fttgsolutions.com",
     "creditLine": "✨ Designed and Developed By <a href='https://fttgsolutions.com' target='_blank'>FTTG Solutions</a>"
   },
+  "components": {
+    "admin": {
+      "name": "Admin Dashboard",
+      "description": "Backend management system for appointments, clients, and services",
+      "domain": "admin.glamorbybee.com",
+      "directory": "admin",
+      "purpose": "backend-view"
+    },
+    "invoice": {
+      "name": "Invoice System",
+      "description": "Generate and manage client invoices",
+      "domain": "invoice.glamorbybee.com",
+      "directory": "invoice",
+      "purpose": "invoicing"
+    },
+     "schedule": {
+      "name": "Schedule System",
+      "description": "Manage and organize appointments and bookings",
+      "domain": "schedule.glamorbybee.com",
+      "directory": "schedule",
+      "purpose": "scheduling"
+    },
+    "firebase": {
+      "name": "Firebase Integration",
+      "description": "Data management and storage backend",
+      "directory": "firebase",
+      "purpose": "data-management"
+    }
+  },
   "about": {
     "title": "About Us",
     "description": "GlamorByBee is dedicated to elevating your natural beauty with flawless, professional makeup artistry for every occasion. We believe every face is a unique canvas, and our passion is to create stunning, confidence-boosting looks tailored just for you.",

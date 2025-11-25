@@ -752,7 +752,27 @@ textarea {
 
 .gallery-section h2 {
     text-align: center;
-    margin-bottom: 3rem;
+    margin-bottom: 1rem;
+}
+
+.instagram-embed-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem 0;
+}
+
+.instagram-embed-container iframe {
+    max-width: 100%;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+    .instagram-embed-container iframe {
+        width: 100% !important;
+        height: auto !important;
+    }
 }
 
 .gallery-grid {

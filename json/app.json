@@ -92,36 +92,10 @@
       "6:00 PM"
     ]
   },
-  "gallery": [
-    {
-      "id": 1,
-      "image": "https://picsum.photos/seed/glam1/400/400",
-      "alt": "Makeup look 1"
-    },
-    {
-      "id": 2,
-      "image": "https://picsum.photos/seed/glam2/400/400",
-      "alt": "Makeup look 2"
-    },
-    {
-      "id": 3,
-      "image": "https://picsum.photos/seed/glam3/400/400",
-      "alt": "Makeup look 3"
-    },
-    {
-      "id": 4,
-      "image": "https://picsum.photos/seed/glam4/400/400",
-      "alt": "Makeup look 4"
-    },
-    {
-      "id": 5,
-      "image": "https://picsum.photos/seed/glam5/400/400",
-      "alt": "Makeup look 5"
-    },
-    {
-      "id": 6,
-      "image": "https://picsum.photos/seed/glam6/400/400",
-      "alt": "Makeup look 6"
-    }
-  ]
+  "gallery": {
+    "title": "Instagram Gallery",
+    "description": "Follow our latest work on Instagram",
+    "instagram": "https://www.instagram.com/glamor_bybee/",
+    "embedUrl": "https://www.instagram.com/glamor_bybee/embed/igphoto/"
+  }
 }

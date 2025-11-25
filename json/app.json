@@ -29,100 +29,50 @@
     {
       "id": "celebrant",
       "name": "Celebrant Makeup",
-      "price": 250,
-      "minPrice": 250,
       "description": "Perfect for wedding days and special celebrations",
-      "features": [
-        "Consultation included",
-        "Long-lasting products",
-        "Touch-up kit provided"
-      ],
-      "duration": "90-120 minutes",
-      "image": "https://picsum.photos/seed/bridal/400/300"
+      "image": "img/makeup1.jpg"
     },
     {
       "id": "party",
       "name": "Party / Owanbe Makeup",
-      "price": 150,
-      "minPrice": 150,
       "description": "Stunning looks for parties and celebrations",
-      "features": [
-        "Consultation included",
-        "Long-lasting products",
-        "Touch-up kit provided"
-      ],
-      "duration": "60-90 minutes",
-      "image": "https://picsum.photos/seed/party/400/300"
+      "image": "img/makeup1.jpg"
     },
     {
       "id": "soft-glam",
       "name": "Soft Glam Makeup",
-      "price": 130,
-      "minPrice": 130,
       "description": "Trendy, elegant looks for everyday glamour",
-      "features": [
-        "Trendy looks",
-        "Premium products",
-        "2-3 hours wear test"
-      ],
-      "duration": "45-60 minutes",
-      "image": "https://picsum.photos/seed/party/400/300"
+      "image": "img/makeup1.jpg"
     },
     {
       "id": "photoshoot-1",
       "name": "Makeup/Photoshoot (1 Outfit)",
-      "price": 350,
-      "minPrice": 350,
       "description": "Camera-ready makeup for professional photos",
-      "features": [
-        "Professional camera-ready finish",
-        "Customized to outfit & style",
-        "HD/4K optimized"
-      ],
-      "duration": "60 minutes",
-      "image": "https://picsum.photos/seed/photo/400/300"
+      "image": "img/makeup1.jpg"
     },
     {
       "id": "photoshoot-2",
       "name": "Makeup/Photoshoot (2 Outfits)",
-      "price": 450,
-      "minPrice": 450,
       "description": "Professional makeup for multiple outfit changes",
-      "features": [
-        "Custom looks per outfit",
-        "Quick transformation time",
-        "Waterproof & long-lasting"
-      ],
-      "duration": "90 minutes",
-      "image": "https://picsum.photos/seed/natural/400/300"
+      "image": "img/makeup1.jpg"
     },
     {
       "id": "photoshoot-3",
       "name": "Makeup/Photoshoot (3 Outfits)",
-      "price": 550,
-      "minPrice": 550,
       "description": "Complete makeup suite for extensive photoshoots",
-      "features": [
-        "3 unique makeup designs",
-        "Full styling consultation",
-        "Professional makeup artist included"
-      ],
-      "duration": "120 minutes",
-      "image": "https://picsum.photos/seed/natural/400/300"
+      "image": "img/makeup1.jpg"
     },
     {
       "id": "home-service",
       "name": "Luxury Home Service",
-      "price": 150,
-      "minPrice": 150,
       "description": "Professional makeup service at your home",
-      "features": [
-        "Additional charge for distance",
-        "Comfort of your home",
-        "Professional service"
-      ],
-      "duration": "Varies",
-      "image": "https://picsum.photos/seed/natural/400/300"
+      "image": "img/makeup1.jpg"
+    },
+    {
+      "id": "placeholder",
+      "name": "Coming Soon",
+      "description": "Exciting new service - stay tuned!",
+      "image": "img/makeup1.jpg"
     }
   ],
   "booking": {

@@ -206,6 +206,17 @@ function populateServicesGrid() {
     });
 }
 
+// Populate Gallery
+function populateGallery() {
+    const galleryTitle = document.getElementById('galleryTitle');
+    const galleryDescription = document.getElementById('galleryDescription');
+    
+    if (appData.gallery) {
+        if (galleryTitle) galleryTitle.textContent = appData.gallery.title || 'Gallery';
+        if (galleryDescription) galleryDescription.textContent = appData.gallery.description || '';
+    }
+}
+
 // Populate Service Pills
 function populateServicePills() {
     const servicePillsContainer = document.getElementById('servicePills');

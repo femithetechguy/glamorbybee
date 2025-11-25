@@ -1,8 +1,8 @@
 {
   "site": {
     "title": "GlamorByBee",
-    "tagline": "Beautiful makeup, for every occasion",
-    "description": "Get your glow in 60 seconds. Professional makeup artistry, booked easy.",
+    "tagline": "Professional makeup artistry, booked easy",
+    "description": "Booking as fast as 30 seconds.",
     "contact": {
       "email": "contact@glamorbybee.com",
       "phone": "+1 (678) 600-5287",
@@ -17,7 +17,8 @@
   },
   "appdev": {
     "name": "FTTG SOLUTIONS",
-    "website": "fttgsolutions.com"
+    "website": "fttgsolutions.com",
+    "creditLine": "✨ Designed and Developed By <a href='https://fttgsolutions.com' target='_blank'>FTTG Solutions</a>"
   },
   "about": {
     "title": "About Us",

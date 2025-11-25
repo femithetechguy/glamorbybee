@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GlamorByBee - Book Your Glow</title>
+    <title>GlamorByBee</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
@@ -17,13 +17,18 @@
             <a href="#" class="navbar-brand">
                 <span>GlamorByBee</span>
             </a>
-            <div class="nav-menu">
+            <div class="nav-menu" id="navMenu">
                 <a href="#services" class="nav-link">Services</a>
                 <a href="#gallery" class="nav-link">Gallery</a>
                 <a href="#contact" class="nav-link">Contact</a>
             </div>
             <div class="nav-actions">
                 <a href="#booking" class="btn-book">Book Now</a>
+                <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </div>
         </div>
     </nav>
@@ -31,8 +36,11 @@
     <!-- HERO -->
     <section class="hero">
         <div class="hero-content">
-            <h1 class="hero-title">Get Your Glow On</h1>
-            <p class="hero-subtitle">Professional makeup artistry, booked in 60 seconds</p>
+            <div class="hero-brand">
+                <h1 class="hero-brand-name" id="heroBrandName">GlamorByBee</h1>
+            </div>
+            <h2 class="hero-tagline" id="heroTagline">Professional makeup artistry, booked easy.</h2>
+            <p class="hero-subtitle" id="heroSubtitle">Get your glow in 60 seconds.</p>
             <a href="#booking" class="cta-button">Start Booking →</a>
         </div>
         <div class="hero-visual">
@@ -153,34 +161,18 @@
             </div>
             <div class="contact-content">
                 <div class="contact-info">
-                    <div class="contact-item">
-                        <i class="bi bi-geo-alt-fill"></i>
-                        <div>
-                            <h4>Location</h4>
-                            <p id="contactLocation"></p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <i class="bi bi-telephone-fill"></i>
-                        <div>
-                            <h4>Phone</h4>
-                            <p id="contactPhone"></p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <i class="bi bi-envelope-fill"></i>
-                        <div>
-                            <h4>Email</h4>
-                            <p id="contactEmail"></p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
+                    <a href="#" class="contact-icon" title="Instagram" id="contactInstagramIcon">
                         <i class="bi bi-instagram"></i>
-                        <div>
-                            <h4>Instagram</h4>
-                            <p><a id="contactInstagram" href="#" target="_blank">@glamor_bybee</a></p>
-                        </div>
-                    </div>
+                    </a>
+                    <a href="#" class="contact-icon" title="Phone" id="contactPhoneIcon">
+                        <i class="bi bi-telephone-fill"></i>
+                    </a>
+                    <a href="#" class="contact-icon" title="Email" id="contactEmailIcon">
+                        <i class="bi bi-envelope-fill"></i>
+                    </a>
+                    <a href="#" class="contact-icon" title="Location" id="contactLocationIcon">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -192,6 +184,7 @@
             <div class="footer-content">
                 <div class="footer-column">
                     <h4>Contact</h4>
+                    <p id="footerLocation"></p>
                     <p id="footerEmail"></p>
                     <p id="footerPhone"></p>
                 </div>
@@ -203,16 +196,18 @@
                     <h4>Booking Policy</h4>
                     <p id="bookingPolicy"></p>
                 </div>
-                <div class="footer-column">
-                    <h4>App Development</h4>
-                    <p><a id="appdevLink" href="#" target="_blank"></a></p>
-                </div>
             </div>
             <div class="footer-bottom">
                 <p>&copy; 2025 GlamorByBee. All rights reserved.</p>
+                <p id="appdevCredit" class="appdev-credit"></p>
             </div>
         </div>
     </footer>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="back-to-top" aria-label="Back to home">
+        <i class="bi bi-house-fill"></i>
+    </button>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/app.js"></script>

@@ -8,9 +8,52 @@ console.log('✓ app.js loaded');
 let appData = {};
 let selectedService = null;
 
+// Back to Top Button
+function setupBackToTop() {
+    const backToTopBtn = document.getElementById('backToTop');
+    
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+            backToTopBtn.classList.add('show');
+        } else {
+            backToTopBtn.classList.remove('show');
+        }
+    });
+    
+    backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+}
+
+// Mobile Menu Toggle
+function setupMobileMenu() {
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('navMenu');
+    
+    if (hamburger && navMenu) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('mobile-open');
+        });
+        
+        // Close menu when a link is clicked
+        navMenu.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('mobile-open');
+            });
+        });
+    }
+}
+
 // Initialize App
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('✓ DOMContentLoaded fired');
+    setupMobileMenu();
+    setupBackToTop();
     await initializeApp();
 });
 
@@ -65,10 +108,19 @@ function populatePageContent() {
     // Hero section
     const heroContent = document.querySelector('.hero-content');
     if (heroContent) {
-        const existingH1 = heroContent.querySelector('h1');
-        const existingP = heroContent.querySelector('.hero-subtitle');
-        if (existingH1) existingH1.textContent = appData.site.title || 'GlamorByBee';
-        if (existingP) existingP.textContent = appData.site.description || 'Professional makeup artistry';
+        const heroBrandName = document.getElementById('heroBrandName');
+        const heroTagline = document.getElementById('heroTagline');
+        const heroSubtitle = document.getElementById('heroSubtitle');
+        
+        if (heroBrandName) {
+            heroBrandName.textContent = appData.site.title || 'GlamorByBee';
+        }
+        if (heroTagline) {
+            heroTagline.textContent = appData.site.tagline || 'Professional makeup artistry';
+        }
+        if (heroSubtitle) {
+            heroSubtitle.textContent = appData.site.description || 'Get your glow in 60 seconds';
+        }
     }
 
     // About section (if exists)
@@ -77,45 +129,31 @@ function populatePageContent() {
         aboutSection.innerHTML = `<h2>${appData.about.title}</h2><p>${appData.about.description}</p>`;
     }
 
-    // Contact section
-    console.log('Processing contact section...');
-    console.log('appData.site.contact exists?', appData.site && appData.site.contact ? 'YES' : 'NO');
-    
+    // Contact section - Icon links only
     if (appData.site.contact) {
-        console.log('Contact object:', appData.site.contact);
+        const contactEmailIcon = document.getElementById('contactEmailIcon');
+        const contactPhoneIcon = document.getElementById('contactPhoneIcon');
+        const contactInstagramIcon = document.getElementById('contactInstagramIcon');
         
-        const contactLocation = document.getElementById('contactLocation');
-        const contactPhone = document.getElementById('contactPhone');
-        const contactEmail = document.getElementById('contactEmail');
-        const contactInstagram = document.getElementById('contactInstagram');
-
-        console.log('contactLocation element found?', contactLocation ? 'YES' : 'NO');
-        console.log('contactPhone element found?', contactPhone ? 'YES' : 'NO');
-        console.log('contactEmail element found?', contactEmail ? 'YES' : 'NO');
-        console.log('contactInstagram element found?', contactInstagram ? 'YES' : 'NO');
-
-        if (contactLocation) {
-            contactLocation.textContent = appData.site.contact.location || 'Location';
-            console.log('Set contactLocation to:', contactLocation.textContent);
+        if (contactEmailIcon) {
+            contactEmailIcon.href = `mailto:${appData.site.contact.email}`;
+            contactEmailIcon.title = appData.site.contact.email;
         }
-        if (contactPhone) {
-            contactPhone.textContent = appData.site.contact.phone || 'Phone';
-            console.log('Set contactPhone to:', contactPhone.textContent);
+        if (contactPhoneIcon) {
+            contactPhoneIcon.href = `tel:${appData.site.contact.phone.replace(/\D/g, '')}`;
+            contactPhoneIcon.title = appData.site.contact.phone;
         }
-        if (contactEmail) {
-            contactEmail.textContent = appData.site.contact.email || 'Email';
-            console.log('Set contactEmail to:', contactEmail.textContent);
-        }
-        if (contactInstagram) {
-            contactInstagram.href = appData.site.contact.instagram;
-            contactInstagram.textContent = '@glamor_bybee';
-            console.log('Set contactInstagram to:', contactInstagram.textContent);
+        if (contactInstagramIcon) {
+            contactInstagramIcon.href = appData.site.contact.instagram;
+            contactInstagramIcon.title = '@glamor_bybee';
         }
     }
 
     // Footer contact info
+    const footerLocation = document.getElementById('footerLocation');
     const footerEmail = document.getElementById('footerEmail');
     const footerPhone = document.getElementById('footerPhone');
+    if (footerLocation) footerLocation.innerHTML = `<strong>Location:</strong> ${appData.site.contact.location}`;
     if (footerEmail) footerEmail.innerHTML = `<strong>Email:</strong> <a href="mailto:${appData.site.contact.email}">${appData.site.contact.email}</a>`;
     if (footerPhone) footerPhone.innerHTML = `<strong>Phone:</strong> <a href="tel:${appData.site.contact.phone.replace(/\D/g, '')}">${appData.site.contact.phone}</a>`;
 
@@ -129,12 +167,11 @@ function populatePageContent() {
         instagramLink.href = appData.site.contact.instagram;
     }
 
-    // App Development info
+    // App Development credit line
     if (appData.appdev) {
-        const appdevLink = document.getElementById('appdevLink');
-        if (appdevLink) {
-            appdevLink.href = `https://${appData.appdev.website}`;
-            appdevLink.textContent = appData.appdev.name;
+        const appdevCredit = document.getElementById('appdevCredit');
+        if (appdevCredit) {
+            appdevCredit.innerHTML = appData.appdev.creditLine;
         }
     }
 }

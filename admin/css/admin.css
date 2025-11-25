@@ -416,11 +416,103 @@ section {
    APPOINTMENTS TABLE
    ============================================ */
 
+.sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    transition: var(--transition);
+}
+
+.sortable:hover {
+    background: rgba(214, 51, 132, 0.05);
+}
+
+.sortable .sort-icon {
+    font-size: 0.75rem;
+    margin-left: 0.5rem;
+    opacity: 0.4;
+    transition: var(--transition);
+}
+
+.sortable:hover .sort-icon {
+    opacity: 0.8;
+}
+
+.sortable.active {
+    color: var(--primary);
+}
+
+.sortable.active .sort-icon {
+    opacity: 1;
+}
+
 .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.section-header h2 {
+    margin: 0;
+}
+
+.appointments-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 280px;
+}
+
+.search-box i {
+    position: absolute;
+    left: 1rem;
+    color: var(--text-muted);
+}
+
+.search-box input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(214, 51, 132, 0.1);
+}
+
+.filter-select {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--transition);
+    min-width: 140px;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(214, 51, 132, 0.1);
+}
+
+.filter-select:hover {
+    border-color: var(--primary);
 }
 
 .btn-link {

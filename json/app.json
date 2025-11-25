@@ -24,14 +24,14 @@
     "admin": {
       "name": "Admin Dashboard",
       "description": "Backend management system for appointments, clients, and services",
-      "domain": "admin.glamorbybee.com",
+      "domain": "http://localhost:5500/admin/index.html",
       "directory": "admin",
       "purpose": "backend-view"
     },
     "invoice": {
       "name": "Invoice System",
       "description": "Generate and manage client invoices",
-      "domain": "invoice.glamorbybee.com",
+      "domain": "http://localhost:5500/invoice/index.html",
       "directory": "invoice",
       "purpose": "invoicing"
     },

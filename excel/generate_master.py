@@ -242,6 +242,140 @@ def generate_staff():
     return staff
 
 
+def generate_analytics():
+    """Generate analytics/metrics data"""
+    analytics = []
+    base_date = datetime.now() - timedelta(days=90)
+    
+    for i in range(90):
+        date = base_date + timedelta(days=i)
+        # More bookings on weekends
+        is_weekend = date.weekday() >= 5
+        base_bookings = random.randint(8, 15) if is_weekend else random.randint(3, 8)
+        
+        analytics.append({
+            "date": date.strftime("%Y-%m-%d"),
+            "total_bookings": base_bookings,
+            "completed_bookings": int(base_bookings * random.uniform(0.85, 0.95)),
+            "cancelled_bookings": random.randint(0, 2),
+            "no_shows": random.randint(0, 1),
+            "total_revenue": round(base_bookings * random.uniform(150, 300), 2),
+            "new_clients": random.randint(0, 3),
+            "returning_clients": base_bookings - random.randint(0, 3),
+            "average_service_value": round(random.uniform(150, 300), 2),
+            "deposit_collected": round(base_bookings * random.uniform(45, 90), 2),
+            "tips_received": round(base_bookings * random.uniform(10, 30), 2)
+        })
+    
+    return analytics
+
+
+def generate_inventory():
+    """Generate inventory/supplies data"""
+    inventory = [
+        {"item_id": "INV001", "item_name": "Foundation - Light", "category": "Base", "quantity": 12, "unit": "bottle", "cost_per_unit": 35.00, "reorder_level": 5, "supplier": "MAC Cosmetics"},
+        {"item_id": "INV002", "item_name": "Foundation - Medium", "category": "Base", "quantity": 15, "unit": "bottle", "cost_per_unit": 35.00, "reorder_level": 5, "supplier": "MAC Cosmetics"},
+        {"item_id": "INV003", "item_name": "Foundation - Dark", "category": "Base", "quantity": 8, "unit": "bottle", "cost_per_unit": 35.00, "reorder_level": 5, "supplier": "MAC Cosmetics"},
+        {"item_id": "INV004", "item_name": "Eyeshadow Palette - Neutral", "category": "Eyes", "quantity": 6, "unit": "palette", "cost_per_unit": 52.00, "reorder_level": 3, "supplier": "Urban Decay"},
+        {"item_id": "INV005", "item_name": "Eyeshadow Palette - Bold", "category": "Eyes", "quantity": 4, "unit": "palette", "cost_per_unit": 52.00, "reorder_level": 2, "supplier": "Urban Decay"},
+        {"item_id": "INV006", "item_name": "Mascara - Waterproof", "category": "Eyes", "quantity": 20, "unit": "tube", "cost_per_unit": 24.00, "reorder_level": 8, "supplier": "Benefit"},
+        {"item_id": "INV007", "item_name": "Eyeliner - Black", "category": "Eyes", "quantity": 15, "unit": "pencil", "cost_per_unit": 18.00, "reorder_level": 6, "supplier": "Stila"},
+        {"item_id": "INV008", "item_name": "Lipstick - Red", "category": "Lips", "quantity": 10, "unit": "tube", "cost_per_unit": 28.00, "reorder_level": 4, "supplier": "NARS"},
+        {"item_id": "INV009", "item_name": "Lipstick - Nude", "category": "Lips", "quantity": 12, "unit": "tube", "cost_per_unit": 28.00, "reorder_level": 5, "supplier": "NARS"},
+        {"item_id": "INV010", "item_name": "Lip Gloss", "category": "Lips", "quantity": 18, "unit": "tube", "cost_per_unit": 22.00, "reorder_level": 7, "supplier": "Fenty Beauty"},
+        {"item_id": "INV011", "item_name": "Blush - Pink", "category": "Cheeks", "quantity": 8, "unit": "compact", "cost_per_unit": 32.00, "reorder_level": 3, "supplier": "NARS"},
+        {"item_id": "INV012", "item_name": "Highlighter", "category": "Cheeks", "quantity": 6, "unit": "compact", "cost_per_unit": 38.00, "reorder_level": 3, "supplier": "Fenty Beauty"},
+        {"item_id": "INV013", "item_name": "Bronzer", "category": "Cheeks", "quantity": 7, "unit": "compact", "cost_per_unit": 35.00, "reorder_level": 3, "supplier": "Benefit"},
+        {"item_id": "INV014", "item_name": "Setting Spray", "category": "Setting", "quantity": 25, "unit": "bottle", "cost_per_unit": 18.00, "reorder_level": 10, "supplier": "Urban Decay"},
+        {"item_id": "INV015", "item_name": "Primer", "category": "Base", "quantity": 14, "unit": "bottle", "cost_per_unit": 32.00, "reorder_level": 6, "supplier": "Smashbox"},
+        {"item_id": "INV016", "item_name": "False Lashes - Natural", "category": "Lashes", "quantity": 50, "unit": "pair", "cost_per_unit": 8.00, "reorder_level": 20, "supplier": "Ardell"},
+        {"item_id": "INV017", "item_name": "False Lashes - Dramatic", "category": "Lashes", "quantity": 35, "unit": "pair", "cost_per_unit": 12.00, "reorder_level": 15, "supplier": "Huda Beauty"},
+        {"item_id": "INV018", "item_name": "Lash Glue", "category": "Lashes", "quantity": 30, "unit": "bottle", "cost_per_unit": 6.00, "reorder_level": 15, "supplier": "DUO"},
+        {"item_id": "INV019", "item_name": "Makeup Brushes Set", "category": "Tools", "quantity": 8, "unit": "set", "cost_per_unit": 85.00, "reorder_level": 3, "supplier": "Morphe"},
+        {"item_id": "INV020", "item_name": "Beauty Sponges", "category": "Tools", "quantity": 45, "unit": "piece", "cost_per_unit": 6.00, "reorder_level": 20, "supplier": "Beauty Blender"},
+        {"item_id": "INV021", "item_name": "Makeup Remover Wipes", "category": "Supplies", "quantity": 60, "unit": "pack", "cost_per_unit": 4.50, "reorder_level": 25, "supplier": "Neutrogena"},
+        {"item_id": "INV022", "item_name": "Cotton Pads", "category": "Supplies", "quantity": 100, "unit": "pack", "cost_per_unit": 3.00, "reorder_level": 40, "supplier": "Generic"},
+        {"item_id": "INV023", "item_name": "Sanitizing Spray", "category": "Supplies", "quantity": 12, "unit": "bottle", "cost_per_unit": 8.50, "reorder_level": 5, "supplier": "Cinema Secrets"},
+    ]
+    
+    for item in inventory:
+        item["total_value"] = round(item["quantity"] * item["cost_per_unit"], 2)
+        item["needs_reorder"] = item["quantity"] <= item["reorder_level"]
+        item["last_restocked"] = (datetime.now() - timedelta(days=random.randint(5, 60))).strftime("%Y-%m-%d")
+    
+    return inventory
+
+
+def generate_schedule():
+    """Generate schedule/availability data"""
+    schedule = []
+    base_date = datetime.now()
+    
+    # Generate schedule for next 30 days
+    for i in range(30):
+        date = base_date + timedelta(days=i)
+        day_name = date.strftime("%A")
+        
+        # Skip some days (closed)
+        if day_name == "Sunday" or (day_name == "Monday" and random.random() < 0.3):
+            schedule.append({
+                "date": date.strftime("%Y-%m-%d"),
+                "day_of_week": day_name,
+                "is_available": False,
+                "open_time": None,
+                "close_time": None,
+                "total_slots": 0,
+                "booked_slots": 0,
+                "available_slots": 0,
+                "staff_assigned": None,
+                "notes": "Closed"
+            })
+        else:
+            # Regular business hours
+            open_time = "09:00" if day_name == "Saturday" else "10:00"
+            close_time = "18:00"
+            total_slots = 8
+            booked = random.randint(2, 7)
+            
+            schedule.append({
+                "date": date.strftime("%Y-%m-%d"),
+                "day_of_week": day_name,
+                "is_available": True,
+                "open_time": open_time,
+                "close_time": close_time,
+                "total_slots": total_slots,
+                "booked_slots": booked,
+                "available_slots": total_slots - booked,
+                "staff_assigned": "Beauty Bee",
+                "notes": "Special event" if random.random() < 0.1 else ""
+            })
+    
+    return schedule
+
+
+def generate_settings():
+    """Generate business settings/configuration data"""
+    settings = [
+        {"setting_id": "SET001", "category": "Business", "setting_key": "business_name", "setting_value": "GlamorByBee", "description": "Business name"},
+        {"setting_id": "SET002", "category": "Business", "setting_key": "business_email", "setting_value": "contact@glamorbybee.com", "description": "Primary business email"},
+        {"setting_id": "SET003", "category": "Business", "setting_key": "business_phone", "setting_value": "(214) 555-0100", "description": "Primary business phone"},
+        {"setting_id": "SET004", "category": "Business", "setting_key": "business_address", "setting_value": "123 Beauty Lane, Dallas, TX 75201", "description": "Studio address"},
+        {"setting_id": "SET005", "category": "Booking", "setting_key": "default_deposit_percentage", "setting_value": "30", "description": "Default deposit percentage"},
+        {"setting_id": "SET006", "category": "Booking", "setting_key": "cancellation_notice_hours", "setting_value": "24", "description": "Cancellation notice required (hours)"},
+        {"setting_id": "SET007", "category": "Booking", "setting_key": "max_advance_booking_days", "setting_value": "90", "description": "Maximum days in advance for booking"},
+        {"setting_id": "SET008", "category": "Booking", "setting_key": "time_slot_duration", "setting_value": "60", "description": "Default time slot duration (minutes)"},
+        {"setting_id": "SET009", "category": "Financial", "setting_key": "tax_rate", "setting_value": "8.25", "description": "Sales tax rate (percentage)"},
+        {"setting_id": "SET010", "category": "Financial", "setting_key": "late_fee_percentage", "setting_value": "5", "description": "Late payment fee percentage"},
+        {"setting_id": "SET011", "category": "Financial", "setting_key": "invoice_due_days", "setting_value": "15", "description": "Payment due days after service"},
+        {"setting_id": "SET012", "category": "Notifications", "setting_key": "send_confirmation_email", "setting_value": "true", "description": "Send booking confirmation emails"},
+        {"setting_id": "SET013", "category": "Notifications", "setting_key": "send_reminder_sms", "setting_value": "true", "description": "Send appointment reminder SMS"},
+        {"setting_id": "SET014", "category": "Notifications", "setting_key": "reminder_hours_before", "setting_value": "24", "description": "Send reminder X hours before"},
+        {"setting_id": "SET015", "category": "Operations", "setting_key": "buffer_time_minutes", "setting_value": "15", "description": "Buffer time between appointments"},
+        {"setting_id": "SET016", "category": "Operations", "setting_key": "max_daily_bookings", "setting_value": "8", "description": "Maximum bookings per day"},
+    ]
+    return settings
+
+
 def create_excel_file(filename="master.xlsx"):
     """Create Excel file with all data"""
     if not EXCEL_AVAILABLE:
@@ -255,6 +389,10 @@ def create_excel_file(filename="master.xlsx"):
     products = generate_products()
     invoices = generate_invoices(appointments)
     staff = generate_staff()
+    analytics = generate_analytics()
+    inventory = generate_inventory()
+    schedule = generate_schedule()
+    settings = generate_settings()
     
     print(f"Creating Excel workbook: {filename}")
     wb = Workbook()
@@ -274,7 +412,11 @@ def create_excel_file(filename="master.xlsx"):
         ("Appointments", appointments),
         ("Products", products),
         ("Invoices", invoices),
-        ("Staff", staff)
+        ("Staff", staff),
+        ("Analytics", analytics),
+        ("Inventory", inventory),
+        ("Schedule", schedule),
+        ("Settings", settings)
     ]
     
     for sheet_name, data in sheets_data:
@@ -324,6 +466,10 @@ def create_excel_file(filename="master.xlsx"):
     print(f"  • Products/Services: {len(products)}")
     print(f"  • Invoices: {len(invoices)}")
     print(f"  • Staff: {len(staff)}")
+    print(f"  • Analytics: {len(analytics)}")
+    print(f"  • Inventory: {len(inventory)}")
+    print(f"  • Schedule: {len(schedule)}")
+    print(f"  • Settings: {len(settings)}")
 
 
 def create_json_files():
@@ -335,6 +481,10 @@ def create_json_files():
     products = generate_products()
     invoices = generate_invoices(appointments)
     staff = generate_staff()
+    analytics = generate_analytics()
+    inventory = generate_inventory()
+    schedule = generate_schedule()
+    settings = generate_settings()
     
     data = {
         "customers": customers,
@@ -342,7 +492,11 @@ def create_json_files():
         "appointments": appointments,
         "products": products,
         "invoices": invoices,
-        "staff": staff
+        "staff": staff,
+        "analytics": analytics,
+        "inventory": inventory,
+        "schedule": schedule,
+        "settings": settings
     }
     
     # Save individual JSON files

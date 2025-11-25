@@ -85,6 +85,8 @@ async function initializeApp() {
         populateServicesGrid();
         populateTimeSlots();
         populateGallery();
+        populateTeam();
+        populateTestimonials();
         
         // Setup form handling
         setupFormHandling();
@@ -297,18 +299,62 @@ function populateTimeSlots() {
 
 // Populate Gallery
 function populateGallery() {
-    const galleryGrid = document.querySelector('.gallery-grid');
-    if (!galleryGrid || !appData.gallery) return;
-
-    galleryGrid.innerHTML = '';
+    const galleryTitle = document.getElementById('galleryTitle');
+    const galleryDescription = document.getElementById('galleryDescription');
     
-    appData.gallery.forEach(item => {
-        const galleryItem = document.createElement('div');
-        galleryItem.className = 'gallery-item';
-        galleryItem.innerHTML = `
-            <img src="${item.image}" alt="${item.alt}" loading="lazy">
+    if (appData.gallery) {
+        if (galleryTitle) galleryTitle.textContent = appData.gallery.title || 'Gallery';
+        if (galleryDescription) galleryDescription.textContent = appData.gallery.description || '';
+    }
+}
+
+// Populate Team
+function populateTeam() {
+    const teamGrid = document.getElementById('teamGrid');
+    if (!teamGrid || !appData.team) return;
+
+    teamGrid.innerHTML = '';
+    
+    appData.team.forEach(member => {
+        const teamCard = document.createElement('div');
+        teamCard.className = 'team-card';
+        teamCard.innerHTML = `
+            <div class="team-image-wrapper">
+                <img src="${member.image}" alt="${member.name}" class="team-image" loading="lazy">
+            </div>
+            <div class="team-info">
+                <h3 class="team-name">${member.name}</h3>
+                <p class="team-role">${member.role}</p>
+            </div>
         `;
-        galleryGrid.appendChild(galleryItem);
+        teamGrid.appendChild(teamCard);
+    });
+}
+
+// Populate Testimonials
+function populateTestimonials() {
+    const testimonialsGrid = document.getElementById('testimonialsGrid');
+    if (!testimonialsGrid || !appData.testimonials) return;
+
+    testimonialsGrid.innerHTML = '';
+    
+    appData.testimonials.forEach(testimonial => {
+        const testimonialCard = document.createElement('div');
+        testimonialCard.className = 'testimonial-card';
+        
+        const stars = '<i class="bi bi-star-fill"></i>'.repeat(testimonial.rating);
+        
+        testimonialCard.innerHTML = `
+            <div class="testimonial-stars">${stars}</div>
+            <p class="testimonial-text">"${testimonial.text}"</p>
+            <div class="testimonial-author">
+                <div class="testimonial-avatar">
+                    <i class="bi bi-person-circle"></i>
+                </div>
+                <p class="testimonial-name">${testimonial.name}</p>
+            </div>
+        `;
+        testimonialsGrid.appendChild(testimonialCard);
     });
 }
 

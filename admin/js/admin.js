@@ -468,13 +468,35 @@ function cancelAppointment(appointment, customer) {
 
 function loadDashboard() {
     console.log('📊 Loading dashboard...');
+    
+    // Hide all views
+    document.querySelectorAll('.content-view').forEach(view => view.style.display = 'none');
+    
+    // Show dashboard view
+    const dashboardView = document.getElementById('dashboardView');
+    if (dashboardView) {
+        dashboardView.style.display = 'block';
+    }
+    
     updateDashboardStats();
-    loadAllAppointments();
 }
 
 function loadAppointmentsView() {
     console.log('📅 Loading all appointments...');
-    alert(`Appointments View\n\nTotal Appointments: ${adminData.appointments.length}\n\nThis would show a full appointments management interface with filtering, search, and calendar view.`);
+    
+    // Hide all views
+    document.querySelectorAll('.content-view').forEach(view => view.style.display = 'none');
+    
+    // Show appointments view
+    const appointmentsView = document.getElementById('appointmentsView');
+    if (appointmentsView) {
+        appointmentsView.style.display = 'block';
+    }
+    
+    // Load appointments data if not already loaded
+    if (filteredAppointments.length === 0) {
+        loadAllAppointments();
+    }
 }
 
 function loadClientsView() {

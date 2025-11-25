@@ -135,11 +135,6 @@
       "name": "Beauty",
       "role": "CEO",
       "image": "img/team-beauty.jpg"
-    },
-    {
-      "name": "Paul",
-      "role": "Logistics",
-      "image": "img/team-paul.jpg"
     }
   ],
   "testimonials": [

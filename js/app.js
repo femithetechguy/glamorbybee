@@ -200,9 +200,30 @@ function populateServicesGrid() {
             <div class="service-body">
                 <h4 class="service-name">${service.name}</h4>
                 <p class="service-desc">${service.description}</p>
+                <a href="#booking" class="service-book-btn" data-service-id="${service.id}" data-service-name="${service.name}">
+                    <i class="bi bi-calendar-check"></i> Book
+                </a>
             </div>
         `;
         servicesGrid.appendChild(card);
+    });
+    
+    // Add click handlers to book buttons
+    document.querySelectorAll('.service-book-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const serviceId = btn.dataset.serviceId;
+            const serviceName = btn.dataset.serviceName;
+            selectService(serviceId, serviceName);
+            
+            // Scroll to booking section with smooth animation
+            const bookingSection = document.getElementById('booking');
+            if (bookingSection) {
+                setTimeout(() => {
+                    bookingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            }
+        });
     });
 }
 
@@ -217,56 +238,46 @@ function populateGallery() {
     }
 }
 
-// Populate Service Pills
+// Populate Service Pills (for booking step 1)
 function populateServicePills() {
-    const servicePillsContainer = document.getElementById('servicePills');
-    if (!servicePillsContainer || !appData.services) return;
+    const serviceSelect = document.getElementById('servicePills');
+    if (!serviceSelect || !appData.services) return;
 
-    servicePillsContainer.innerHTML = '';
+    serviceSelect.innerHTML = '<option value="">Select a service...</option>';
     
     appData.services.forEach(service => {
-        const pill = document.createElement('button');
-        pill.type = 'button';
-        pill.className = 'service-pill';
-        pill.dataset.serviceId = service.id;
-        pill.innerHTML = `
-            ${service.name}
-            <span class="service-pill-price">${service.price}</span>
-        `;
-        
-        pill.addEventListener('click', (e) => {
-            e.preventDefault();
-            selectService(service, pill);
-        });
-        
-        servicePillsContainer.appendChild(pill);
+        const option = document.createElement('option');
+        option.value = service.id;
+        option.textContent = service.name;
+        serviceSelect.appendChild(option);
+    });
+    
+    // Add change event listener
+    serviceSelect.addEventListener('change', (e) => {
+        if (e.target.value) {
+            const service = appData.services.find(s => s.id === e.target.value);
+            if (service) {
+                selectService(service.id, service.name);
+            }
+        }
     });
 }
 
-// Select Service
-function selectService(service, pillElement) {
-    // Remove active class from all pills
-    document.querySelectorAll('.service-pill').forEach(pill => {
-        pill.classList.remove('active');
-    });
-    
-    // Add active class to clicked pill
-    pillElement.classList.add('active');
-    
-    // Store selected service
-    selectedService = service;
-    
-    // Set hidden input
+// Select a service from the dropdown/booking interface
+function selectService(serviceId, serviceName) {
+    // Update service input
     const serviceInput = document.getElementById('service_name');
     if (serviceInput) {
-        serviceInput.value = service.name;
+        serviceInput.value = serviceName;
     }
     
-    // Scroll to date/time section
-    const dateSection = document.querySelector('[data-step="2"]');
-    if (dateSection) {
-        dateSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Update select dropdown value
+    const serviceSelect = document.getElementById('servicePills');
+    if (serviceSelect) {
+        serviceSelect.value = serviceId;
     }
+    
+    console.log(`✅ Selected service: ${serviceName}`);
 }
 
 // Populate Time Slots

@@ -38,6 +38,19 @@ body {
 }
 
 /* ============================================
+   SECTION DIVIDERS
+   ============================================ */
+
+section:not(:last-child)::after {
+    content: '';
+    display: block;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(214, 51, 132, 0.15) 50%, transparent 100%);
+    margin: 0 auto;
+    max-width: 80%;
+}
+
+/* ============================================
    TYPOGRAPHY
    ============================================ */
 

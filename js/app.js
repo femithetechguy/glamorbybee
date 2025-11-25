@@ -134,6 +134,7 @@ function populatePageContent() {
         const contactEmailIcon = document.getElementById('contactEmailIcon');
         const contactPhoneIcon = document.getElementById('contactPhoneIcon');
         const contactInstagramIcon = document.getElementById('contactInstagramIcon');
+        const contactLocationIcon = document.getElementById('contactLocationIcon');
         
         if (contactEmailIcon) {
             contactEmailIcon.href = `mailto:${appData.site.contact.email}`;
@@ -147,13 +148,19 @@ function populatePageContent() {
             contactInstagramIcon.href = appData.site.contact.instagram;
             contactInstagramIcon.title = '@glamor_bybee';
         }
+        if (contactLocationIcon) {
+            contactLocationIcon.href = `https://maps.google.com/?q=${encodeURIComponent(appData.site.contact.location)}`;
+            contactLocationIcon.title = appData.site.contact.location;
+            contactLocationIcon.target = '_blank';
+            contactLocationIcon.rel = 'noopener noreferrer';
+        }
     }
 
     // Footer contact info
     const footerLocation = document.getElementById('footerLocation');
     const footerEmail = document.getElementById('footerEmail');
     const footerPhone = document.getElementById('footerPhone');
-    if (footerLocation) footerLocation.innerHTML = `<strong>Location:</strong> ${appData.site.contact.location}`;
+    if (footerLocation) footerLocation.innerHTML = `<strong>Location:</strong> <a href="https://maps.google.com/?q=${encodeURIComponent(appData.site.contact.location)}" target="_blank" rel="noopener noreferrer">${appData.site.contact.location}</a>`;
     if (footerEmail) footerEmail.innerHTML = `<strong>Email:</strong> <a href="mailto:${appData.site.contact.email}">${appData.site.contact.email}</a>`;
     if (footerPhone) footerPhone.innerHTML = `<strong>Phone:</strong> <a href="tel:${appData.site.contact.phone.replace(/\D/g, '')}">${appData.site.contact.phone}</a>`;
 
@@ -187,19 +194,12 @@ function populateServicesGrid() {
         const card = document.createElement('div');
         card.className = 'service-card';
         card.innerHTML = `
-            <img src="${service.image}" alt="${service.name}" class="service-image" loading="lazy">
+            <div class="service-image-wrapper">
+                <img src="${service.image}" alt="${service.name}" class="service-image" loading="lazy">
+            </div>
             <div class="service-body">
-                <div class="service-price">$${service.price}</div>
                 <h4 class="service-name">${service.name}</h4>
                 <p class="service-desc">${service.description}</p>
-                <div class="service-meta">
-                    <span><i class="bi bi-clock"></i> ${service.duration}</span>
-                </div>
-                <div class="service-feature">
-                    <ul>
-                        ${service.features.map(feature => `<li>${feature}</li>`).join('')}
-                    </ul>
-                </div>
             </div>
         `;
         servicesGrid.appendChild(card);

@@ -505,49 +505,17 @@ function showErrorAlert(message) {
     }, 5000);
 }
 
-// Handle Instagram Embed Links - Open in Native App or Website
+// Handle Instagram Embed - Note: Instagram iframe is cross-origin, so clicks open in new tabs
 function setupInstagramEmbedHandler() {
-    const instagramFrame = document.getElementById('instagramFrame');
+    console.log('🔍 setupInstagramEmbedHandler called');
     
-    if (!instagramFrame) return;
+    // Instagram embed script will handle everything
+    if (window.instgrm) {
+        console.log('📲 Instagram embed script found, processing embeds');
+        window.instgrm.Embeds.process();
+    }
     
-    // Wait for Instagram embed script to load and attach click handlers
-    const checkAndAttachHandlers = () => {
-        const embedLinks = document.querySelectorAll('[data-instgrm-permalink]');
-        
-        embedLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const postUrl = link.getAttribute('href') || link.getAttribute('data-instgrm-permalink');
-                
-                if (postUrl) {
-                    // Check if on mobile
-                    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-                    
-                    if (isMobile) {
-                        // Try to open native Instagram app first
-                        const username = postUrl.match(/instagram\.com\/([^\/]+)/)?.[1];
-                        if (username) {
-                            window.location.href = `instagram://user?username=${username}`;
-                            // Fallback to web after 500ms if app doesn't exist
-                            setTimeout(() => {
-                                window.open(postUrl, '_blank');
-                            }, 500);
-                        } else {
-                            window.open(postUrl, '_blank');
-                        }
-                    } else {
-                        // Desktop - just open in new tab
-                        window.open(postUrl, '_blank');
-                    }
-                }
-            });
-        });
-    };
-    
-    // Check immediately and also after a delay for dynamically loaded content
-    checkAndAttachHandlers();
-    setTimeout(checkAndAttachHandlers, 2000);
+    console.log('ℹ️ Instagram embed ready. Clicks on posts will open Instagram in new tabs.');
 }
 
 // Smooth Scroll Navigation

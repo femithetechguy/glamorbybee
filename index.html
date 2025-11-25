@@ -32,7 +32,7 @@
     <!-- NAVIGATION -->
     <nav class="navbar sticky-top">
         <div class="container-fluid">
-            <a href="#" class="navbar-brand">
+            <a href="javascript:void(0)" class="navbar-brand" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
                 <span>GlamorByBee</span>
             </a>
             <div class="nav-menu" id="navMenu">
@@ -104,8 +104,8 @@
                 <div class="booking-step">
                     <div class="step-number">1</div>
                     <div class="step-content">
-                        <h3>Choose Your Look</h3>
-                        <select id="servicePills" class="form-select"></select>
+                        <h3>Choose Your Look *</h3>
+                        <select id="servicePills" class="form-select form-select-lg"></select>
                     </div>
                 </div>
 
@@ -113,10 +113,10 @@
                 <div class="booking-step" data-step="2">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3>Pick Your Time</h3>
+                        <h3>Pick Your Time *</h3>
                         <div class="date-time-picker">
-                            <input type="date" id="date" class="date-input" required>
-                            <select id="time" class="time-select" required>
+                            <input type="date" id="date" class="form-control form-control-lg" required>
+                            <select id="time" class="form-select form-select-lg" required>
                                 <option value="">Select a time</option>
                             </select>
                         </div>
@@ -127,17 +127,17 @@
                 <div class="booking-step">
                     <div class="step-number">3</div>
                     <div class="step-content">
-                        <h3>Your Details</h3>
+                        <h3>Your Details *</h3>
                         <form id="bookingForm" class="booking-form">
                             <input type="hidden" id="service_name" name="service_name">
                             <div class="form-group">
-                                <input type="text" id="name" name="name" placeholder="Full name" required>
+                                <input type="text" id="name" name="name" class="form-control form-control-lg" placeholder="Full name *" required>
                             </div>
                             <div class="form-group">
-                                <input type="email" id="email" name="email" placeholder="Email address" required>
+                                <input type="email" id="email" name="email" class="form-control form-control-lg" placeholder="Email address *" required>
                             </div>
                             <div class="form-group">
-                                <input type="tel" id="phone" name="phone" placeholder="Phone number" required>
+                                <input type="tel" id="phone" name="phone" class="form-control form-control-lg" placeholder="Phone number (214 111 1111) *" required>
                             </div>
                             <div class="location-toggle">
                                 <label class="toggle-option">
@@ -260,8 +260,13 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 GlamorByBee. All rights reserved.</p>
-                <p id="appdevCredit" class="appdev-credit"></p>
+                <div>
+                    <p>&copy; 2025 GlamorByBee. All rights reserved.</p>
+                    <p id="appdevCredit" class="appdev-credit"></p>
+                </div>
+                <a href="http://localhost:5500/admin/index.html" class="admin-link" target="_blank">
+                    <i class="bi bi-shield-lock"></i> Admin
+                </a>
             </div>
         </div>
     </footer>

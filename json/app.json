@@ -15,6 +15,10 @@
       "publicKey": "YOUR_EMAILJS_PUBLIC_KEY"
     }
   },
+  "appdev": {
+    "name": "FTTG SOLUTIONS",
+    "website": "fttgsolutions.com"
+  },
   "about": {
     "title": "About Us",
     "description": "GlamorByBee is dedicated to elevating your natural beauty with flawless, professional makeup artistry for every occasion. We believe every face is a unique canvas, and our passion is to create stunning, confidence-boosting looks tailored just for you.",

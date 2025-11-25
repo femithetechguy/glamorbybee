@@ -3,24 +3,40 @@
 // 2025 - Fresh, Fast, Flawless
 // ============================================
 
+console.log('✓ app.js loaded');
+
 let appData = {};
 let selectedService = null;
 
 // Initialize App
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('✓ DOMContentLoaded fired');
     await initializeApp();
 });
 
 async function initializeApp() {
     try {
-        // Load JSON data
-        const response = await fetch('json/app.json');
-        appData = await response.json();
+        console.log('✓ initializeApp started');
         
-        // Initialize EmailJS
-        emailjs.init(appData.site.emailjs.publicKey);
+        // Load JSON data
+        console.log('About to fetch JSON...');
+        const response = await fetch('json/app.json');
+        console.log('Fetch response status:', response.status);
+        
+        appData = await response.json();
+        console.log('✓ JSON loaded:', appData);
+        console.log('Contact data:', appData.site.contact);
+        
+        // Initialize EmailJS (only if credentials are configured)
+        if (appData.site.emailjs.publicKey && !appData.site.emailjs.publicKey.includes('YOUR_')) {
+            emailjs.init(appData.site.emailjs.publicKey);
+            console.log('✓ EmailJS initialized');
+        } else {
+            console.warn('⚠ EmailJS credentials not configured');
+        }
         
         // Populate page content
+        console.log('About to call populatePageContent...');
         populatePageContent();
         populateServicePills();
         populateServicesGrid();
@@ -36,12 +52,16 @@ async function initializeApp() {
         console.log('✓ App initialized successfully');
     } catch (error) {
         console.error('✗ Error initializing app:', error);
+        console.error('Error stack:', error.stack);
         showErrorAlert('Error loading application. Please refresh.');
     }
 }
 
 // Populate Page Content
 function populatePageContent() {
+    console.log('populatePageContent called');
+    console.log('appData:', appData);
+    
     // Hero section
     const heroContent = document.querySelector('.hero-content');
     if (heroContent) {
@@ -58,18 +78,38 @@ function populatePageContent() {
     }
 
     // Contact section
+    console.log('Processing contact section...');
+    console.log('appData.site.contact exists?', appData.site && appData.site.contact ? 'YES' : 'NO');
+    
     if (appData.site.contact) {
+        console.log('Contact object:', appData.site.contact);
+        
         const contactLocation = document.getElementById('contactLocation');
         const contactPhone = document.getElementById('contactPhone');
         const contactEmail = document.getElementById('contactEmail');
         const contactInstagram = document.getElementById('contactInstagram');
 
-        if (contactLocation) contactLocation.textContent = appData.site.contact.location || 'Location';
-        if (contactPhone) contactPhone.textContent = appData.site.contact.phone || 'Phone';
-        if (contactEmail) contactEmail.textContent = appData.site.contact.email || 'Email';
+        console.log('contactLocation element found?', contactLocation ? 'YES' : 'NO');
+        console.log('contactPhone element found?', contactPhone ? 'YES' : 'NO');
+        console.log('contactEmail element found?', contactEmail ? 'YES' : 'NO');
+        console.log('contactInstagram element found?', contactInstagram ? 'YES' : 'NO');
+
+        if (contactLocation) {
+            contactLocation.textContent = appData.site.contact.location || 'Location';
+            console.log('Set contactLocation to:', contactLocation.textContent);
+        }
+        if (contactPhone) {
+            contactPhone.textContent = appData.site.contact.phone || 'Phone';
+            console.log('Set contactPhone to:', contactPhone.textContent);
+        }
+        if (contactEmail) {
+            contactEmail.textContent = appData.site.contact.email || 'Email';
+            console.log('Set contactEmail to:', contactEmail.textContent);
+        }
         if (contactInstagram) {
             contactInstagram.href = appData.site.contact.instagram;
             contactInstagram.textContent = '@glamor_bybee';
+            console.log('Set contactInstagram to:', contactInstagram.textContent);
         }
     }
 
@@ -87,6 +127,15 @@ function populatePageContent() {
     const instagramLink = document.querySelector('[href*="instagram"]');
     if (instagramLink && appData.site.contact.instagram) {
         instagramLink.href = appData.site.contact.instagram;
+    }
+
+    // App Development info
+    if (appData.appdev) {
+        const appdevLink = document.getElementById('appdevLink');
+        if (appdevLink) {
+            appdevLink.href = `https://${appData.appdev.website}`;
+            appdevLink.textContent = appData.appdev.name;
+        }
     }
 }
 
@@ -284,6 +333,14 @@ async function handleFormSubmit(form) {
         const submitBtn = form.querySelector('.submit-btn');
         submitBtn.disabled = true;
         submitBtn.textContent = 'Sending...';
+
+        // Check if EmailJS is properly configured
+        if (!appData.site.emailjs.publicKey || appData.site.emailjs.publicKey.includes('YOUR_')) {
+            showErrorAlert('Email service not configured. Please contact support.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Book Your Look';
+            return;
+        }
 
         // Send email
         const response = await emailjs.send(

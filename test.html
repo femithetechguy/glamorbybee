@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test JSON Loading</title>
+</head>
+<body>
+    <h1>JSON Loading Test</h1>
+    <div id="output"></div>
+    
+    <script>
+        async function testLoad() {
+            try {
+                console.log('Starting fetch...');
+                const response = await fetch('json/app.json');
+                console.log('Response status:', response.status);
+                const data = await response.json();
+                console.log('Data loaded:', data);
+                document.getElementById('output').innerHTML = `
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('output').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+        testLoad();
+    </script>
+</body>
+</html>

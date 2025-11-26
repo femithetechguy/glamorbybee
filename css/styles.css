@@ -26,6 +26,7 @@
 
 html {
     scroll-behavior: smooth;
+    scroll-padding-top: 30px;
 }
 
 body {
@@ -445,16 +446,20 @@ p {
 
 .service-image-wrapper {
     width: 100%;
-    height: 240px;
+    position: relative;
     overflow: hidden;
     background: var(--light);
-    position: relative;
+    aspect-ratio: 1 / 1;
 }
 
 .service-image {
     width: 100%;
     height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
     object-fit: cover;
+    object-position: center;
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 

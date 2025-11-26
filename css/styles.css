@@ -460,11 +460,12 @@ p {
     left: 0;
     object-fit: cover;
     object-position: center;
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: brightness(1);
 }
 
 .service-card:hover .service-image {
-    transform: scale(1.1);
+    filter: brightness(1.1) contrast(1.05);
 }
 
 .service-body {

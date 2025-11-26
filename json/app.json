@@ -98,10 +98,10 @@
       "image": "img/luxury_home_service.jpg"
     },
     {
-      "id": "placeholder",
-      "name": "Coming Soon",
-      "description": "Exciting new service - stay tuned!",
-      "image": "img/placeholder.jpg"
+      "id": "makeup-class",
+      "name": "Makeup Training Class",
+      "description": "Get trained with our expert makeup classes!",
+      "image": "img/makeup_training.jpg"
     }
   ],
   "booking": {

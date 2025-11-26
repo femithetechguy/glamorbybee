@@ -12,7 +12,15 @@
     "emailjs": {
       "serviceId": "fttg_service",
       "templateId": "template_glamorbybee",
-      "publicKey": "ANmN0gWxEnEHgUCXx"
+      "publicKey": "ANmN0gWxEnEHgUCXx",
+      "fromEmail": "femithetechguy@gmail.com",
+      "staffEmail": "femithetechguy@gmail.com",
+      "templateVariables": {
+        "toEmail": "{{recipient_email}}",
+        "fromEmail": "{{fromEmail}}",
+        "replyTo": "{{reply_to_email}}",
+        "bcc": "{{staff_email}}"
+      }
     }
   },
   "appdev": {

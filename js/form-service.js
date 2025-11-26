@@ -52,11 +52,30 @@ class FormService {
         
         console.log('✉️ Form submitted');
         
-        // Check if service is selected
-        const serviceName = document.getElementById('service_name');
-        if (!serviceName || !serviceName.value || serviceName.value.trim() === '') {
+        // Check if service is selected from the dropdown
+        const servicePills = document.getElementById('servicePills');
+        if (!servicePills || !servicePills.value || servicePills.value.trim() === '') {
             console.warn('⚠️ Service not selected');
             this.showError('⚠️ Please select a service before booking');
+            return;
+        }
+        
+        // Validate email
+        const emailInput = document.getElementById('email');
+        const emailValue = emailInput ? emailInput.value.trim() : '';
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailValue || !emailRegex.test(emailValue)) {
+            console.warn('⚠️ Invalid email address');
+            this.showError('⚠️ Please provide a valid email address');
+            return;
+        }
+        
+        // Validate phone
+        const phoneInput = document.getElementById('phone');
+        const phoneValue = phoneInput ? phoneInput.value.trim() : '';
+        if (!phoneValue) {
+            console.warn('⚠️ Phone number missing');
+            this.showError('⚠️ Please provide a phone number');
             return;
         }
         
@@ -107,16 +126,19 @@ class FormService {
             const formattedTime = timeStr ? `${timeStr} ${tzAbbr}` : '';
             
             const templateParams = {
-                to_email: formData.get('email'),
-                from_name: formData.get('name'),
-                client_name: formData.get('name'),
-                service_name: formData.get('service_name') || 'Not selected',
-                appointment_date: formattedDate,
-                appointment_time: formattedTime,
-                service_type: formData.get('location') === 'studio' ? 'Studio Visit' : 'Home Service',
-                service_address: formData.get('location') === 'home' ? (formData.get('serviceAddress') || '') : 'N/A (Studio Visit)',
-                phone: formData.get('phone'),
-                notes: formData.get('notes') || 'No special requests'
+                recipient_email: formData.get('email'), // Customer email - primary recipient
+                reply_to_email: formData.get('email'), // Where replies go (back to customer)
+                from_name: `${formData.get('name')}: ${formattedDate} - ${formData.get('location') === 'studio' ? 'Studio Visit' : 'Home Service'}`, // From name with details
+                customer_name: formData.get('name'),
+                customer_email: formData.get('email'),
+                staff_email: appData?.site?.emailjs?.staffEmail || 'femithetechguy@gmail.com', // Staff receives BCC
+                selected_service: formData.get('service_name') || 'Not selected',
+                booking_date: formattedDate,
+                booking_time: formattedTime,
+                visit_type: formData.get('location') === 'studio' ? 'Studio Visit' : 'Home Service',
+                service_location: formData.get('location') === 'home' ? (formData.get('serviceAddress') || '') : 'N/A (Studio Visit)',
+                customer_phone: formData.get('phone'),
+                special_requests: formData.get('notes') || 'No special requests'
             };
 
             console.log('🚀 Sending email with params:', templateParams);
@@ -164,7 +186,22 @@ class FormService {
 
         } catch (error) {
             console.error('✗ Error sending email:', error);
-            this.showError('❌ Oops! Something went wrong. Please check your information and try again.');
+            console.error('📋 Error details:', {
+                message: error.message,
+                status: error.status,
+                text: error.text,
+                name: error.name
+            });
+            
+            // Provide specific error message based on error type
+            let errorMsg = '❌ Oops! Something went wrong. Please check your information and try again.';
+            if (error.message && error.message.includes('service')) {
+                errorMsg = '❌ Email service error. Please try again in a moment.';
+            } else if (error.status) {
+                errorMsg = `❌ Error (${error.status}): Please try again.`;
+            }
+            
+            this.showError(errorMsg);
         } finally {
             // Re-enable submit button
             submitBtn.disabled = false;

@@ -9,6 +9,13 @@ console.log('🌟 GLAMORBYBEE APP STARTING - Version 1.0');
 let appData = {};
 let selectedService = null;
 
+// Suppress extension/add-on message channel errors
+window.addEventListener('unhandledrejection', event => {
+    if (event.reason && event.reason.message && event.reason.message.includes('message channel closed')) {
+        event.preventDefault();
+    }
+});
+
 // Back to Top Button
 function setupBackToTop() {
     const backToTopBtn = document.getElementById('backToTop');

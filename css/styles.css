@@ -960,11 +960,15 @@ p {
     font-size: 1.1rem;
     box-shadow: 0 8px 24px rgba(22, 163, 74, 0.3);
     animation: slideDown 0.3s ease-out;
-    margin: 1.5rem;
+    margin: 1.5rem auto;
     display: flex;
     align-items: center;
     gap: 1rem;
     line-height: 1.6;
+    max-width: fit-content;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .alert-success i {
@@ -982,11 +986,15 @@ p {
     font-size: 1.1rem;
     box-shadow: 0 8px 24px rgba(220, 38, 38, 0.3);
     animation: slideDown 0.3s ease-out;
-    margin: 1.5rem;
+    margin: 1.5rem auto;
     display: flex;
     align-items: center;
     gap: 1rem;
     line-height: 1.6;
+    max-width: fit-content;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .alert-error i {

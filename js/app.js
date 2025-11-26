@@ -71,18 +71,6 @@ async function initializeApp() {
         console.log('✓ JSON loaded:', appData);
         console.log('Contact data:', appData.site.contact);
         
-        // Initialize EmailJS (only if credentials are configured and library is loaded)
-        if (typeof emailjs !== 'undefined') {
-            if (appData.site.emailjs.publicKey && !appData.site.emailjs.publicKey.includes('YOUR_')) {
-                emailjs.init(appData.site.emailjs.publicKey);
-                console.log('✓ EmailJS initialized');
-            } else {
-                console.warn('⚠ EmailJS credentials not configured');
-            }
-        } else {
-            console.warn('⚠ EmailJS library not loaded - will retry initialization on form submit');
-        }
-        
         // Populate page content
         console.log('About to call populatePageContent...');
         populatePageContent();
@@ -95,6 +83,16 @@ async function initializeApp() {
         
         // Setup form handling
         setupFormHandling();
+        
+        // Initialize FormService for email handling
+        console.log('Initializing FormService...');
+        const formService = new FormService({
+            formSelector: '#bookingForm',
+            emailJSServiceId: appData.site.emailjs.serviceId,
+            emailJSTemplateId: appData.site.emailjs.templateId,
+            emailJSPublicKey: appData.site.emailjs.publicKey
+        });
+        await formService.init();
         
         // Set minimum date to today
         setMinDate();
@@ -454,7 +452,17 @@ function setupFormHandling() {
     // Sync time to hidden form input
     const timeSelect = document.getElementById('time');
     if (timeSelect) {
+        // Sync on change
         timeSelect.addEventListener('change', (e) => {
+            const hiddenTimeInput = document.getElementById('hidden_time');
+            if (hiddenTimeInput) {
+                hiddenTimeInput.value = e.target.value;
+                console.log('⏰ Time synced:', e.target.value);
+            }
+        });
+        
+        // Also sync on input for better responsiveness
+        timeSelect.addEventListener('input', (e) => {
             const hiddenTimeInput = document.getElementById('hidden_time');
             if (hiddenTimeInput) {
                 hiddenTimeInput.value = e.target.value;
@@ -572,11 +580,41 @@ function setupFormHandling() {
         });
     });
 
-    // Form submission
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await handleFormSubmit(form);
-    });
+    // Note: Form submission is now handled by FormService (form-service.js)
+}
+
+// Retry Email Send (helper for when EmailJS loads dynamically)
+async function retryEmailSend(appData, templateParams, submitBtn, email) {
+    try {
+        const response = await emailjs.send(
+            appData.site.emailjs.serviceId,
+            appData.site.emailjs.templateId,
+            templateParams
+        );
+
+        console.log('✅ Email sent successfully:', response);
+        showSuccessAlert(`Booking confirmed! Check your email at ${email}`);
+
+        // Reset form
+        const form = document.getElementById('bookingForm');
+        form.reset();
+        document.querySelectorAll('.service-pill').forEach(pill => {
+            pill.classList.remove('active');
+        });
+        selectedService = null;
+
+        // Reset button
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Book Your Look';
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+        console.error('✗ Error sending email:', error);
+        showErrorAlert('Failed to send booking. Please try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Book Your Look';
+    }
 }
 
 // Handle Form Submission
@@ -686,11 +724,36 @@ async function handleFormSubmit(form) {
         
         // Ensure EmailJS is initialized
         if (typeof emailjs === 'undefined') {
-            console.error('❌ EmailJS not available');
-            showErrorAlert('Email service not available. Please try again later.');
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Book Your Look';
-            return;
+            console.error('❌ EmailJS not available - attempting to load dynamically...');
+            
+            // Try to load EmailJS dynamically
+            try {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@3.11.0/dist/index.min.js';
+                script.onload = async () => {
+                    console.log('✓ EmailJS loaded dynamically');
+                    if (typeof emailjs !== 'undefined') {
+                        emailjs.init(appData.site.emailjs.publicKey);
+                        window.emailjsInitialized = true;
+                        // Retry sending email
+                        await retryEmailSend(appData, templateParams, submitBtn, email);
+                    }
+                };
+                script.onerror = () => {
+                    console.error('❌ Failed to load EmailJS dynamically');
+                    showErrorAlert('Email service not available. Please try again later.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Book Your Look';
+                };
+                document.head.appendChild(script);
+                return;
+            } catch (err) {
+                console.error('❌ Error loading EmailJS:', err);
+                showErrorAlert('Email service not available. Please try again later.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Book Your Look';
+                return;
+            }
         }
         
         // Initialize if not already done
@@ -766,6 +829,12 @@ function setMinDate() {
     const today = new Date().toISOString().split('T')[0];
     dateInput.min = today;
     dateInput.value = today;
+    
+    // Sync to hidden field on initialization
+    const hiddenDateInput = document.getElementById('hidden_date');
+    if (hiddenDateInput) {
+        hiddenDateInput.value = today;
+    }
 }
 
 // Validate Email

@@ -948,9 +948,14 @@ p {
 }
 
 .alert-success {
-    background: rgba(16, 185, 129, 0.1);
-    color: var(--success);
-    border: 1px solid rgba(16, 185, 129, 0.2);
+    background: #dcfce7;
+    color: #166534;
+    border: 2px solid #16a34a;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
+    animation: slideDown 0.3s ease-out;
 }
 
 .alert-error {
@@ -961,6 +966,18 @@ p {
     padding: 1rem;
     font-weight: 500;
     box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .d-none {
@@ -986,8 +1003,11 @@ p {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin: 2rem 0;
-    gap: 1.5rem;
+    margin: 2rem auto;
+    gap: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
 }
 
 .instagram-embed-info {
@@ -1042,13 +1062,37 @@ p {
     max-width: 500px;
 }
 
-.instagram-embed-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0;
+.instagram-profile-link {
+    text-decoration: none;
     width: 100%;
-    max-width: 500px;
+    max-width: 100%;
+    display: block;
+}
+
+.instagram-placeholder {
+    background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+    border: 2px solid #e4e9f0;
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    max-width: 100%;
+    overflow: hidden;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+.instagram-placeholder p {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.instagram-placeholder:hover {
+    border-color: #E4405F;
+    box-shadow: 0 12px 35px rgba(228, 64, 95, 0.25);
+    transform: translateY(-4px);
 }
 
 .instagram-embed-container iframe {
@@ -1074,9 +1118,6 @@ p {
     padding: 0;
     width: 100%;
     max-width: 500px;
-    min-height: 850px;
-    max-height: 850px;
-    overflow: hidden;
     transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -1121,6 +1162,9 @@ p {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1.5rem;
+    width: 100%;
+    margin-top: 3rem;
+    margin-bottom: 0;
 }
 
 .gallery-item {

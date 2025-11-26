@@ -64,7 +64,7 @@
     },
     {
       "id": "party",
-      "name": "Party / Owanbe Makeup",
+      "name": "Party - Owanbe Makeup",
       "description": "Stunning looks for parties and celebrations",
       "image": "img/owanbe_makeup.jpg",
       "price": "$100"
@@ -78,21 +78,21 @@
     },
     {
       "id": "photoshoot-1",
-      "name": "Makeup/Photoshoot (1 Outfit)",
+      "name": "Makeup & Photoshoot (1 Outfit)",
       "description": "Camera-ready makeup for professional photos",
       "image": "img/1_outfit_shoot.jpg",
       "price": "$85"
     },
     {
       "id": "photoshoot-2",
-      "name": "Makeup/Photoshoot (2 Outfits)",
+      "name": "Makeup &Photoshoot (2 Outfits)",
       "description": "Professional makeup for multiple outfit changes",
       "image": "img/2_outfit_shoot.jpg",
       "price": "$120"
     },
     {
       "id": "photoshoot-3",
-      "name": "Makeup/Photoshoot (3 Outfits)",
+      "name": "Makeup & Photoshoot (3 Outfits)",
       "description": "Complete makeup suite for extensive photoshoots",
       "image": "img/3_outfit_shoot.jpg",
       "price": "$150"

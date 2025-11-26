@@ -3,7 +3,8 @@
 // 2025 - Fresh, Fast, Flawless
 // ============================================
 
-console.log('✓ app.js loaded');
+console.log('🚀 app.js loaded');
+console.log('🌟 GLAMORBYBEE APP STARTING - Version 1.0');
 
 let appData = {};
 let selectedService = null;
@@ -70,14 +71,6 @@ async function initializeApp() {
         console.log('✓ JSON loaded:', appData);
         console.log('Contact data:', appData.site.contact);
         
-        // Initialize EmailJS (only if credentials are configured)
-        if (appData.site.emailjs.publicKey && !appData.site.emailjs.publicKey.includes('YOUR_')) {
-            emailjs.init(appData.site.emailjs.publicKey);
-            console.log('✓ EmailJS initialized');
-        } else {
-            console.warn('⚠ EmailJS credentials not configured');
-        }
-        
         // Populate page content
         console.log('About to call populatePageContent...');
         populatePageContent();
@@ -90,6 +83,16 @@ async function initializeApp() {
         
         // Setup form handling
         setupFormHandling();
+        
+        // Initialize FormService for email handling
+        console.log('Initializing FormService...');
+        const formService = new FormService({
+            formSelector: '#bookingForm',
+            emailJSServiceId: appData.site.emailjs.serviceId,
+            emailJSTemplateId: appData.site.emailjs.templateId,
+            emailJSPublicKey: appData.site.emailjs.publicKey
+        });
+        await formService.init();
         
         // Set minimum date to today
         setMinDate();
@@ -104,8 +107,8 @@ async function initializeApp() {
 
 // Populate Page Content
 function populatePageContent() {
-    console.log('populatePageContent called');
-    console.log('appData:', appData);
+    console.log('📄 populatePageContent called');
+    console.log('📦 appData loaded:', !!appData, 'keys:', Object.keys(appData).length);
     
     // Hero section
     const heroContent = document.querySelector('.hero-content');
@@ -168,6 +171,7 @@ function populatePageContent() {
 
     // Booking policy
     const bookingPolicy = document.getElementById('bookingPolicy');
+    console.log('📋 Booking Policy - element:', !!bookingPolicy, 'policy text:', appData.booking?.cancellationPolicy?.substring(0, 30));
     if (bookingPolicy) bookingPolicy.textContent = appData.booking.cancellationPolicy;
 
     // Footer Instagram
@@ -188,7 +192,11 @@ function populatePageContent() {
 // Populate Services Grid
 function populateServicesGrid() {
     const servicesGrid = document.getElementById('servicesGrid');
-    if (!servicesGrid || !appData.services) return;
+    console.log('🎯 populateServicesGrid called - servicesGrid:', !!servicesGrid, 'services:', appData.services?.length);
+    if (!servicesGrid || !appData.services) {
+        console.warn('⚠️ servicesGrid or appData.services missing');
+        return;
+    }
 
     servicesGrid.innerHTML = '';
     
@@ -243,7 +251,11 @@ function populateGallery() {
 // Populate Service Pills (for booking step 1)
 function populateServicePills() {
     const serviceSelect = document.getElementById('servicePills');
-    if (!serviceSelect || !appData.services) return;
+    console.log('💊 populateServicePills - select element:', !!serviceSelect, 'services count:', appData.services?.length);
+    if (!serviceSelect || !appData.services) {
+        console.warn('⚠️ servicePills or appData.services missing');
+        return;
+    }
 
     serviceSelect.innerHTML = '<option value="">Select a service...</option>';
     
@@ -267,6 +279,9 @@ function populateServicePills() {
 
 // Select a service from the dropdown/booking interface
 function selectService(serviceId, serviceName) {
+    // Find the full service object and set selectedService
+    selectedService = appData.services.find(s => s.id === serviceId);
+    
     // Update service input
     const serviceInput = document.getElementById('service_name');
     if (serviceInput) {
@@ -279,13 +294,17 @@ function selectService(serviceId, serviceName) {
         serviceSelect.value = serviceId;
     }
     
-    console.log(`✅ Selected service: ${serviceName}`);
+    console.log(`✅ Selected service: ${serviceName} - Full object:`, selectedService);
 }
 
 // Populate Time Slots
 function populateTimeSlots() {
     const timeSelect = document.getElementById('time');
-    if (!timeSelect || !appData.booking || !appData.booking.timeSlots) return;
+    console.log('⏰ populateTimeSlots - select element:', !!timeSelect, 'timeSlots count:', appData.booking?.timeSlots?.length);
+    if (!timeSelect || !appData.booking || !appData.booking.timeSlots) {
+        console.warn('⚠️ time select or timeSlots missing');
+        return;
+    }
 
     timeSelect.innerHTML = '<option value="">Select a time...</option>';
     
@@ -343,7 +362,11 @@ function populateGallery() {
 // Populate Team
 function populateTeam() {
     const teamGrid = document.getElementById('teamGrid');
-    if (!teamGrid || !appData.team) return;
+    console.log('👥 populateTeam called - teamGrid:', !!teamGrid, 'team:', appData.team?.length);
+    if (!teamGrid || !appData.team) {
+        console.warn('⚠️ teamGrid or appData.team missing');
+        return;
+    }
 
     teamGrid.innerHTML = '';
     
@@ -366,7 +389,11 @@ function populateTeam() {
 // Populate Testimonials
 function populateTestimonials() {
     const testimonialsGrid = document.getElementById('testimonialsGrid');
-    if (!testimonialsGrid || !appData.testimonials) return;
+    console.log('💬 populateTestimonials called - testimonialsGrid:', !!testimonialsGrid, 'testimonials:', appData.testimonials?.length);
+    if (!testimonialsGrid || !appData.testimonials) {
+        console.warn('⚠️ testimonialsGrid or appData.testimonials missing');
+        return;
+    }
 
     testimonialsGrid.innerHTML = '';
     
@@ -393,7 +420,11 @@ function populateTestimonials() {
 // Setup Form Handling
 function setupFormHandling() {
     const form = document.getElementById('bookingForm');
-    if (!form) return;
+    console.log('📝 setupFormHandling - form element:', !!form);
+    if (!form) {
+        console.warn('⚠️ bookingForm element not found!');
+        return;
+    }
 
     // Format phone number on input
     const phoneInput = document.getElementById('phone');
@@ -403,17 +434,195 @@ function setupFormHandling() {
         });
     }
 
-    // Form submission
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await handleFormSubmit(form);
+    // Make date field clickable anywhere to open calendar
+    const dateInput = document.getElementById('date');
+    if (dateInput) {
+        dateInput.addEventListener('click', () => {
+            dateInput.showPicker?.();
+        });
+        // Sync date to hidden form input
+        dateInput.addEventListener('change', (e) => {
+            const hiddenDateInput = document.getElementById('hidden_date');
+            if (hiddenDateInput) {
+                hiddenDateInput.value = e.target.value;
+            }
+        });
+    }
+
+    // Sync time to hidden form input
+    const timeSelect = document.getElementById('time');
+    if (timeSelect) {
+        // Sync on change
+        timeSelect.addEventListener('change', (e) => {
+            const hiddenTimeInput = document.getElementById('hidden_time');
+            if (hiddenTimeInput) {
+                hiddenTimeInput.value = e.target.value;
+                console.log('⏰ Time synced:', e.target.value);
+            }
+        });
+        
+        // Also sync on input for better responsiveness
+        timeSelect.addEventListener('input', (e) => {
+            const hiddenTimeInput = document.getElementById('hidden_time');
+            if (hiddenTimeInput) {
+                hiddenTimeInput.value = e.target.value;
+            }
+        });
+    }
+
+    // Handle location toggle - show/hide service address
+    const locationRadios = document.querySelectorAll('input[name="location"]');
+    const serviceAddressContainer = document.getElementById('serviceAddressContainer');
+    const serviceAddressInput = document.getElementById('serviceAddress');
+    const studioNotice = document.getElementById('studioNotice');
+    
+    console.log('🔧 Location toggle setup:', {
+        radiosFound: locationRadios.length,
+        containerFound: !!serviceAddressContainer,
+        inputFound: !!serviceAddressInput,
+        studioNoticeFound: !!studioNotice
     });
+
+    // Initialize display based on default checked radio
+    const checkedRadio = document.querySelector('input[name="location"]:checked');
+    if (checkedRadio && checkedRadio.value === 'home') {
+        serviceAddressContainer.style.display = 'block';
+        studioNotice.style.display = 'none';
+    } else if (checkedRadio && checkedRadio.value === 'studio') {
+        serviceAddressContainer.style.display = 'none';
+        studioNotice.style.display = 'block';
+    } else {
+        serviceAddressContainer.style.display = 'none';
+        studioNotice.style.display = 'none';
+    }
+    
+    // Initialize Google Places Autocomplete
+    let autocomplete = null;
+    
+    locationRadios.forEach(radio => {
+        radio.addEventListener('change', async (e) => {
+            console.log('📍 Location changed to:', e.target.value);
+            
+            if (e.target.value === 'home') {
+                serviceAddressContainer.style.display = 'block';
+                studioNotice.style.display = 'none';
+                serviceAddressInput.required = true;
+                console.log('✅ Address container shown');
+                
+                // Initialize autocomplete if not already initialized
+                if (!autocomplete) {
+                    console.log('🔄 Checking Google Maps availability...');
+                    console.log('Google object:', typeof google);
+                    
+                    if (typeof google !== 'undefined') {
+                        try {
+                            console.log('📦 Loading Places library...');
+                            const { Autocomplete } = await google.maps.importLibrary("places");
+                            console.log('✅ Places library loaded successfully');
+                            
+                            autocomplete = new Autocomplete(serviceAddressInput, {
+                                componentRestrictions: { country: 'us' },
+                                fields: ['formatted_address', 'address_components', 'name'],
+                                types: ['address']
+                            });
+                            console.log('✅ Autocomplete initialized');
+                            
+                            // Handle place selection
+                            autocomplete.addListener('place_changed', () => {
+                                const place = autocomplete.getPlace();
+                                console.log('📌 Place selected:', place);
+                                
+                                if (place && place.formatted_address) {
+                                    serviceAddressInput.value = place.formatted_address;
+                                    console.log('✅ Address set:', place.formatted_address);
+                                } else if (place && place.name) {
+                                    // Fallback to name if formatted_address isn't available
+                                    serviceAddressInput.value = place.name;
+                                    console.log('✅ Address set from name:', place.name);
+                                } else {
+                                    console.log('⚠️ No address found in place object');
+                                }
+                            });
+                            
+                            // Workaround: Handle manual keyboard selection
+                            serviceAddressInput.addEventListener('keydown', (e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    // Allow Google to handle the selection
+                                    setTimeout(() => {
+                                        const place = autocomplete.getPlace();
+                                        if (place && place.formatted_address) {
+                                            serviceAddressInput.value = place.formatted_address;
+                                            console.log('✅ Address set via Enter key:', place.formatted_address);
+                                        }
+                                    }, 100);
+                                }
+                            });
+                            
+                            console.log('✅ Autocomplete fully configured');
+                        } catch (error) {
+                            console.error('❌ Error loading Places library:', error);
+                            console.log('ℹ️ Address field will work as regular text input');
+                        }
+                    } else {
+                        console.warn('⚠️ Google Maps not available - using regular text input');
+                    }
+                } else {
+                    console.log('ℹ️ Autocomplete already initialized');
+                }
+            } else {
+                studioNotice.style.display = 'block';
+                serviceAddressContainer.style.display = 'none';
+                serviceAddressInput.required = false;
+                serviceAddressInput.value = '';
+                console.log('✅ Studio service selected - notice shown');
+            }
+        });
+    });
+
+    // Note: Form submission is now handled by FormService (form-service.js)
+}
+
+// Retry Email Send (helper for when EmailJS loads dynamically)
+async function retryEmailSend(appData, templateParams, submitBtn, email) {
+    try {
+        const response = await emailjs.send(
+            appData.site.emailjs.serviceId,
+            appData.site.emailjs.templateId,
+            templateParams
+        );
+
+        console.log('✅ Email sent successfully:', response);
+        showSuccessAlert(`Booking confirmed! Check your email at ${email}`);
+
+        // Reset form
+        const form = document.getElementById('bookingForm');
+        form.reset();
+        document.querySelectorAll('.service-pill').forEach(pill => {
+            pill.classList.remove('active');
+        });
+        selectedService = null;
+
+        // Reset button
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Book Your Look';
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+        console.error('✗ Error sending email:', error);
+        showErrorAlert('Failed to send booking. Please try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Book Your Look';
+    }
 }
 
 // Handle Form Submission
 async function handleFormSubmit(form) {
+    console.log('✉️ Form submitted - selectedService:', !!selectedService, selectedService?.name);
     // Validate selection
     if (!selectedService) {
+        console.warn('⚠️ No service selected!');
         showErrorAlert('Please select a service first');
         return;
     }
@@ -425,12 +634,26 @@ async function handleFormSubmit(form) {
     const name = formData.get('name');
     const email = formData.get('email');
     const phone = formData.get('phone');
-    const location = formData.get('location') || 'Studio';
+    const location = formData.get('location') || 'studio';
+    const serviceAddress = formData.get('serviceAddress');
     const notes = formData.get('notes');
 
     // Validate required fields
-    if (!date || !time || !name || !email || !phone) {
-        showErrorAlert('Please fill in all required fields');
+    const missingFields = [];
+    if (!date) missingFields.push('Date');
+    if (!time) missingFields.push('Time');
+    if (!name) missingFields.push('Name');
+    if (!email) missingFields.push('Email');
+    if (!phone) missingFields.push('Phone');
+
+    if (missingFields.length > 0) {
+        showErrorAlert(`Please fill in: ${missingFields.join(', ')}`);
+        return;
+    }
+
+    // Validate service address if home service is selected
+    if (location === 'home' && (!serviceAddress || serviceAddress.trim() === '')) {
+        showErrorAlert('Please provide your service address for home service');
         return;
     }
 
@@ -447,15 +670,32 @@ async function handleFormSubmit(form) {
         month: 'long',
         day: 'numeric'
     });
+    console.log('📧 Preparing email - service:', selectedService.name, 'price:', selectedService.price, 'date:', appointmentDate, 'time:', time);
+
+    // Get current time with timezone for booking submission
+    const now = new Date();
+    const bookingTime = now.toLocaleString('en-US', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZoneName: 'short'
+    });
 
     const templateParams = {
         to_email: email,
+        from_name: name,
         client_name: name,
         service_name: selectedService.name,
         service_price: selectedService.price,
         appointment_date: appointmentDate,
         appointment_time: time,
-        location: location === 'studio' ? 'Studio' : 'Home Service',
+        time: bookingTime,
+        location: location === 'studio' ? 'Studio Visit' : 'Home Service',
+        service_address: location === 'home' ? serviceAddress : 'N/A (Studio Visit)',
         phone: phone,
         notes: notes || 'No special requests',
         business_name: appData.site.title,
@@ -480,13 +720,64 @@ async function handleFormSubmit(form) {
         }
 
         // Send email
+        console.log('🚀 Sending email via EmailJS...');
+        
+        // Ensure EmailJS is initialized
+        if (typeof emailjs === 'undefined') {
+            console.error('❌ EmailJS not available - attempting to load dynamically...');
+            
+            // Try to load EmailJS dynamically
+            try {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@3.11.0/dist/index.min.js';
+                script.onload = async () => {
+                    console.log('✓ EmailJS loaded dynamically');
+                    if (typeof emailjs !== 'undefined') {
+                        emailjs.init(appData.site.emailjs.publicKey);
+                        window.emailjsInitialized = true;
+                        // Retry sending email
+                        await retryEmailSend(appData, templateParams, submitBtn, email);
+                    }
+                };
+                script.onerror = () => {
+                    console.error('❌ Failed to load EmailJS dynamically');
+                    showErrorAlert('Email service not available. Please try again later.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Book Your Look';
+                };
+                document.head.appendChild(script);
+                return;
+            } catch (err) {
+                console.error('❌ Error loading EmailJS:', err);
+                showErrorAlert('Email service not available. Please try again later.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Book Your Look';
+                return;
+            }
+        }
+        
+        // Initialize if not already done
+        if (!window.emailjsInitialized) {
+            try {
+                emailjs.init(appData.site.emailjs.publicKey);
+                window.emailjsInitialized = true;
+                console.log('✓ EmailJS initialized now');
+            } catch (err) {
+                console.error('❌ EmailJS init failed:', err);
+                showErrorAlert('Email service initialization failed.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Book Your Look';
+                return;
+            }
+        }
+        
         const response = await emailjs.send(
             appData.site.emailjs.serviceId,
             appData.site.emailjs.templateId,
             templateParams
         );
 
-        console.log('✓ Email sent:', response);
+        console.log('✅ Email sent successfully:', response);
 
         // Show success alert
         showSuccessAlert(`Booking confirmed! Check your email at ${email}`);
@@ -538,6 +829,12 @@ function setMinDate() {
     const today = new Date().toISOString().split('T')[0];
     dateInput.min = today;
     dateInput.value = today;
+    
+    // Sync to hidden field on initialization
+    const hiddenDateInput = document.getElementById('hidden_date');
+    if (hiddenDateInput) {
+        hiddenDateInput.value = today;
+    }
 }
 
 // Validate Email
@@ -572,27 +869,18 @@ function showSuccessAlert(message) {
 
 // Show Error Alert
 function showErrorAlert(message) {
-    const alertContainer = document.querySelector('.alert-container') || 
-                          document.querySelector('.booking-step:last-of-type');
+    const errorAlert = document.getElementById('errorAlert');
+    const errorMsg = document.getElementById('errorMsg');
     
-    if (!alertContainer) return;
-
-    const alert = document.createElement('div');
-    alert.className = 'alert alert-error';
-    alert.innerHTML = `✗ ${message}`;
-    
-    const existingAlert = alertContainer.querySelector('.alert');
-    if (existingAlert) {
-        existingAlert.remove();
+    if (errorAlert && errorMsg) {
+        errorMsg.textContent = message;
+        errorAlert.classList.remove('d-none');
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            errorAlert.classList.add('d-none');
+        }, 5000);
     }
-    
-    alertContainer.appendChild(alert);
-    
-    
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-        alert.remove();
-    }, 5000);
 }
 
 // Handle Instagram Embed - Note: Instagram iframe is cross-origin, so clicks open in new tabs

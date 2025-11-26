@@ -10,9 +10,9 @@
       "instagram": "https://instagram.com/glamor_bybee/"
     },
     "emailjs": {
-      "serviceId": "YOUR_EMAILJS_SERVICE_ID",
-      "templateId": "YOUR_EMAILJS_TEMPLATE_ID",
-      "publicKey": "YOUR_EMAILJS_PUBLIC_KEY"
+      "serviceId": "fttg_service",
+      "templateId": "template_glamorbybee",
+      "publicKey": "ANmN0gWxEnEHgUCXx"
     }
   },
   "appdev": {
@@ -59,49 +59,57 @@
       "id": "celebrant",
       "name": "Celebrant Makeup",
       "description": "Perfect for wedding days and special celebrations",
-      "image": "img/celebrant.jpg"
+      "image": "img/celebrant.jpg",
+      "price": "$150"
     },
     {
       "id": "party",
-      "name": "Party / Owanbe Makeup",
+      "name": "Party - Owanbe Makeup",
       "description": "Stunning looks for parties and celebrations",
-      "image": "img/owanbe_makeup.jpg"
+      "image": "img/owanbe_makeup.jpg",
+      "price": "$100"
     },
     {
       "id": "soft-glam",
       "name": "Soft Glam Makeup",
       "description": "Trendy, elegant looks for everyday glamour",
-      "image": "img/soft_glam.jpg"
+      "image": "img/soft_glam.jpg",
+      "price": "$75"
     },
     {
       "id": "photoshoot-1",
-      "name": "Makeup/Photoshoot (1 Outfit)",
+      "name": "Makeup & Photoshoot (1 Outfit)",
       "description": "Camera-ready makeup for professional photos",
-      "image": "img/1_outfit_shoot.jpg"
+      "image": "img/1_outfit_shoot.jpg",
+      "price": "$85"
     },
     {
       "id": "photoshoot-2",
-      "name": "Makeup/Photoshoot (2 Outfits)",
+      "name": "Makeup &Photoshoot (2 Outfits)",
       "description": "Professional makeup for multiple outfit changes",
-      "image": "img/2_outfit_shoot.jpg"
+      "image": "img/2_outfit_shoot.jpg",
+      "price": "$120"
     },
     {
       "id": "photoshoot-3",
-      "name": "Makeup/Photoshoot (3 Outfits)",
+      "name": "Makeup & Photoshoot (3 Outfits)",
       "description": "Complete makeup suite for extensive photoshoots",
-      "image": "img/3_outfit_shoot.jpg"
+      "image": "img/3_outfit_shoot.jpg",
+      "price": "$150"
     },
     {
       "id": "home-service",
       "name": "Luxury Home Service",
       "description": "Professional makeup service at your home",
-      "image": "img/luxury_home_service.jpg"
+      "image": "img/luxury_home_service.jpg",
+      "price": "$125"
     },
     {
       "id": "makeup-class",
       "name": "Makeup Training Class",
       "description": "Get trained with our expert makeup classes!",
-      "image": "img/makeup_training.jpg"
+      "image": "img/makeup_training.jpg",
+      "price": "$200"
     }
   ],
   "booking": {

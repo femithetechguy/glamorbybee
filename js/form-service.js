@@ -121,11 +121,8 @@ class FormService {
             );
 
             console.log('✅ Email sent successfully:', response);
-            this.showSuccess(`✨ Booking Confirmed! 
-We've sent a confirmation email to ${formData.get('email')}. 
-Get ready to glow!`);
             
-            // Reset form
+            // Reset form first
             this.form.reset();
             document.querySelectorAll('.service-pill').forEach(pill => {
                 pill.classList.remove('active');
@@ -133,9 +130,15 @@ Get ready to glow!`);
             if (typeof selectedService !== 'undefined') {
                 selectedService = null;
             }
-
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Show success message BEFORE scrolling
+            this.showSuccess(`Your Glam Session has been booked! 
+Our staff will get in touch with you shortly at ${formData.get('email')}`);
+            
+            // Then scroll to top after 5 seconds so message is visible for full duration
+            setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 5000);
 
         } catch (error) {
             console.error('✗ Error sending email:', error);
@@ -151,20 +154,37 @@ Get ready to glow!`);
      * Show success message
      */
     showSuccess(message) {
+        console.log('🎉 showSuccess called with message:', message);
+        
         const successAlert = document.getElementById('successAlert');
+        console.log('✓ successAlert element found:', !!successAlert);
+        
         if (successAlert) {
-            successAlert.innerHTML = `<i class="bi bi-check-circle-fill"></i> ${message}`;
+            console.log('📝 Setting innerHTML to:', message);
+            successAlert.innerHTML = `<i class="bi bi-check-circle-fill"></i> <strong>${message}</strong>`;
+            console.log('✓ innerHTML set successfully');
+            
+            console.log('🔴 Removing d-none class');
             successAlert.classList.remove('d-none');
+            successAlert.style.display = 'flex';
+            successAlert.style.visibility = 'visible';
+            successAlert.style.opacity = '1';
+            console.log('✓ d-none class removed, classes now:', successAlert.className);
             
-            // Scroll into view
-            successAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
-            // Keep visible for 10 seconds
+            // Scroll the alert into view
+            console.log('📱 Scrolling alert into view');
             setTimeout(() => {
+                successAlert.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+            
+            // Keep visible for 12 seconds
+            console.log('⏱️ Setting timeout for 12 seconds');
+            setTimeout(() => {
+                console.log('⏰ Timeout reached, hiding alert');
                 successAlert.classList.add('d-none');
-            }, 10000);
+            }, 12000);
         } else {
-            // Fallback: show alert if element not found
+            console.warn('⚠️ successAlert element NOT FOUND, using fallback alert');
             alert(`✅ ${message}`);
         }
     }
@@ -173,21 +193,35 @@ Get ready to glow!`);
      * Show error message
      */
     showError(message) {
+        console.log('❌ showError called with message:', message);
+        
         const errorAlert = document.getElementById('errorAlert');
         const errorMsg = document.getElementById('errorMsg');
         
+        console.log('✓ errorAlert element found:', !!errorAlert);
+        console.log('✓ errorMsg element found:', !!errorMsg);
+        
         if (errorAlert && errorMsg) {
+            console.log('📝 Setting errorMsg innerHTML to:', message);
             errorMsg.innerHTML = `<i class="bi bi-exclamation-circle-fill"></i> ${message}`;
+            console.log('✓ errorMsg innerHTML set successfully');
+            
+            console.log('🔴 Removing d-none class from errorAlert');
             errorAlert.classList.remove('d-none');
+            console.log('✓ d-none class removed, classes now:', errorAlert.className);
             
             // Scroll into view
+            console.log('📱 Scrolling into view');
             errorAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
             
             // Keep visible for 10 seconds
+            console.log('⏱️ Setting timeout for 10 seconds');
             setTimeout(() => {
+                console.log('⏰ Timeout reached, hiding alert');
                 errorAlert.classList.add('d-none');
             }, 10000);
         } else {
+            console.warn('⚠️ errorAlert or errorMsg element NOT FOUND, using fallback alert');
             // Fallback: show alert if element not found
             alert(`❌ ${message}`);
         }

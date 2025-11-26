@@ -403,6 +403,99 @@ function setupFormHandling() {
         });
     }
 
+    // Handle location toggle - show/hide service address
+    const locationRadios = document.querySelectorAll('input[name="location"]');
+    const serviceAddressContainer = document.getElementById('serviceAddressContainer');
+    const serviceAddressInput = document.getElementById('serviceAddress');
+    
+    console.log('🔧 Location toggle setup:', {
+        radiosFound: locationRadios.length,
+        containerFound: !!serviceAddressContainer,
+        inputFound: !!serviceAddressInput
+    });
+    
+    // Initialize Google Places Autocomplete
+    let autocomplete = null;
+    
+    locationRadios.forEach(radio => {
+        radio.addEventListener('change', async (e) => {
+            console.log('📍 Location changed to:', e.target.value);
+            
+            if (e.target.value === 'home') {
+                serviceAddressContainer.style.display = 'block';
+                serviceAddressInput.required = true;
+                console.log('✅ Address container shown');
+                
+                // Initialize autocomplete if not already initialized
+                if (!autocomplete) {
+                    console.log('🔄 Checking Google Maps availability...');
+                    console.log('Google object:', typeof google);
+                    
+                    if (typeof google !== 'undefined') {
+                        try {
+                            console.log('📦 Loading Places library...');
+                            const { Autocomplete } = await google.maps.importLibrary("places");
+                            console.log('✅ Places library loaded successfully');
+                            
+                            autocomplete = new Autocomplete(serviceAddressInput, {
+                                componentRestrictions: { country: 'us' },
+                                fields: ['formatted_address', 'address_components', 'name'],
+                                types: ['address']
+                            });
+                            console.log('✅ Autocomplete initialized');
+                            
+                            // Handle place selection
+                            autocomplete.addListener('place_changed', () => {
+                                const place = autocomplete.getPlace();
+                                console.log('📌 Place selected:', place);
+                                
+                                if (place && place.formatted_address) {
+                                    serviceAddressInput.value = place.formatted_address;
+                                    console.log('✅ Address set:', place.formatted_address);
+                                } else if (place && place.name) {
+                                    // Fallback to name if formatted_address isn't available
+                                    serviceAddressInput.value = place.name;
+                                    console.log('✅ Address set from name:', place.name);
+                                } else {
+                                    console.log('⚠️ No address found in place object');
+                                }
+                            });
+                            
+                            // Workaround: Handle manual keyboard selection
+                            serviceAddressInput.addEventListener('keydown', (e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    // Allow Google to handle the selection
+                                    setTimeout(() => {
+                                        const place = autocomplete.getPlace();
+                                        if (place && place.formatted_address) {
+                                            serviceAddressInput.value = place.formatted_address;
+                                            console.log('✅ Address set via Enter key:', place.formatted_address);
+                                        }
+                                    }, 100);
+                                }
+                            });
+                            
+                            console.log('✅ Autocomplete fully configured');
+                        } catch (error) {
+                            console.error('❌ Error loading Places library:', error);
+                            console.log('ℹ️ Address field will work as regular text input');
+                        }
+                    } else {
+                        console.warn('⚠️ Google Maps not available - using regular text input');
+                    }
+                } else {
+                    console.log('ℹ️ Autocomplete already initialized');
+                }
+            } else {
+                serviceAddressContainer.style.display = 'none';
+                serviceAddressInput.required = false;
+                serviceAddressInput.value = '';
+                console.log('✅ Address container hidden');
+            }
+        });
+    });
+
     // Form submission
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -425,12 +518,19 @@ async function handleFormSubmit(form) {
     const name = formData.get('name');
     const email = formData.get('email');
     const phone = formData.get('phone');
-    const location = formData.get('location') || 'Studio';
+    const location = formData.get('location') || 'studio';
+    const serviceAddress = formData.get('serviceAddress');
     const notes = formData.get('notes');
 
     // Validate required fields
     if (!date || !time || !name || !email || !phone) {
         showErrorAlert('Please fill in all required fields');
+        return;
+    }
+
+    // Validate service address if home service is selected
+    if (location === 'home' && (!serviceAddress || serviceAddress.trim() === '')) {
+        showErrorAlert('Please provide your service address for home service');
         return;
     }
 
@@ -455,7 +555,8 @@ async function handleFormSubmit(form) {
         service_price: selectedService.price,
         appointment_date: appointmentDate,
         appointment_time: time,
-        location: location === 'studio' ? 'Studio' : 'Home Service',
+        location: location === 'studio' ? 'Studio Visit' : 'Home Service',
+        service_address: location === 'home' ? serviceAddress : 'N/A (Studio Visit)',
         phone: phone,
         notes: notes || 'No special requests',
         business_name: appData.site.title,

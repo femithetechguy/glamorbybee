@@ -59,49 +59,49 @@
       "id": "celebrant",
       "name": "Celebrant Makeup",
       "description": "Perfect for wedding days and special celebrations",
-      "image": "img/makeup1.jpg"
+      "image": "img/celebrant.jpg"
     },
     {
       "id": "party",
       "name": "Party / Owanbe Makeup",
       "description": "Stunning looks for parties and celebrations",
-      "image": "img/makeup1.jpg"
+      "image": "img/owanbe_makeup.jpg"
     },
     {
       "id": "soft-glam",
       "name": "Soft Glam Makeup",
       "description": "Trendy, elegant looks for everyday glamour",
-      "image": "img/makeup1.jpg"
+      "image": "img/soft_glam.jpg"
     },
     {
       "id": "photoshoot-1",
       "name": "Makeup/Photoshoot (1 Outfit)",
       "description": "Camera-ready makeup for professional photos",
-      "image": "img/makeup1.jpg"
+      "image": "img/1_outfit_shoot.jpg"
     },
     {
       "id": "photoshoot-2",
       "name": "Makeup/Photoshoot (2 Outfits)",
       "description": "Professional makeup for multiple outfit changes",
-      "image": "img/makeup1.jpg"
+      "image": "img/2_outfit_shoot.jpg"
     },
     {
       "id": "photoshoot-3",
       "name": "Makeup/Photoshoot (3 Outfits)",
       "description": "Complete makeup suite for extensive photoshoots",
-      "image": "img/makeup1.jpg"
+      "image": "img/3_outfit_shoot.jpg"
     },
     {
       "id": "home-service",
       "name": "Luxury Home Service",
       "description": "Professional makeup service at your home",
-      "image": "img/makeup1.jpg"
+      "image": "img/luxury_home_service.jpg"
     },
     {
       "id": "placeholder",
       "name": "Coming Soon",
       "description": "Exciting new service - stay tuned!",
-      "image": "img/makeup1.jpg"
+      "image": "img/placeholder.jpg"
     }
   ],
   "booking": {

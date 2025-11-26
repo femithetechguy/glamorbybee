@@ -116,8 +116,8 @@
                     <div class="step-content">
                         <h3>Pick Your Time *</h3>
                         <div class="date-time-picker">
-                            <input type="date" id="date" class="form-control form-control-lg" required>
-                            <select id="time" class="form-select form-select-lg" required>
+                            <input type="date" id="date" name="date" class="form-control form-control-lg" required>
+                            <select id="time" name="time" class="form-select form-select-lg" required>
                                 <option value="">Select a time</option>
                             </select>
                         </div>
@@ -131,6 +131,8 @@
                         <h3>Your Details *</h3>
                         <form id="bookingForm" class="booking-form">
                             <input type="hidden" id="service_name" name="service_name">
+                            <input type="hidden" id="hidden_date" name="date">
+                            <input type="hidden" id="hidden_time" name="time">
                             <div class="form-group">
                                 <input type="text" id="name" name="name" class="form-control form-control-lg" placeholder="Full name *" required>
                             </div>
@@ -154,8 +156,12 @@
                                         <span><i class="bi bi-house-fill"></i> No</span>
                                     </label>
                                 </div>
+                                <div id="studioNotice" class="address-notice" style="display: none; margin-top: 1rem;">
+                                    <i class="bi bi-info-circle-fill"></i>
+                                    <span><strong>In Studio Makeup?</strong> Our studio location will be sent to you promptly</span>
+                                </div>
                             </div>
-                            <div id="serviceAddressContainer" class="service-address-container" style="display: none;">
+                            <div id="serviceAddressContainer" class="service-address-container" style="display: none; margin-top: 0;">
                                 <div class="address-notice">
                                     <i class="bi bi-info-circle-fill"></i>
                                     <span>We'll come to you! Please provide your service address.</span>

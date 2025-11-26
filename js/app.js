@@ -442,18 +442,51 @@ function setupFormHandling() {
         dateInput.addEventListener('click', () => {
             dateInput.showPicker?.();
         });
+        // Sync date to hidden form input
+        dateInput.addEventListener('change', (e) => {
+            const hiddenDateInput = document.getElementById('hidden_date');
+            if (hiddenDateInput) {
+                hiddenDateInput.value = e.target.value;
+            }
+        });
+    }
+
+    // Sync time to hidden form input
+    const timeSelect = document.getElementById('time');
+    if (timeSelect) {
+        timeSelect.addEventListener('change', (e) => {
+            const hiddenTimeInput = document.getElementById('hidden_time');
+            if (hiddenTimeInput) {
+                hiddenTimeInput.value = e.target.value;
+            }
+        });
     }
 
     // Handle location toggle - show/hide service address
     const locationRadios = document.querySelectorAll('input[name="location"]');
     const serviceAddressContainer = document.getElementById('serviceAddressContainer');
     const serviceAddressInput = document.getElementById('serviceAddress');
+    const studioNotice = document.getElementById('studioNotice');
     
     console.log('🔧 Location toggle setup:', {
         radiosFound: locationRadios.length,
         containerFound: !!serviceAddressContainer,
-        inputFound: !!serviceAddressInput
+        inputFound: !!serviceAddressInput,
+        studioNoticeFound: !!studioNotice
     });
+
+    // Initialize display based on default checked radio
+    const checkedRadio = document.querySelector('input[name="location"]:checked');
+    if (checkedRadio && checkedRadio.value === 'home') {
+        serviceAddressContainer.style.display = 'block';
+        studioNotice.style.display = 'none';
+    } else if (checkedRadio && checkedRadio.value === 'studio') {
+        serviceAddressContainer.style.display = 'none';
+        studioNotice.style.display = 'block';
+    } else {
+        serviceAddressContainer.style.display = 'none';
+        studioNotice.style.display = 'none';
+    }
     
     // Initialize Google Places Autocomplete
     let autocomplete = null;
@@ -464,6 +497,7 @@ function setupFormHandling() {
             
             if (e.target.value === 'home') {
                 serviceAddressContainer.style.display = 'block';
+                studioNotice.style.display = 'none';
                 serviceAddressInput.required = true;
                 console.log('✅ Address container shown');
                 
@@ -529,10 +563,11 @@ function setupFormHandling() {
                     console.log('ℹ️ Autocomplete already initialized');
                 }
             } else {
+                studioNotice.style.display = 'block';
                 serviceAddressContainer.style.display = 'none';
                 serviceAddressInput.required = false;
                 serviceAddressInput.value = '';
-                console.log('✅ Address container hidden');
+                console.log('✅ Studio service selected - notice shown');
             }
         });
     });
@@ -566,8 +601,15 @@ async function handleFormSubmit(form) {
     const notes = formData.get('notes');
 
     // Validate required fields
-    if (!date || !time || !name || !email || !phone) {
-        showErrorAlert('Please fill in all required fields');
+    const missingFields = [];
+    if (!date) missingFields.push('Date');
+    if (!time) missingFields.push('Time');
+    if (!name) missingFields.push('Name');
+    if (!email) missingFields.push('Email');
+    if (!phone) missingFields.push('Phone');
+
+    if (missingFields.length > 0) {
+        showErrorAlert(`Please fill in: ${missingFields.join(', ')}`);
         return;
     }
 
@@ -758,27 +800,18 @@ function showSuccessAlert(message) {
 
 // Show Error Alert
 function showErrorAlert(message) {
-    const alertContainer = document.querySelector('.alert-container') || 
-                          document.querySelector('.booking-step:last-of-type');
+    const errorAlert = document.getElementById('errorAlert');
+    const errorMsg = document.getElementById('errorMsg');
     
-    if (!alertContainer) return;
-
-    const alert = document.createElement('div');
-    alert.className = 'alert alert-error';
-    alert.innerHTML = `✗ ${message}`;
-    
-    const existingAlert = alertContainer.querySelector('.alert');
-    if (existingAlert) {
-        existingAlert.remove();
+    if (errorAlert && errorMsg) {
+        errorMsg.textContent = message;
+        errorAlert.classList.remove('d-none');
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            errorAlert.classList.add('d-none');
+        }, 5000);
     }
-    
-    alertContainer.appendChild(alert);
-    
-    
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-        alert.remove();
-    }, 5000);
 }
 
 // Handle Instagram Embed - Note: Instagram iframe is cross-origin, so clicks open in new tabs

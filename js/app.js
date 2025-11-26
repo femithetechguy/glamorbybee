@@ -3,7 +3,8 @@
 // 2025 - Fresh, Fast, Flawless
 // ============================================
 
-console.log('✓ app.js loaded');
+console.log('🚀 app.js loaded');
+console.log('🌟 GLAMORBYBEE APP STARTING - Version 1.0');
 
 let appData = {};
 let selectedService = null;
@@ -70,12 +71,16 @@ async function initializeApp() {
         console.log('✓ JSON loaded:', appData);
         console.log('Contact data:', appData.site.contact);
         
-        // Initialize EmailJS (only if credentials are configured)
-        if (appData.site.emailjs.publicKey && !appData.site.emailjs.publicKey.includes('YOUR_')) {
-            emailjs.init(appData.site.emailjs.publicKey);
-            console.log('✓ EmailJS initialized');
+        // Initialize EmailJS (only if credentials are configured and library is loaded)
+        if (typeof emailjs !== 'undefined') {
+            if (appData.site.emailjs.publicKey && !appData.site.emailjs.publicKey.includes('YOUR_')) {
+                emailjs.init(appData.site.emailjs.publicKey);
+                console.log('✓ EmailJS initialized');
+            } else {
+                console.warn('⚠ EmailJS credentials not configured');
+            }
         } else {
-            console.warn('⚠ EmailJS credentials not configured');
+            console.warn('⚠ EmailJS library not loaded - will retry initialization on form submit');
         }
         
         // Populate page content
@@ -104,8 +109,8 @@ async function initializeApp() {
 
 // Populate Page Content
 function populatePageContent() {
-    console.log('populatePageContent called');
-    console.log('appData:', appData);
+    console.log('📄 populatePageContent called');
+    console.log('📦 appData loaded:', !!appData, 'keys:', Object.keys(appData).length);
     
     // Hero section
     const heroContent = document.querySelector('.hero-content');
@@ -168,6 +173,7 @@ function populatePageContent() {
 
     // Booking policy
     const bookingPolicy = document.getElementById('bookingPolicy');
+    console.log('📋 Booking Policy - element:', !!bookingPolicy, 'policy text:', appData.booking?.cancellationPolicy?.substring(0, 30));
     if (bookingPolicy) bookingPolicy.textContent = appData.booking.cancellationPolicy;
 
     // Footer Instagram
@@ -188,7 +194,11 @@ function populatePageContent() {
 // Populate Services Grid
 function populateServicesGrid() {
     const servicesGrid = document.getElementById('servicesGrid');
-    if (!servicesGrid || !appData.services) return;
+    console.log('🎯 populateServicesGrid called - servicesGrid:', !!servicesGrid, 'services:', appData.services?.length);
+    if (!servicesGrid || !appData.services) {
+        console.warn('⚠️ servicesGrid or appData.services missing');
+        return;
+    }
 
     servicesGrid.innerHTML = '';
     
@@ -243,7 +253,11 @@ function populateGallery() {
 // Populate Service Pills (for booking step 1)
 function populateServicePills() {
     const serviceSelect = document.getElementById('servicePills');
-    if (!serviceSelect || !appData.services) return;
+    console.log('💊 populateServicePills - select element:', !!serviceSelect, 'services count:', appData.services?.length);
+    if (!serviceSelect || !appData.services) {
+        console.warn('⚠️ servicePills or appData.services missing');
+        return;
+    }
 
     serviceSelect.innerHTML = '<option value="">Select a service...</option>';
     
@@ -267,6 +281,9 @@ function populateServicePills() {
 
 // Select a service from the dropdown/booking interface
 function selectService(serviceId, serviceName) {
+    // Find the full service object and set selectedService
+    selectedService = appData.services.find(s => s.id === serviceId);
+    
     // Update service input
     const serviceInput = document.getElementById('service_name');
     if (serviceInput) {
@@ -279,13 +296,17 @@ function selectService(serviceId, serviceName) {
         serviceSelect.value = serviceId;
     }
     
-    console.log(`✅ Selected service: ${serviceName}`);
+    console.log(`✅ Selected service: ${serviceName} - Full object:`, selectedService);
 }
 
 // Populate Time Slots
 function populateTimeSlots() {
     const timeSelect = document.getElementById('time');
-    if (!timeSelect || !appData.booking || !appData.booking.timeSlots) return;
+    console.log('⏰ populateTimeSlots - select element:', !!timeSelect, 'timeSlots count:', appData.booking?.timeSlots?.length);
+    if (!timeSelect || !appData.booking || !appData.booking.timeSlots) {
+        console.warn('⚠️ time select or timeSlots missing');
+        return;
+    }
 
     timeSelect.innerHTML = '<option value="">Select a time...</option>';
     
@@ -343,7 +364,11 @@ function populateGallery() {
 // Populate Team
 function populateTeam() {
     const teamGrid = document.getElementById('teamGrid');
-    if (!teamGrid || !appData.team) return;
+    console.log('👥 populateTeam called - teamGrid:', !!teamGrid, 'team:', appData.team?.length);
+    if (!teamGrid || !appData.team) {
+        console.warn('⚠️ teamGrid or appData.team missing');
+        return;
+    }
 
     teamGrid.innerHTML = '';
     
@@ -366,7 +391,11 @@ function populateTeam() {
 // Populate Testimonials
 function populateTestimonials() {
     const testimonialsGrid = document.getElementById('testimonialsGrid');
-    if (!testimonialsGrid || !appData.testimonials) return;
+    console.log('💬 populateTestimonials called - testimonialsGrid:', !!testimonialsGrid, 'testimonials:', appData.testimonials?.length);
+    if (!testimonialsGrid || !appData.testimonials) {
+        console.warn('⚠️ testimonialsGrid or appData.testimonials missing');
+        return;
+    }
 
     testimonialsGrid.innerHTML = '';
     
@@ -393,13 +422,25 @@ function populateTestimonials() {
 // Setup Form Handling
 function setupFormHandling() {
     const form = document.getElementById('bookingForm');
-    if (!form) return;
+    console.log('📝 setupFormHandling - form element:', !!form);
+    if (!form) {
+        console.warn('⚠️ bookingForm element not found!');
+        return;
+    }
 
     // Format phone number on input
     const phoneInput = document.getElementById('phone');
     if (phoneInput) {
         phoneInput.addEventListener('input', (e) => {
             e.target.value = formatPhoneNumber(e.target.value);
+        });
+    }
+
+    // Make date field clickable anywhere to open calendar
+    const dateInput = document.getElementById('date');
+    if (dateInput) {
+        dateInput.addEventListener('click', () => {
+            dateInput.showPicker?.();
         });
     }
 
@@ -505,8 +546,10 @@ function setupFormHandling() {
 
 // Handle Form Submission
 async function handleFormSubmit(form) {
+    console.log('✉️ Form submitted - selectedService:', !!selectedService, selectedService?.name);
     // Validate selection
     if (!selectedService) {
+        console.warn('⚠️ No service selected!');
         showErrorAlert('Please select a service first');
         return;
     }
@@ -547,14 +590,30 @@ async function handleFormSubmit(form) {
         month: 'long',
         day: 'numeric'
     });
+    console.log('📧 Preparing email - service:', selectedService.name, 'price:', selectedService.price, 'date:', appointmentDate, 'time:', time);
+
+    // Get current time with timezone for booking submission
+    const now = new Date();
+    const bookingTime = now.toLocaleString('en-US', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZoneName: 'short'
+    });
 
     const templateParams = {
         to_email: email,
+        from_name: name,
         client_name: name,
         service_name: selectedService.name,
         service_price: selectedService.price,
         appointment_date: appointmentDate,
         appointment_time: time,
+        time: bookingTime,
         location: location === 'studio' ? 'Studio Visit' : 'Home Service',
         service_address: location === 'home' ? serviceAddress : 'N/A (Studio Visit)',
         phone: phone,
@@ -581,13 +640,39 @@ async function handleFormSubmit(form) {
         }
 
         // Send email
+        console.log('🚀 Sending email via EmailJS...');
+        
+        // Ensure EmailJS is initialized
+        if (typeof emailjs === 'undefined') {
+            console.error('❌ EmailJS not available');
+            showErrorAlert('Email service not available. Please try again later.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Book Your Look';
+            return;
+        }
+        
+        // Initialize if not already done
+        if (!window.emailjsInitialized) {
+            try {
+                emailjs.init(appData.site.emailjs.publicKey);
+                window.emailjsInitialized = true;
+                console.log('✓ EmailJS initialized now');
+            } catch (err) {
+                console.error('❌ EmailJS init failed:', err);
+                showErrorAlert('Email service initialization failed.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Book Your Look';
+                return;
+            }
+        }
+        
         const response = await emailjs.send(
             appData.site.emailjs.serviceId,
             appData.site.emailjs.templateId,
             templateParams
         );
 
-        console.log('✓ Email sent:', response);
+        console.log('✅ Email sent successfully:', response);
 
         // Show success alert
         showSuccessAlert(`Booking confirmed! Check your email at ${email}`);

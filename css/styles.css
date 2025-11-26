@@ -395,6 +395,7 @@ p {
 .container-lg {
     max-width: 1400px;
     margin: 0 auto;
+    padding: 0 1rem;
 }
 
 .section-header {
@@ -561,6 +562,8 @@ p {
     display: grid;
     grid-template-columns: 1fr;
     gap: 2rem;
+    width: 100%;
+    padding: 0 1rem;
 }
 
 .booking-step {
@@ -1000,6 +1003,66 @@ p {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+@keyframes celebrate {
+    0% {
+        transform: scale(0.8) translateY(20px);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes dissolve {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.celebrate-animation {
+    animation: celebrate 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+}
+
+.celebrate-animation::before {
+    content: '🎉 Yay! 🎉';
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.5rem;
+    animation: bounce 0.6s ease-out;
+    pointer-events: none;
+}
+
+.dissolve-out {
+    animation: dissolve 0.6s ease-out forwards !important;
 }
 
 .d-none {

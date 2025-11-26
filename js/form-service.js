@@ -52,6 +52,14 @@ class FormService {
         
         console.log('✉️ Form submitted');
         
+        // Check if service is selected
+        const serviceName = document.getElementById('service_name');
+        if (!serviceName || !serviceName.value || serviceName.value.trim() === '') {
+            console.warn('⚠️ Service not selected');
+            this.showError('⚠️ Please select a service before booking');
+            return;
+        }
+        
         // Check if EmailJS is available
         if (typeof emailjs === 'undefined') {
             console.error('❌ EmailJS not available');
@@ -132,13 +140,27 @@ class FormService {
             }
             
             // Show success message BEFORE scrolling
-            this.showSuccess(`Your Glam Session has been booked! 
-Our staff will get in touch with you shortly at ${formData.get('email')}`);
+            const email = formData.get('email');
+            const phone = formData.get('phone');
+            let contactMessage = 'Our staff will get in touch with you shortly at ';
             
-            // Then scroll to top after 5 seconds so message is visible for full duration
+            if (email && phone) {
+                contactMessage += `${email} or ${phone}`;
+            } else if (email) {
+                contactMessage += email;
+            } else if (phone) {
+                contactMessage += phone;
+            }
+            
+            this.showSuccess(`Your Glam Session has been booked! ${contactMessage}`);
+            
+            // Add animation effect after 6 seconds
             setTimeout(() => {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }, 5000);
+                const successAlert = document.getElementById('successAlert');
+                if (successAlert) {
+                    successAlert.style.animation = 'pulse 1.5s ease-in-out infinite';
+                }
+            }, 6000);
 
         } catch (error) {
             console.error('✗ Error sending email:', error);
@@ -169,6 +191,7 @@ Our staff will get in touch with you shortly at ${formData.get('email')}`);
             successAlert.style.display = 'flex';
             successAlert.style.visibility = 'visible';
             successAlert.style.opacity = '1';
+            successAlert.classList.add('celebrate-animation');
             console.log('✓ d-none class removed, classes now:', successAlert.className);
             
             // Scroll the alert into view
@@ -177,11 +200,15 @@ Our staff will get in touch with you shortly at ${formData.get('email')}`);
                 successAlert.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100);
             
-            // Keep visible for 12 seconds
+            // Keep visible for 12 seconds then dissolve out
             console.log('⏱️ Setting timeout for 12 seconds');
             setTimeout(() => {
-                console.log('⏰ Timeout reached, hiding alert');
-                successAlert.classList.add('d-none');
+                console.log('⏰ Timeout reached, dissolving alert');
+                successAlert.classList.add('dissolve-out');
+                setTimeout(() => {
+                    successAlert.classList.add('d-none');
+                    successAlert.classList.remove('dissolve-out');
+                }, 600); // Match dissolve animation duration
             }, 12000);
         } else {
             console.warn('⚠️ successAlert element NOT FOUND, using fallback alert');

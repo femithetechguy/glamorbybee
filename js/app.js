@@ -57,6 +57,26 @@ function setupMobileMenu() {
     }
 }
 
+// Get Admin Link from Configuration
+function getAdminLink() {
+    const adminConfig = appData?.components?.admin;
+    if (!adminConfig) return 'https://dev-admin.glamorbybee.com/';
+    
+    // Resolve current_domain if it references another key
+    const currentDomainKey = adminConfig.current_domain;
+    const domain = adminConfig[currentDomainKey] || currentDomainKey;
+    
+    return domain || 'https://dev-admin.glamorbybee.com/';
+}
+
+// Initialize Admin Links from Configuration
+function initializeAdminLinks() {
+    const adminLink = getAdminLink();
+    document.querySelectorAll('[data-admin-link]').forEach(element => {
+        element.href = adminLink;
+    });
+}
+
 // Initialize App
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('✓ DOMContentLoaded fired');
@@ -77,6 +97,9 @@ async function initializeApp() {
         appData = await response.json();
         console.log('✓ JSON loaded:', appData);
         console.log('Contact data:', appData.site.contact);
+        
+        // Initialize admin links from configuration
+        initializeAdminLinks();
         
         // Populate page content
         console.log('About to call populatePageContent...');

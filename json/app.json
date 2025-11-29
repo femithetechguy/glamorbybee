@@ -32,9 +32,9 @@
     "admin": {
       "name": "Admin Dashboard",
       "description": "Backend management system for appointments, clients, and services",
-      "dev_domain": "https://dev.glamorbybee.com/",
-      "prod_domain": "https://glamorbybee.com/",
-      "local_domain": "http://localhost:5500/index.html",
+      "dev_domain": "https://dev-admin.glamorbybee.com/",
+      "prod_domain": "https://admin.glamorbybee.com/",
+      "local_domain": "auto",
       "current_domain": "dev_domain",
       "directory": "admin",
       "purpose": "backend-view"

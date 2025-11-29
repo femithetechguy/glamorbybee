@@ -62,11 +62,24 @@ function getAdminLink() {
     const adminConfig = appData?.components?.admin;
     if (!adminConfig) return 'https://dev-admin.glamorbybee.com/';
     
-    // Resolve current_domain if it references another key
-    const currentDomainKey = adminConfig.current_domain;
-    const domain = adminConfig[currentDomainKey] || currentDomainKey;
+    // Detect environment based on current hostname
+    const hostname = window.location.hostname;
+    let domainKey = 'dev_domain'; // default
     
-    return domain || 'https://dev-admin.glamorbybee.com/';
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        domainKey = 'local_domain';
+    } else if (hostname === 'glamorbybee.com') {
+        domainKey = 'prod_domain';
+    }
+    
+    let domain = adminConfig[domainKey] || adminConfig.dev_domain || 'https://dev-admin.glamorbybee.com/';
+    
+    // If domain is "auto" for localhost, use current origin with /admin/index.html
+    if (domain === 'auto') {
+        domain = window.location.origin + '/admin/index.html';
+    }
+    
+    return domain;
 }
 
 // Initialize Admin Links from Configuration

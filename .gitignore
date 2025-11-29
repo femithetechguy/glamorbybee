@@ -1,0 +1,50 @@
+# Module Folders (Have Their Own Repositories)
+/admin/
+/appointments/
+/client/
+/invoice/
+/schedule/
+/services/
+
+# Dependencies
+node_modules/
+.venv/
+venv/
+env/
+__pycache__/
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.env.local
+.env.*.local
+
+# Build & Distribution
+dist/
+build/
+*.min.js
+*.min.css
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+Thumbs.db
+.AppleDouble
+.LSOverride
+
+# Local environment
+.env
+.env.development
+.env.production
+
+# Temporary files
+*.tmp
+*.temp
+*.bak

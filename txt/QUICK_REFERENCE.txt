@@ -1,0 +1,329 @@
+# GlamorByBee - Quick Reference Guide
+**Date:** November 29, 2025 | **Last Updated:** Development Phase
+
+---
+
+## 🚀 QUICK START
+
+### Local Development
+```bash
+# Start local server
+python -m http.server 5500
+
+# Access main site
+http://localhost:5500
+
+# Access modules
+http://localhost:5500/client/index.html
+http://localhost:5500/services/index.html
+http://localhost:5500/appointments/index.html
+http://localhost:5500/invoice/index.html
+http://localhost:5500/schedule/index.html
+http://localhost:5500/admin/index.html
+```
+
+---
+
+## 📍 KEY FILE LOCATIONS
+
+### Data Files (`json/`)
+```
+json/
+├── master_data.json ← Master backup (all data)
+├── clients.json ← Customer database
+├── services.json ← Service catalog
+├── appointments.json ← Bookings
+├── schedule.json ← Staff availability
+├── invoices.json ← Invoices
+├── addresses.json ← Addresses
+├── staff.json ← Staff information
+└── app.json ← Config & component registry
+```
+
+### HTML Modules
+```
+/client/index.html ← Client CRM
+/services/index.html ← Services management
+/appointments/index.html ← Appointment booking/management ⭐ NEW
+/invoice/index.html ← Invoice system
+/schedule/index.html ← Staff schedule
+/admin/index.html ← Admin panel
+index.html ← Main site
+```
+
+### Stylesheets
+```
+css/
+├── styles.css ← Main styles (includes filter styling)
+├── appointments.css ← Appointment module styles ⭐ NEW
+└── [module-name].css ← Module-specific styles
+```
+
+### JavaScript
+```
+js/
+├── app.js ← Main JS (includes filter functions)
+├── appointments.js ← Appointment module logic ⭐ NEW
+└── [module-name].js ← Module-specific logic
+```
+
+---
+
+## 🎛️ CONFIGURATION
+
+### Switch Environments
+**File:** `json/app.json`
+
+```json
+"current_domain": "dev_domain"  ← Change this
+```
+
+Options:
+- `local_domain` → localhost:5500
+- `dev_domain` → dev-appointments.glamorbybee.com
+- `prod_domain` → appointments.glamorbybee.com
+
+---
+
+## 📊 MODULES AT A GLANCE
+
+| Module | Purpose | Data Source | Key Features |
+|--------|---------|-------------|--------------|
+| **Client** | CRM | clients.json | Stats, filters, add/edit/delete |
+| **Services** | Service catalog | services.json | Grid/table view, pricing |
+| **Appointments** | Booking system | appointments.json | CRUD, filters, status tracking |
+| **Invoice** | Billing | invoices.json | Create, track payments |
+| **Schedule** | Staff availability | schedule.json | Timeline, availability |
+| **Admin** | Settings | app.json | Config, user management |
+
+---
+
+## 🔍 FILTER SYSTEM
+
+### How Filters Work
+All tables now have **header filter rows** with real-time filtering:
+
+```
+Table Header
+    ↓
+[Filter Row with inputs]
+    ↓
+Real-time matching (debounced)
+    ↓
+Table updates dynamically
+```
+
+### Filter Types
+1. **Text** - Contains search (case-insensitive)
+2. **Number** - Exact match
+3. **Date** - Date picker format
+4. **Select** - Dropdown from data
+
+### Example: Client Table Filters
+```
+[Name] [Email] [Phone] [Registration Date] [Visits] [Loyalty Points] [Contact Pref]
+```
+
+---
+
+## 📈 DATA FLOW
+
+### New Appointment Process
+```
+1. Select Client (dropdown from clients.json)
+2. Select Service (dropdown from services.json)
+3. Select Staff (dropdown from staff.json)
+4. Choose Date/Time
+5. System generates ID: APT00XXX
+6. Saved to appointments.json
+7. Invoice created automatically
+8. Updated in schedule
+```
+
+### Data Relationships
+```
+Appointment
+├─ customer_id → clients.json
+├─ service_id → services.json
+├─ staff_id → staff.json
+└─ appointment_id → invoices.json (linked)
+```
+
+---
+
+## 🔧 COMMON TASKS
+
+### Add New Client
+1. Go to Client module
+2. Click "Add New Client"
+3. Fill form: name, email, phone, contact preference
+4. System generates ID: CUST0XXX
+5. Saves to clients.json
+
+### Create Appointment
+1. Go to Appointments module
+2. Click "Create New Appointment"
+3. Select client, service, staff, date
+4. Click Save
+5. System auto-generates APT00XXX
+6. Auto-creates invoice entry
+
+### View Service Details
+1. Go to Services module
+2. Switch between Grid/Table view
+3. Apply filters to find service
+4. Click row to see details
+
+### Check Staff Availability
+1. Go to Schedule module
+2. View by date
+3. See all staff working hours
+4. See booked appointments
+
+---
+
+## 🐛 TROUBLESHOOTING
+
+### Data Not Loading?
+**Check:**
+1. JSON files exist in `/json` folder
+2. File names match fetch calls
+3. JSON is valid (use JSONLint)
+4. Browser console for errors (F12)
+
+### Filters Not Working?
+**Check:**
+1. Header filter row visible (may need scroll)
+2. JavaScript not throwing errors
+3. Clear filters to reset
+
+### Module Not Showing?
+**Check:**
+1. Module folder exists
+2. index.html file present
+3. CSS and JS files linked correctly
+4. Local server running (http.server)
+
+---
+
+## 📝 ID FORMATS
+
+```
+Clients:         CUST0001, CUST0002, ...
+Services:        celebrant, party, soft-glam, ...
+Appointments:    APT00001, APT00002, ...
+Invoices:        INV00001, INV00002, ...
+Addresses:       ADDR001, ADDR002, ...
+Staff:           STAFF0001, STAFF0002, ...
+Schedules:       SCHED0001, SCHED0002, ...
+```
+
+---
+
+## 🎨 STYLING NOTES
+
+### Main Colors
+```css
+Primary: #6f42c1 (Purple)
+Success: #28a745 (Green)
+Danger: #dc3545 (Red)
+Warning: #ffc107 (Yellow)
+Info: #17a2b8 (Blue)
+```
+
+### Filter Row Styling
+```css
+Background: #f8f9fa
+Input size: form-control-sm
+Border: Light gray
+Focus: Primary color shadow
+```
+
+### Bootstrap Version
+- Bootstrap 5.3.0
+- Responsive grid (12 columns)
+- Mobile-first approach
+
+---
+
+## 📱 RESPONSIVE DESIGN
+
+### Breakpoints
+```
+Mobile:   < 576px  (xs)
+Small:    ≥ 576px  (sm)
+Medium:   ≥ 768px  (md)
+Large:    ≥ 992px  (lg)
+XL:       ≥ 1200px (xl)
+XXL:      ≥ 1400px (xxl)
+```
+
+### Table Behavior
+- Desktop: Full table with all columns
+- Tablet: May need horizontal scroll
+- Mobile: Stacked card view recommended
+
+---
+
+## 🔒 SECURITY NOTES
+
+### Current Status
+- ⚠️ No authentication (Phase 2)
+- ⚠️ No data validation (Phase 2)
+- ⚠️ No encryption (Phase 2)
+- ✅ Client-side filtering
+
+### Recommendations
+1. Add user authentication
+2. Implement backend validation
+3. Use HTTPS in production
+4. Add rate limiting
+5. Implement access control
+
+---
+
+## 📊 SAMPLE DATA STATS
+
+- **Clients:** 30 records
+- **Services:** 8 types
+- **Appointments:** 100+ records
+- **Invoices:** 100+ records
+- **Staff:** 5 members
+- **Schedules:** 14 entries
+- **Addresses:** 30 records
+
+---
+
+## 🚀 NEXT PHASES
+
+### Phase 2: Backend
+- [ ] Set up database (MongoDB/PostgreSQL)
+- [ ] Create REST API endpoints
+- [ ] Implement authentication
+- [ ] Add data validation
+
+### Phase 3: Features
+- [ ] Email notifications
+- [ ] Payment processing
+- [ ] Customer portal
+- [ ] Analytics dashboard
+
+### Phase 4: Production
+- [ ] Domain setup
+- [ ] SSL certificate
+- [ ] Performance optimization
+- [ ] Backup & disaster recovery
+
+---
+
+## 🆘 SUPPORT CONTACTS
+
+**Development:** Via GitHub issues
+**Questions:** Check PROJECT_SUMMARY.txt
+**Data Questions:** See DATA_ARCHITECTURE.txt
+
+---
+
+**Keep this guide handy while developing!**
+
+Last Updated: November 29, 2025

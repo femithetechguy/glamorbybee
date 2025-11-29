@@ -131,6 +131,15 @@
                             <th>Preferred Contact</th>
                             <th>Actions</th>
                         </tr>
+                        <tr class="filter-row">
+                            <td><input type="text" class="form-control form-control-sm" placeholder="Filter name..." data-filter="name"></td>
+                            <td><input type="text" class="form-control form-control-sm" placeholder="Filter contact..." data-filter="email"></td>
+                            <td><input type="date" class="form-control form-control-sm" data-filter="registered"></td>
+                            <td><input type="number" class="form-control form-control-sm" placeholder="Min visits..." data-filter="visits"></td>
+                            <td><input type="number" class="form-control form-control-sm" placeholder="Min points..." data-filter="loyalty"></td>
+                            <td><select class="form-select form-select-sm" data-filter="contact"><option value="">All</option><option value="email">Email</option><option value="phone">Phone</option><option value="sms">SMS</option></select></td>
+                            <td></td>
+                        </tr>
                     </thead>
                     <tbody id="clientsTableBody">
                         <!-- Populated by JavaScript -->

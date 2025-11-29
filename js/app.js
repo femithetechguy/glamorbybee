@@ -77,6 +77,92 @@ function initializeAdminLinks() {
     });
 }
 
+// Get Invoice Link from Configuration
+function getInvoiceLink() {
+    const invoiceConfig = appData?.components?.invoice;
+    if (!invoiceConfig) return 'http://localhost:5500/invoice/index.html';
+    
+    // Resolve current_domain if it references another key
+    const currentDomainKey = invoiceConfig.current_domain;
+    const domain = invoiceConfig[currentDomainKey] || currentDomainKey;
+    
+    return domain || 'http://localhost:5500/invoice/index.html';
+}
+
+// Initialize Invoice Links from Configuration
+function initializeInvoiceLinks() {
+    const invoiceLink = getInvoiceLink();
+    const invoiceCreateLink = invoiceLink.replace(/\/?$/, '/create.html');
+    
+    document.querySelectorAll('[data-invoice-link]').forEach(element => {
+        element.href = invoiceLink;
+    });
+    
+    document.querySelectorAll('[data-invoice-create-link]').forEach(element => {
+        element.href = invoiceCreateLink;
+    });
+}
+
+// Get Client Link from Configuration
+function getClientLink() {
+    const clientConfig = appData?.components?.client;
+    if (!clientConfig) return 'https://dev-client.glamorbybee.com/';
+    
+    // Resolve current_domain if it references another key
+    const currentDomainKey = clientConfig.current_domain;
+    const domain = clientConfig[currentDomainKey] || currentDomainKey;
+    
+    return domain || 'https://dev-client.glamorbybee.com/';
+}
+
+// Initialize Client Links from Configuration
+function initializeClientLinks() {
+    const clientLink = getClientLink();
+    document.querySelectorAll('[data-client-link]').forEach(element => {
+        element.href = clientLink;
+    });
+}
+
+// Get Schedule Link from Configuration
+function getScheduleLink() {
+    const scheduleConfig = appData?.components?.schedule;
+    if (!scheduleConfig) return 'https://dev-schedule.glamorbybee.com/';
+    
+    // Resolve current_domain if it references another key
+    const currentDomainKey = scheduleConfig.current_domain;
+    const domain = scheduleConfig[currentDomainKey] || currentDomainKey;
+    
+    return domain || 'https://dev-schedule.glamorbybee.com/';
+}
+
+// Initialize Schedule Links from Configuration
+function initializeScheduleLinks() {
+    const scheduleLink = getScheduleLink();
+    document.querySelectorAll('[data-schedule-link]').forEach(element => {
+        element.href = scheduleLink;
+    });
+}
+
+// Get Services Link from Configuration
+function getServicesLink() {
+    const servicesConfig = appData?.components?.services;
+    if (!servicesConfig) return 'https://dev-services.glamorbybee.com/';
+    
+    // Resolve current_domain if it references another key
+    const currentDomainKey = servicesConfig.current_domain;
+    const domain = servicesConfig[currentDomainKey] || currentDomainKey;
+    
+    return domain || 'https://dev-services.glamorbybee.com/';
+}
+
+// Initialize Services Links from Configuration
+function initializeServicesLinks() {
+    const servicesLink = getServicesLink();
+    document.querySelectorAll('[data-services-link]').forEach(element => {
+        element.href = servicesLink;
+    });
+}
+
 // Initialize App
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('✓ DOMContentLoaded fired');
@@ -91,15 +177,28 @@ async function initializeApp() {
         
         // Load JSON data
         console.log('About to fetch JSON...');
-        const response = await fetch('json/app.json');
-        console.log('Fetch response status:', response.status);
+        const appResponse = await fetch('json/app.json');
+        const servicesResponse = await fetch('json/services.json');
         
-        appData = await response.json();
-        console.log('✓ JSON loaded:', appData);
+        console.log('App.json response status:', appResponse.status);
+        console.log('Services.json response status:', servicesResponse.status);
+        
+        appData = await appResponse.json();
+        const servicesData = await servicesResponse.json();
+        
+        // Merge services into appData for backward compatibility
+        appData.services = servicesData.services;
+        
+        console.log('✓ App config loaded:', appData);
+        console.log('✓ Services loaded:', appData.services.length, 'items');
         console.log('Contact data:', appData.site.contact);
         
-        // Initialize admin links from configuration
+        // Initialize all component links from configuration
         initializeAdminLinks();
+        initializeInvoiceLinks();
+        initializeClientLinks();
+        initializeScheduleLinks();
+        initializeServicesLinks();
         
         // Populate page content
         console.log('About to call populatePageContent...');
@@ -941,4 +1040,80 @@ document.addEventListener('click', (e) => {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(setupInstagramEmbedHandler, 1000);
 });
+
+/* ============================================
+   TABLE HEADER FILTERS
+   ============================================ */
+
+function initTableHeaderFilters() {
+    const filterInputs = document.querySelectorAll('.filter-row input, .filter-row select');
+    
+    filterInputs.forEach(input => {
+        input.addEventListener('change', handleTableFilter);
+        input.addEventListener('keyup', debounce(handleTableFilter, 300));
+    });
+}
+
+function handleTableFilter(e) {
+    const filterRow = e.target.closest('.filter-row');
+    if (!filterRow) return;
+    
+    const table = filterRow.closest('table');
+    const tbody = table.querySelector('tbody');
+    const rows = tbody.querySelectorAll('tr:not(.filter-row)');
+    const filters = {};
+    
+    filterRow.querySelectorAll('input, select').forEach((input, idx) => {
+        const filterKey = input.getAttribute('data-filter');
+        if (filterKey && input.value) {
+            filters[filterKey] = input.value.toLowerCase();
+        }
+    });
+    
+    rows.forEach(row => {
+        let showRow = true;
+        const cells = row.querySelectorAll('td');
+        
+        Object.entries(filters).forEach(([key, value]) => {
+            const cellIndex = Array.from(filterRow.querySelectorAll('input, select')).findIndex(
+                el => el.getAttribute('data-filter') === key
+            );
+            
+            if (cellIndex >= 0 && cellIndex < cells.length) {
+                const cellText = cells[cellIndex].textContent.toLowerCase();
+                const inputType = filterRow.querySelectorAll('input, select')[cellIndex].type;
+                
+                if (inputType === 'number') {
+                    const cellNum = parseFloat(cellText);
+                    const filterNum = parseFloat(value);
+                    if (isNaN(cellNum) || cellNum < filterNum) {
+                        showRow = false;
+                    }
+                } else if (inputType === 'date') {
+                    // Simple date filter - shows rows on or after the selected date
+                    if (cellText && !cellText.includes(value)) {
+                        showRow = false;
+                    }
+                } else {
+                    if (!cellText.includes(value)) {
+                        showRow = false;
+                    }
+                }
+            }
+        });
+        
+        row.style.display = showRow ? '' : 'none';
+    });
+}
+
+function debounce(func, delay) {
+    let timeoutId;
+    return function(...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => func.apply(this, args), delay);
+    };
+}
+
+// Initialize table filters when page loads
+document.addEventListener('DOMContentLoaded', initTableHeaderFilters);
 

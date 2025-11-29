@@ -3,8 +3,17 @@
    2025 - Invoice Management
    ============================================ */
 
-document.addEventListener('DOMContentLoaded', function() {
+let invoiceData = {
+    services: [],
+    invoices: [],
+    clients: []
+};
+
+document.addEventListener('DOMContentLoaded', async function() {
     console.log('Invoice system initialized');
+    
+    // Load data
+    await loadInvoiceData();
     
     // Set default date to today
     setDefaultDate();
@@ -15,6 +24,33 @@ document.addEventListener('DOMContentLoaded', function() {
     initFormSubmission();
     initPreview();
 });
+
+/* ============================================
+   DATA LOADING
+   ============================================ */
+
+async function loadInvoiceData() {
+    try {
+        console.log('📄 Loading invoice data...');
+        const [servicesRes, invoicesRes, clientsRes] = await Promise.all([
+            fetch('../json/services.json').then(r => r.json()),
+            fetch('../json/invoices.json').then(r => r.json()),
+            fetch('../json/clients.json').then(r => r.json())
+        ]);
+        
+        invoiceData.services = servicesRes.services || [];
+        invoiceData.invoices = invoicesRes.invoices || [];
+        invoiceData.clients = clientsRes.customers || [];
+        
+        console.log('✅ Invoice data loaded:', {
+            services: invoiceData.services.length,
+            invoices: invoiceData.invoices.length,
+            clients: invoiceData.clients.length
+        });
+    } catch (error) {
+        console.error('❌ Error loading invoice data:', error);
+    }
+}
 
 /* ============================================
    DEFAULT VALUES
@@ -47,6 +83,12 @@ function initServiceHandlers() {
 function addServiceItem() {
     const servicesContainer = document.getElementById('servicesContainer');
     
+    // Generate service options from invoiceData
+    const serviceOptions = invoiceData.services.map(service => {
+        const price = typeof service.price === 'string' ? service.price.replace('$', '') : service.price;
+        return `<option value="${service.name}" data-price="${price}">${service.name} ($${price})</option>`;
+    }).join('');
+    
     const serviceHTML = `
         <div class="service-item">
             <div class="row g-3 align-items-end">
@@ -54,13 +96,7 @@ function addServiceItem() {
                     <label class="form-label">Service *</label>
                     <select class="form-select form-select-lg service-select" required>
                         <option value="">Select service</option>
-                        <option value="Bridal Glam" data-price="300">Bridal Glam</option>
-                        <option value="Natural Beat" data-price="150">Natural Beat</option>
-                        <option value="Evening Elegance" data-price="200">Evening Elegance</option>
-                        <option value="Special FX" data-price="250">Special FX</option>
-                        <option value="Photo Ready" data-price="175">Photo Ready</option>
-                        <option value="Glam Squad Package" data-price="400">Glam Squad Package</option>
-                        <option value="Makeup Lesson" data-price="125">Makeup Lesson</option>
+                        ${serviceOptions}
                     </select>
                 </div>
                 <div class="col-md-2">

@@ -42,16 +42,52 @@
     "invoice": {
       "name": "Invoice System",
       "description": "Generate and manage client invoices",
-      "domain": "http://localhost:5500/invoice/index.html",
+      "dev_domain": "https://dev-invoice.glamorbybee.com/",
+      "prod_domain": "https://invoice.glamorbybee.com/",
+      "local_domain": "http://localhost:5500/invoice/index.html",
+      "current_domain": "dev_domain",
       "directory": "invoice",
       "purpose": "invoicing"
     },
-     "schedule": {
+    "client": {
+      "name": "Client Portal",
+      "description": "Client booking and management portal",
+      "dev_domain": "https://dev-client.glamorbybee.com/",
+      "prod_domain": "https://client.glamorbybee.com/",
+      "local_domain": "http://localhost:5500/client/index.html",
+      "current_domain": "dev_domain",
+      "directory": "client",
+      "purpose": "client-view"
+    },
+    "schedule": {
       "name": "Schedule System",
       "description": "Manage and organize appointments and bookings",
-      "domain": "schedule.glamorbybee.com",
+      "dev_domain": "https://dev-schedule.glamorbybee.com/",
+      "prod_domain": "https://schedule.glamorbybee.com/",
+      "local_domain": "http://localhost:5500/schedule/index.html",
+      "current_domain": "dev_domain",
       "directory": "schedule",
       "purpose": "scheduling"
+    },
+    "services": {
+      "name": "Services Management",
+      "description": "Manage makeup services and pricing",
+      "dev_domain": "https://dev-services.glamorbybee.com/",
+      "prod_domain": "https://services.glamorbybee.com/",
+      "local_domain": "http://localhost:5500/services/index.html",
+      "current_domain": "dev_domain",
+      "directory": "services",
+      "purpose": "services-management"
+    },
+    "appointments": {
+      "name": "Appointments Management",
+      "description": "Manage client appointments and bookings",
+      "dev_domain": "https://dev-appointments.glamorbybee.com/",
+      "prod_domain": "https://appointments.glamorbybee.com/",
+      "local_domain": "http://localhost:5500/appointments/index.html",
+      "current_domain": "dev_domain",
+      "directory": "appointments",
+      "purpose": "appointment-management"
     },
     "firebase": {
       "name": "Firebase Integration",
@@ -65,64 +101,6 @@
     "description": "GlamorByBee is dedicated to elevating your natural beauty with flawless, professional makeup artistry for every occasion. We believe every face is a unique canvas, and our passion is to create stunning, confidence-boosting looks tailored just for you.",
     "highlight": "From soft glam to bold transformations, our certified artists use premium products and the latest techniques to ensure you leave feeling radiant, empowered, and truly glamorous."
   },
-  "services": [
-    {
-      "id": "celebrant",
-      "name": "Celebrant Makeup",
-      "description": "Perfect for wedding days and special celebrations",
-      "image": "img/celebrant.jpg",
-      "price": "$150"
-    },
-    {
-      "id": "party",
-      "name": "Party - Owanbe Makeup",
-      "description": "Stunning looks for parties and celebrations",
-      "image": "img/owanbe_makeup.jpg",
-      "price": "$100"
-    },
-    {
-      "id": "soft-glam",
-      "name": "Soft Glam Makeup",
-      "description": "Trendy, elegant looks for everyday glamour",
-      "image": "img/soft_glam.jpg",
-      "price": "$75"
-    },
-    {
-      "id": "photoshoot-1",
-      "name": "Makeup & Photoshoot (1 Outfit)",
-      "description": "Camera-ready makeup for professional photos",
-      "image": "img/1_outfit_shoot.jpg",
-      "price": "$85"
-    },
-    {
-      "id": "photoshoot-2",
-      "name": "Makeup &Photoshoot (2 Outfits)",
-      "description": "Professional makeup for multiple outfit changes",
-      "image": "img/2_outfit_shoot.jpg",
-      "price": "$120"
-    },
-    {
-      "id": "photoshoot-3",
-      "name": "Makeup & Photoshoot (3 Outfits)",
-      "description": "Complete makeup suite for extensive photoshoots",
-      "image": "img/3_outfit_shoot.jpg",
-      "price": "$150"
-    },
-    {
-      "id": "home-service",
-      "name": "Luxury Home Service",
-      "description": "Professional makeup service at your home",
-      "image": "img/luxury_home_service.jpg",
-      "price": "$125"
-    },
-    {
-      "id": "makeup-class",
-      "name": "Makeup Training Class",
-      "description": "Get trained with our expert makeup classes!",
-      "image": "img/makeup_training.jpg",
-      "price": "$200"
-    }
-  ],
   "booking": {
     "deposit": "30% payment required to lock in dates",
     "balanceDue": "Balance due upon completion of service",

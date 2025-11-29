@@ -60,13 +60,15 @@ async function loadClientData() {
     try {
         console.log('📊 Loading client data from JSON files...');
         
-        const [masterData] = await Promise.all([
-            fetch('../json/master_data.json').then(r => r.json())
+        const [clientsRes, addressesRes, appointmentsRes] = await Promise.all([
+            fetch('../json/clients.json').then(r => r.json()),
+            fetch('../json/addresses.json').then(r => r.json()),
+            fetch('../json/appointments.json').then(r => r.json())
         ]);
         
-        clientData.customers = masterData.customers || [];
-        clientData.addresses = masterData.addresses || [];
-        clientData.appointments = masterData.appointments || [];
+        clientData.customers = clientsRes.customers || [];
+        clientData.addresses = addressesRes.addresses || [];
+        clientData.appointments = appointmentsRes.appointments || [];
         
         console.log('✅ Client data loaded:', {
             customers: clientData.customers.length,
@@ -75,6 +77,7 @@ async function loadClientData() {
         });
     } catch (error) {
         console.error('❌ Error loading data:', error);
+        console.error('Error details:', error);
         alert('Failed to load client data. Please ensure the server is running.');
     }
 }

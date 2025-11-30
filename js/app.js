@@ -1127,49 +1127,117 @@ function showErrorAlert(message) {
     }
 }
 
-// Handle Instagram Embed - Opens in same window with back button support
+// Handle Instagram Embed - Load and process embed script
 function setupInstagramEmbedHandler() {
-    console.log('🔍 setupInstagramEmbedHandler called');
-    
-    // Instagram embed script will handle everything
+    // Instagram embed script will process the blockquote element
     if (window.instgrm) {
-        console.log('📲 Instagram embed script found, processing embeds');
         window.instgrm.Embeds.process();
     }
+}
+
+// Instagram Modal Viewer - Display posts in a modal instead of opening Instagram
+function openInstagramModal(postUrl) {
+    console.log('📱 Opening Instagram post in modal:', postUrl);
     
-    // Intercept Instagram links and open in same window (allow back button)
-    const instagramContainer = document.getElementById('instagramContainer');
-    if (instagramContainer) {
-        // Function to remove target="_blank" from all links
-        const removeTargetBlank = () => {
-            const links = instagramContainer.querySelectorAll('a[target="_blank"]');
-            links.forEach(link => {
-                link.removeAttribute('target');
-                console.log('🔗 Removed target="_blank" from Instagram link');
-            });
-        };
-        
-        // Remove target="_blank" immediately
-        removeTargetBlank();
-        
-        // Set up observer to monitor for new links added by Instagram
-        const observer = new MutationObserver(() => {
-            // Check and remove target="_blank" on any new links
-            removeTargetBlank();
-        });
-        
-        observer.observe(instagramContainer, {
-            childList: true,
-            subtree: true,
-            attributes: true,
-            attributeFilter: ['target', 'href']
-        });
-        
-        // Also run periodically in case Instagram updates links asynchronously
-        setInterval(removeTargetBlank, 500);
-        
-        console.log('✅ Instagram embed: Links open in same window - use browser back button to return');
+    // Extract post ID from URL
+    const postId = postUrl.split('/p/')[1]?.split('/')[0];
+    if (!postId) {
+        console.error('Could not extract post ID from URL:', postUrl);
+        return;
     }
+    
+    // Create modal overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'instagramModalOverlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        padding: 1rem;
+    `;
+    
+    // Create modal content
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        background: white;
+        border-radius: 16px;
+        max-width: 500px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.3s ease-out;
+        position: relative;
+    `;
+    
+    // Create close button
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '✕';
+    closeBtn.style.cssText = `
+        position: sticky;
+        top: 0;
+        right: 0;
+        background: #d63384;
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        font-size: 24px;
+        cursor: pointer;
+        margin: 1rem;
+        z-index: 10000;
+        transition: 0.3s;
+    `;
+    closeBtn.onmouseover = () => closeBtn.style.background = '#c0227a';
+    closeBtn.onmouseout = () => closeBtn.style.background = '#d63384';
+    closeBtn.onclick = () => overlay.remove();
+    
+    // Create iframe to embed Instagram post
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.instagram.com/p/${postId}/embed/`;
+    iframe.style.cssText = `
+        border: none;
+        width: 100%;
+        min-height: 500px;
+        display: block;
+        margin: 0 auto;
+    `;
+    
+    modal.appendChild(closeBtn);
+    modal.appendChild(iframe);
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    
+    // Process embed if Instagram script is available
+    if (window.instgrm) {
+        setTimeout(() => {
+            window.instgrm.Embeds.process();
+        }, 500);
+    }
+    
+    // Close on overlay click (outside modal)
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            overlay.remove();
+        }
+    });
+    
+    // Close on ESC key
+    const handleEscape = (e) => {
+        if (e.key === 'Escape') {
+            overlay.remove();
+            document.removeEventListener('keydown', handleEscape);
+        }
+    };
+    document.addEventListener('keydown', handleEscape);
 }
 
 // Smooth Scroll Navigation
@@ -1185,7 +1253,26 @@ document.addEventListener('click', (e) => {
 
 // Initialize Instagram embed handlers when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(setupInstagramEmbedHandler, 1000);
+    setTimeout(() => {
+        setupInstagramEmbedHandler();
+        
+        // Add click handler to Instagram posts to open modal instead of new tab
+        const instagramContainer = document.getElementById('instagramContainer');
+        if (instagramContainer) {
+            instagramContainer.addEventListener('click', (e) => {
+                // Check if click is on an Instagram post link
+                let link = e.target.closest('a[href*="instagram.com"]');
+                
+                if (link && link.href.includes('/p/')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Open in modal instead
+                    openInstagramModal(link.href);
+                }
+            });
+        }
+    }, 1000);
 });
 
 /* ============================================

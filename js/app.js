@@ -57,6 +57,125 @@ function setupMobileMenu() {
     }
 }
 
+// Get Admin Link from Configuration
+function getAdminLink() {
+    const adminConfig = appData?.components?.admin;
+    if (!adminConfig) return 'https://dev-admin.glamorbybee.com/';
+    
+    // Detect environment based on current hostname
+    const hostname = window.location.hostname;
+    let domainKey = 'dev_domain'; // default
+    
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        domainKey = 'local_domain';
+    } else if (hostname === 'glamorbybee.com') {
+        domainKey = 'prod_domain';
+    }
+    
+    let domain = adminConfig[domainKey] || adminConfig.dev_domain || 'https://dev-admin.glamorbybee.com/';
+    
+    // If domain is "auto" for localhost, use current origin with /admin/index.html
+    if (domain === 'auto') {
+        domain = window.location.origin + '/admin/index.html';
+    }
+    
+    return domain;
+}
+
+// Initialize Admin Links from Configuration
+function initializeAdminLinks() {
+    const adminLink = getAdminLink();
+    document.querySelectorAll('[data-admin-link]').forEach(element => {
+        element.href = adminLink;
+    });
+}
+
+// Get Invoice Link from Configuration
+function getInvoiceLink() {
+    const invoiceConfig = appData?.components?.invoice;
+    if (!invoiceConfig) return 'http://localhost:5500/invoice/index.html';
+    
+    // Resolve current_domain if it references another key
+    const currentDomainKey = invoiceConfig.current_domain;
+    const domain = invoiceConfig[currentDomainKey] || currentDomainKey;
+    
+    return domain || 'http://localhost:5500/invoice/index.html';
+}
+
+// Initialize Invoice Links from Configuration
+function initializeInvoiceLinks() {
+    const invoiceLink = getInvoiceLink();
+    const invoiceCreateLink = invoiceLink.replace(/\/?$/, '/create.html');
+    
+    document.querySelectorAll('[data-invoice-link]').forEach(element => {
+        element.href = invoiceLink;
+    });
+    
+    document.querySelectorAll('[data-invoice-create-link]').forEach(element => {
+        element.href = invoiceCreateLink;
+    });
+}
+
+// Get Client Link from Configuration
+function getClientLink() {
+    const clientConfig = appData?.components?.client;
+    if (!clientConfig) return 'https://dev-client.glamorbybee.com/';
+    
+    // Resolve current_domain if it references another key
+    const currentDomainKey = clientConfig.current_domain;
+    const domain = clientConfig[currentDomainKey] || currentDomainKey;
+    
+    return domain || 'https://dev-client.glamorbybee.com/';
+}
+
+// Initialize Client Links from Configuration
+function initializeClientLinks() {
+    const clientLink = getClientLink();
+    document.querySelectorAll('[data-client-link]').forEach(element => {
+        element.href = clientLink;
+    });
+}
+
+// Get Schedule Link from Configuration
+function getScheduleLink() {
+    const scheduleConfig = appData?.components?.schedule;
+    if (!scheduleConfig) return 'https://dev-schedule.glamorbybee.com/';
+    
+    // Resolve current_domain if it references another key
+    const currentDomainKey = scheduleConfig.current_domain;
+    const domain = scheduleConfig[currentDomainKey] || currentDomainKey;
+    
+    return domain || 'https://dev-schedule.glamorbybee.com/';
+}
+
+// Initialize Schedule Links from Configuration
+function initializeScheduleLinks() {
+    const scheduleLink = getScheduleLink();
+    document.querySelectorAll('[data-schedule-link]').forEach(element => {
+        element.href = scheduleLink;
+    });
+}
+
+// Get Services Link from Configuration
+function getServicesLink() {
+    const servicesConfig = appData?.components?.services;
+    if (!servicesConfig) return 'https://dev-services.glamorbybee.com/';
+    
+    // Resolve current_domain if it references another key
+    const currentDomainKey = servicesConfig.current_domain;
+    const domain = servicesConfig[currentDomainKey] || currentDomainKey;
+    
+    return domain || 'https://dev-services.glamorbybee.com/';
+}
+
+// Initialize Services Links from Configuration
+function initializeServicesLinks() {
+    const servicesLink = getServicesLink();
+    document.querySelectorAll('[data-services-link]').forEach(element => {
+        element.href = servicesLink;
+    });
+}
+
 // Initialize App
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('✓ DOMContentLoaded fired');
@@ -71,12 +190,28 @@ async function initializeApp() {
         
         // Load JSON data
         console.log('About to fetch JSON...');
-        const response = await fetch('json/app.json');
-        console.log('Fetch response status:', response.status);
+        const appResponse = await fetch('json/app.json');
+        const servicesResponse = await fetch('json/services.json');
         
-        appData = await response.json();
-        console.log('✓ JSON loaded:', appData);
+        console.log('App.json response status:', appResponse.status);
+        console.log('Services.json response status:', servicesResponse.status);
+        
+        appData = await appResponse.json();
+        const servicesData = await servicesResponse.json();
+        
+        // Merge services into appData for backward compatibility
+        appData.services = servicesData.services;
+        
+        console.log('✓ App config loaded:', appData);
+        console.log('✓ Services loaded:', appData.services.length, 'items');
         console.log('Contact data:', appData.site.contact);
+        
+        // Initialize all component links from configuration
+        initializeAdminLinks();
+        initializeInvoiceLinks();
+        initializeClientLinks();
+        initializeScheduleLinks();
+        initializeServicesLinks();
         
         // Populate page content
         console.log('About to call populatePageContent...');
@@ -850,57 +985,154 @@ function isValidEmail(email) {
     return emailRegex.test(email);
 }
 
-// Show Success Alert
+// Show Success Alert - Custom Modal (no Bootstrap dependency)
 function showSuccessAlert(message) {
-    const alertContainer = document.querySelector('.alert-container') || 
-                          document.querySelector('.booking-step:last-of-type');
-    
-    if (!alertContainer) return;
+    // Create overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'bookingOverlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    `;
 
-    const alert = document.createElement('div');
-    alert.className = 'alert alert-success';
-    alert.innerHTML = `✓ ${message}`;
-    
-    const existingAlert = alertContainer.querySelector('.alert');
-    if (existingAlert) {
-        existingAlert.remove();
+    // Create modal content
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(214, 51, 132, 0.2);
+        animation: slideUp 0.3s ease-out;
+    `;
+
+    modal.innerHTML = `
+        <i class="bi bi-check-circle-fill" style="color: #10b981; font-size: 3rem; display: block; margin-bottom: 1rem;"></i>
+        <h3 style="color: #0f0f0f; margin-bottom: 0.5rem; font-family: 'Space Grotesk', sans-serif; font-weight: 700;">Booking Confirmed!</h3>
+        <p style="color: #666; margin-bottom: 1.5rem;">${message}</p>
+        <button onclick="document.getElementById('bookingOverlay').remove()" style="
+            background: #d63384;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+        ">OK</button>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    // Add animation keyframes if not already present
+    if (!document.getElementById('bookingAnimation')) {
+        const style = document.createElement('style');
+        style.id = 'bookingAnimation';
+        style.textContent = `
+            @keyframes slideUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
     }
-    
-    alertContainer.appendChild(alert);
-    
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-        alert.remove();
-    }, 5000);
 }
 
 // Show Error Alert
 function showErrorAlert(message) {
-    const errorAlert = document.getElementById('errorAlert');
-    const errorMsg = document.getElementById('errorMsg');
-    
-    if (errorAlert && errorMsg) {
-        errorMsg.textContent = message;
-        errorAlert.classList.remove('d-none');
-        
-        // Auto-remove after 5 seconds
-        setTimeout(() => {
-            errorAlert.classList.add('d-none');
-        }, 5000);
+    // Create overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'errorOverlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    `;
+
+    // Create modal content
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(239, 68, 68, 0.2);
+        border-left: 5px solid #ef4444;
+        animation: slideUp 0.3s ease-out;
+    `;
+
+    modal.innerHTML = `
+        <i class="bi bi-exclamation-circle-fill" style="color: #ef4444; font-size: 3rem; display: block; margin-bottom: 1rem;"></i>
+        <h3 style="color: #0f0f0f; margin-bottom: 0.5rem; font-family: 'Space Grotesk', sans-serif; font-weight: 700;">Oops!</h3>
+        <p style="color: #666; margin-bottom: 1.5rem; line-height: 1.5;">${message}</p>
+        <button onclick="document.getElementById('errorOverlay').remove()" style="
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        " onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">Try Again</button>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    // Add animation keyframes if not already present
+    if (!document.getElementById('errorAnimation')) {
+        const style = document.createElement('style');
+        style.id = 'errorAnimation';
+        style.textContent = `
+            @keyframes slideUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
     }
 }
 
-// Handle Instagram Embed - Note: Instagram iframe is cross-origin, so clicks open in new tabs
+// Handle Instagram Embed - Load and process embed script
 function setupInstagramEmbedHandler() {
-    console.log('🔍 setupInstagramEmbedHandler called');
-    
-    // Instagram embed script will handle everything
+    // Instagram embed script will process the blockquote element
     if (window.instgrm) {
-        console.log('📲 Instagram embed script found, processing embeds');
         window.instgrm.Embeds.process();
     }
-    
-    console.log('ℹ️ Instagram embed ready. Clicks on posts will open Instagram in new tabs.');
 }
 
 // Smooth Scroll Navigation
@@ -916,6 +1148,84 @@ document.addEventListener('click', (e) => {
 
 // Initialize Instagram embed handlers when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(setupInstagramEmbedHandler, 1000);
+    setTimeout(() => {
+        setupInstagramEmbedHandler();
+    }, 1000);
 });
+
+/* ============================================
+   TABLE HEADER FILTERS
+   ============================================ */
+
+function initTableHeaderFilters() {
+    const filterInputs = document.querySelectorAll('.filter-row input, .filter-row select');
+    
+    filterInputs.forEach(input => {
+        input.addEventListener('change', handleTableFilter);
+        input.addEventListener('keyup', debounce(handleTableFilter, 300));
+    });
+}
+
+function handleTableFilter(e) {
+    const filterRow = e.target.closest('.filter-row');
+    if (!filterRow) return;
+    
+    const table = filterRow.closest('table');
+    const tbody = table.querySelector('tbody');
+    const rows = tbody.querySelectorAll('tr:not(.filter-row)');
+    const filters = {};
+    
+    filterRow.querySelectorAll('input, select').forEach((input, idx) => {
+        const filterKey = input.getAttribute('data-filter');
+        if (filterKey && input.value) {
+            filters[filterKey] = input.value.toLowerCase();
+        }
+    });
+    
+    rows.forEach(row => {
+        let showRow = true;
+        const cells = row.querySelectorAll('td');
+        
+        Object.entries(filters).forEach(([key, value]) => {
+            const cellIndex = Array.from(filterRow.querySelectorAll('input, select')).findIndex(
+                el => el.getAttribute('data-filter') === key
+            );
+            
+            if (cellIndex >= 0 && cellIndex < cells.length) {
+                const cellText = cells[cellIndex].textContent.toLowerCase();
+                const inputType = filterRow.querySelectorAll('input, select')[cellIndex].type;
+                
+                if (inputType === 'number') {
+                    const cellNum = parseFloat(cellText);
+                    const filterNum = parseFloat(value);
+                    if (isNaN(cellNum) || cellNum < filterNum) {
+                        showRow = false;
+                    }
+                } else if (inputType === 'date') {
+                    // Simple date filter - shows rows on or after the selected date
+                    if (cellText && !cellText.includes(value)) {
+                        showRow = false;
+                    }
+                } else {
+                    if (!cellText.includes(value)) {
+                        showRow = false;
+                    }
+                }
+            }
+        });
+        
+        row.style.display = showRow ? '' : 'none';
+    });
+}
+
+function debounce(func, delay) {
+    let timeoutId;
+    return function(...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => func.apply(this, args), delay);
+    };
+}
+
+// Initialize table filters when page loads
+document.addEventListener('DOMContentLoaded', initTableHeaderFilters);
 

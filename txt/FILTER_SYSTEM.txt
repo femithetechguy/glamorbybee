@@ -1,0 +1,517 @@
+# GlamorByBee - Table Filter System Guide
+**Date:** November 29, 2025 | **Feature:** Header-Level Real-Time Filtering
+
+---
+
+## 🎯 OVERVIEW
+
+Every table in the system now includes a **filter row** with multiple filter inputs positioned directly below the table header. Filters are applied in real-time as users type/select, with performance optimization using debouncing.
+
+---
+
+## 🏗️ ARCHITECTURE
+
+### Filter System Components
+
+#### 1. HTML Structure
+```html
+<div class="table-responsive">
+  <table class="table">
+    <thead>
+      <!-- Original headers -->
+      <tr>
+        <th>Column 1</th>
+        <th>Column 2</th>
+        <th>Column 3</th>
+      </tr>
+      
+      <!-- Filter row (NEW) -->
+      <tr class="filter-row">
+        <th><input type="text" class="form-control form-control-sm filter-input"></th>
+        <th><input type="email" class="form-control form-control-sm filter-input"></th>
+        <th><select class="form-select form-select-sm filter-input"></select></th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Table rows -->
+      <tr data-testid="table-row">...</tr>
+    </tbody>
+  </table>
+</div>
+```
+
+#### 2. CSS Styling (in `css/styles.css`)
+```css
+.filter-row {
+  background-color: #f8f9fa;
+  border-top: 2px solid #dee2e6;
+}
+
+.filter-row th {
+  padding: 0.5rem !important;
+  vertical-align: middle;
+}
+
+.filter-input {
+  font-size: 0.875rem;
+  border-color: #ccc;
+}
+
+.filter-input:focus {
+  border-color: #6f42c1;
+  box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.25);
+}
+
+.filter-input::placeholder {
+  color: #999;
+  font-size: 0.75rem;
+}
+```
+
+#### 3. JavaScript Functions (in `js/app.js`)
+
+```javascript
+// Initialize all filter inputs on page load
+function initTableHeaderFilters() {
+  const filterInputs = document.querySelectorAll('.filter-input');
+  filterInputs.forEach(input => {
+    input.addEventListener('input', debounce(handleTableFilter, 300));
+    input.addEventListener('change', handleTableFilter);
+  });
+}
+
+// Handle filter logic
+function handleTableFilter(e) {
+  const filterRow = e.target.closest('.filter-row');
+  const table = filterRow.closest('table');
+  const tbody = table.querySelector('tbody');
+  const rows = tbody.querySelectorAll('tr[data-testid="table-row"]');
+  const filters = [...filterRow.querySelectorAll('.filter-input')];
+  
+  rows.forEach(row => {
+    const cells = [...row.querySelectorAll('td')];
+    let matches = true;
+    
+    filters.forEach((filter, index) => {
+      if (!filter.value) return;
+      
+      const cell = cells[index];
+      if (!cell) {
+        matches = false;
+        return;
+      }
+      
+      const cellText = cell.textContent.trim().toLowerCase();
+      const filterValue = filter.value.toLowerCase();
+      const filterType = filter.type;
+      
+      // Text/email/search filters
+      if (['text', 'email', 'search'].includes(filterType)) {
+        if (!cellText.includes(filterValue)) {
+          matches = false;
+        }
+      }
+      // Number filters
+      else if (filterType === 'number') {
+        if (cellText !== filterValue) {
+          matches = false;
+        }
+      }
+      // Date filters
+      else if (filterType === 'date') {
+        if (cellText !== filterValue) {
+          matches = false;
+        }
+      }
+      // Select/dropdown filters
+      else if (filterType === 'select' || filter.tagName === 'SELECT') {
+        if (cellText !== filterValue) {
+          matches = false;
+        }
+      }
+    });
+    
+    row.style.display = matches ? '' : 'none';
+  });
+}
+
+// Debounce function for performance
+function debounce(func, delay) {
+  let timeoutId;
+  return function(...args) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func.apply(this, args), delay);
+  };
+}
+
+// Initialize on DOM ready
+document.addEventListener('DOMContentLoaded', initTableHeaderFilters);
+```
+
+---
+
+## 📋 FILTER SPECIFICATIONS BY MODULE
+
+### 1. CLIENT MODULE
+**File:** `/client/index.html`
+**Table:** Clients List
+
+#### Filter Row Columns
+1. **Name** (Text) - Searches first_name + last_name
+2. **Email** (Email) - Exact/contains search
+3. **Phone** (Tel) - Contains search
+4. **Registered** (Date) - Date picker (YYYY-MM-DD)
+5. **Visits** (Number) - Exact number match
+6. **Loyalty Pts** (Number) - Exact number match
+7. **Contact Pref** (Select) - Dropdown: email|phone|sms
+
+#### Search Logic
+```
+Name filter:    Searches against full name
+Email filter:   Case-insensitive contains
+Phone filter:   Partial number match
+Date filter:    Exact date match
+Visits filter:  Exact number match
+Loyalty filter: Exact number match
+Contact filter: Exact dropdown selection
+```
+
+#### Example Filter State
+```html
+<tr class="filter-row">
+  <th><input type="text" placeholder="Search name..." class="form-control form-control-sm filter-input"></th>
+  <th><input type="email" placeholder="Search email..." class="form-control form-control-sm filter-input"></th>
+  <th><input type="tel" placeholder="Search phone..." class="form-control form-control-sm filter-input"></th>
+  <th><input type="date" class="form-control form-control-sm filter-input"></th>
+  <th><input type="number" min="0" class="form-control form-control-sm filter-input"></th>
+  <th><input type="number" min="0" class="form-control form-control-sm filter-input"></th>
+  <th>
+    <select class="form-select form-select-sm filter-input">
+      <option value="">All</option>
+      <option value="email">Email</option>
+      <option value="phone">Phone</option>
+      <option value="sms">SMS</option>
+    </select>
+  </th>
+</tr>
+```
+
+---
+
+### 2. SERVICES MODULE
+**File:** `/services/index.html`
+**Table:** Services List
+
+#### Filter Row Columns
+1. **Name** (Text) - Service name search
+2. **Description** (Text) - Description search
+3. **Price Min** (Number) - Minimum price filter
+4. **Price Max** (Number) - Maximum price filter (optional)
+5. **Active** (Select) - yes|no filter
+
+#### Search Logic
+```
+Name:        Contains search
+Description: Contains search
+Price Min:   Exact match (consider >= logic)
+Price Max:   Exact match (consider <= logic)
+Active:      Dropdown select
+```
+
+#### Example Filter State
+```html
+<tr class="filter-row">
+  <th><input type="text" placeholder="Service name..." class="form-control form-control-sm filter-input"></th>
+  <th><input type="text" placeholder="Description..." class="form-control form-control-sm filter-input"></th>
+  <th><input type="number" placeholder="Min price..." class="form-control form-control-sm filter-input"></th>
+  <th><input type="number" placeholder="Max price..." class="form-control form-control-sm filter-input"></th>
+  <th>
+    <select class="form-select form-select-sm filter-input">
+      <option value="">All</option>
+      <option value="yes">Active</option>
+      <option value="no">Inactive</option>
+    </select>
+  </th>
+</tr>
+```
+
+---
+
+### 3. APPOINTMENTS MODULE ⭐
+**File:** `/appointments/index.html`
+**Table:** Appointments List
+
+#### Filter Row Columns
+1. **ID** (Text) - Appointment ID search
+2. **Client** (Text) - Client name search
+3. **Service** (Text) - Service name search
+4. **Date** (Date) - Appointment date picker
+5. **Staff** (Text) - Staff name search
+6. **Location** (Select) - studio|home
+7. **Status** (Select) - pending|confirmed|completed|cancelled
+8. **Actions** (No filter)
+
+#### Search Logic
+```
+ID:       Contains search
+Client:   Client name contains
+Service:  Service name contains
+Date:     Exact date match
+Staff:    Staff name contains
+Location: Dropdown select
+Status:   Dropdown select
+```
+
+#### Example Filter State
+```html
+<tr class="filter-row">
+  <th><input type="text" placeholder="APT ID..." class="form-control form-control-sm filter-input"></th>
+  <th><input type="text" placeholder="Client..." class="form-control form-control-sm filter-input"></th>
+  <th><input type="text" placeholder="Service..." class="form-control form-control-sm filter-input"></th>
+  <th><input type="date" class="form-control form-control-sm filter-input"></th>
+  <th><input type="text" placeholder="Staff..." class="form-control form-control-sm filter-input"></th>
+  <th>
+    <select class="form-select form-select-sm filter-input">
+      <option value="">All</option>
+      <option value="studio">Studio</option>
+      <option value="home">Home</option>
+    </select>
+  </th>
+  <th>
+    <select class="form-select form-select-sm filter-input">
+      <option value="">All</option>
+      <option value="pending">Pending</option>
+      <option value="confirmed">Confirmed</option>
+      <option value="completed">Completed</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
+  </th>
+  <th><!-- No filter for Actions --></th>
+</tr>
+```
+
+---
+
+### 4. SCHEDULE MODULE
+**File:** `/schedule/index.html`
+**Table:** Schedule/Timeline
+
+#### Filter Row Columns
+1. **Date** (Date) - Schedule date picker
+2. **Staff** (Text) - Staff name search
+3. **Time** (Text) - Time slot search
+4. **Capacity** (Number) - Slots available
+
+#### Search Logic
+```
+Date:     Exact date match
+Staff:    Staff name contains
+Time:     Contains search (HH:MM)
+Capacity: Exact number match
+```
+
+---
+
+### 5. INVOICE MODULE
+**File:** `/invoice/index.html`
+**Table:** Invoices List
+
+#### Filter Row Columns
+1. **Invoice ID** (Text) - Invoice ID search
+2. **Client** (Text) - Client name search
+3. **Amount** (Number) - Invoice amount
+4. **Date** (Date) - Invoice date picker
+5. **Status** (Select) - paid|pending|overdue
+6. **Due Date** (Date) - Due date picker
+
+#### Search Logic
+```
+Invoice ID: Contains search
+Client:     Client name contains
+Amount:     Exact match
+Date:       Exact date match
+Status:     Dropdown select
+Due Date:   Exact date match
+```
+
+---
+
+## ⚙️ PERFORMANCE OPTIMIZATION
+
+### Debouncing Mechanism
+```javascript
+// Waits 300ms after user stops typing before filtering
+handleTableFilter = debounce(handleTableFilter, 300);
+```
+
+**Benefits:**
+- Reduces DOM updates
+- Smoother user experience
+- Less CPU usage
+- Handles rapid key presses
+
+### Event Listeners
+```javascript
+// Text inputs: Use 'input' event (real-time)
+input.addEventListener('input', debounce(handleTableFilter, 300));
+
+// Select/Date: Use 'change' event (immediate)
+input.addEventListener('change', handleTableFilter);
+```
+
+---
+
+## 🔄 FILTER CLEARING
+
+### Manual Clear
+1. User manually deletes text from filter input
+2. Table rows re-appear as filter value becomes empty
+
+### Reset All Filters
+```javascript
+function clearAllFilters() {
+  const filterInputs = document.querySelectorAll('.filter-input');
+  filterInputs.forEach(input => {
+    input.value = '';
+    input.dispatchEvent(new Event('change'));
+  });
+}
+```
+
+---
+
+## 🎯 ADVANCED FEATURES (Future)
+
+### Range Filters
+```javascript
+// Price range: min AND max
+if (filterType === 'range') {
+  const [minInput, maxInput] = filters;
+  const cellValue = parseFloat(cellText);
+  if (cellValue < minInput.value || cellValue > maxInput.value) {
+    matches = false;
+  }
+}
+```
+
+### Multi-Select Filters
+```javascript
+// Filter by multiple statuses
+if (filter.selectedOptions.length > 0) {
+  const options = [...filter.selectedOptions].map(o => o.value);
+  if (!options.includes(cellText)) {
+    matches = false;
+  }
+}
+```
+
+### Date Range Filters
+```javascript
+// Appointments between dates
+if (filterType === 'daterange') {
+  const [minDate, maxDate] = filter.value.split(' to ');
+  const cellDate = new Date(cellText);
+  if (cellDate < new Date(minDate) || cellDate > new Date(maxDate)) {
+    matches = false;
+  }
+}
+```
+
+---
+
+## 🧪 TESTING FILTERS
+
+### Client Module Test
+```
+1. Enter "John" in Name filter
+   → Should show only customers named John
+2. Enter "gmail" in Email filter
+   → Should show only gmail.com customers
+3. Select "email" in Contact Pref
+   → Should show only email contact preference
+```
+
+### Appointments Module Test
+```
+1. Enter a service name in Service filter
+   → Table updates to show only that service
+2. Select status "pending"
+   → Shows only pending appointments
+3. Change date
+   → Shows only appointments on that date
+4. Combine multiple filters
+   → All conditions apply (AND logic)
+```
+
+---
+
+## 🐛 TROUBLESHOOTING
+
+### Filters not appearing?
+- Check filter row has class="filter-row"
+- Check inputs have class="filter-input"
+- Check initTableHeaderFilters() is called
+
+### Filters not working?
+- Open console (F12) for errors
+- Verify table rows have data-testid="table-row"
+- Check column order matches data
+- Try clearing all filters
+
+### Performance issues?
+- Debounce delay is 300ms (can increase)
+- Try filtering smaller datasets first
+- Check browser memory usage
+- Consider pagination for large datasets
+
+---
+
+## 📚 CODE REFERENCES
+
+### Function Locations
+- `initTableHeaderFilters()` → `/js/app.js` (Line ~XXX)
+- `handleTableFilter()` → `/js/app.js` (Line ~XXX)
+- `debounce()` → `/js/app.js` (Line ~XXX)
+
+### CSS Locations
+- Filter styling → `/css/styles.css` (Lines ~XXX)
+- Module-specific → `/css/[module].css`
+
+### HTML Locations
+- All filter rows → `<thead>` section of each table
+- Filter inputs → `<tr class="filter-row">`
+
+---
+
+## 🎨 CUSTOMIZATION
+
+### Change Filter Debounce Delay
+```javascript
+// From: 300ms
+filterInputs.forEach(input => {
+  input.addEventListener('input', debounce(handleTableFilter, 300));
+});
+
+// To: 500ms (slower)
+input.addEventListener('input', debounce(handleTableFilter, 500));
+```
+
+### Change Filter Row Styling
+```css
+.filter-row {
+  background-color: #f0f0f0;  ← Change color
+  border-top: 2px solid #000;  ← Change border
+}
+```
+
+### Add Case-Sensitive Filtering
+```javascript
+const filterValue = filter.value;  // Remove .toLowerCase()
+if (!cellText.includes(filterValue)) {
+  matches = false;
+}
+```
+
+---
+
+**Last Updated:** November 29, 2025

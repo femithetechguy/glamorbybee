@@ -1,0 +1,130 @@
+{
+  "schedules": [
+    {
+      "schedule_id": "SCHED0001",
+      "staff_id": "STAFF0001",
+      "staff_name": "Zainab Okafor",
+      "day_of_week": "Monday",
+      "start_time": "09:00",
+      "end_time": "18:00",
+      "is_working": true
+    },
+    {
+      "schedule_id": "SCHED0002",
+      "staff_id": "STAFF0001",
+      "staff_name": "Zainab Okafor",
+      "day_of_week": "Tuesday",
+      "start_time": "09:00",
+      "end_time": "18:00",
+      "is_working": true
+    },
+    {
+      "schedule_id": "SCHED0003",
+      "staff_id": "STAFF0001",
+      "staff_name": "Zainab Okafor",
+      "day_of_week": "Wednesday",
+      "start_time": "09:00",
+      "end_time": "18:00",
+      "is_working": true
+    },
+    {
+      "schedule_id": "SCHED0004",
+      "staff_id": "STAFF0001",
+      "staff_name": "Zainab Okafor",
+      "day_of_week": "Thursday",
+      "start_time": "09:00",
+      "end_time": "18:00",
+      "is_working": true
+    },
+    {
+      "schedule_id": "SCHED0005",
+      "staff_id": "STAFF0001",
+      "staff_name": "Zainab Okafor",
+      "day_of_week": "Friday",
+      "start_time": "09:00",
+      "end_time": "18:00",
+      "is_working": true
+    },
+    {
+      "schedule_id": "SCHED0006",
+      "staff_id": "STAFF0001",
+      "staff_name": "Zainab Okafor",
+      "day_of_week": "Saturday",
+      "start_time": "10:00",
+      "end_time": "20:00",
+      "is_working": true
+    },
+    {
+      "schedule_id": "SCHED0007",
+      "staff_id": "STAFF0001",
+      "staff_name": "Zainab Okafor",
+      "day_of_week": "Sunday",
+      "start_time": "12:00",
+      "end_time": "18:00",
+      "is_working": true
+    },
+    {
+      "schedule_id": "SCHED0008",
+      "staff_id": "STAFF0002",
+      "staff_name": "Chioma Nwosu",
+      "day_of_week": "Monday",
+      "start_time": "11:00",
+      "end_time": "20:00",
+      "is_working": true
+    },
+    {
+      "schedule_id": "SCHED0009",
+      "staff_id": "STAFF0002",
+      "staff_name": "Chioma Nwosu",
+      "day_of_week": "Tuesday",
+      "start_time": "11:00",
+      "end_time": "20:00",
+      "is_working": true
+    },
+    {
+      "schedule_id": "SCHED0010",
+      "staff_id": "STAFF0002",
+      "staff_name": "Chioma Nwosu",
+      "day_of_week": "Wednesday",
+      "start_time": "11:00",
+      "end_time": "20:00",
+      "is_working": true
+    },
+    {
+      "schedule_id": "SCHED0011",
+      "staff_id": "STAFF0002",
+      "staff_name": "Chioma Nwosu",
+      "day_of_week": "Thursday",
+      "start_time": "11:00",
+      "end_time": "20:00",
+      "is_working": true
+    },
+    {
+      "schedule_id": "SCHED0012",
+      "staff_id": "STAFF0002",
+      "staff_name": "Chioma Nwosu",
+      "day_of_week": "Friday",
+      "start_time": "11:00",
+      "end_time": "20:00",
+      "is_working": true
+    },
+    {
+      "schedule_id": "SCHED0013",
+      "staff_id": "STAFF0002",
+      "staff_name": "Chioma Nwosu",
+      "day_of_week": "Saturday",
+      "start_time": "09:00",
+      "end_time": "21:00",
+      "is_working": true
+    },
+    {
+      "schedule_id": "SCHED0014",
+      "staff_id": "STAFF0002",
+      "staff_name": "Chioma Nwosu",
+      "day_of_week": "Sunday",
+      "start_time": "12:00",
+      "end_time": "19:00",
+      "is_working": true
+    }
+  ]
+}

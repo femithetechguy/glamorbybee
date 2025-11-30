@@ -128,6 +128,8 @@ const InstagramGallery = {
         const container = document.getElementById(this.config.containerId);
         container.innerHTML = '';
         
+        let successCount = 0;
+        
         this.config.posts.forEach((postUrl, index) => {
             const postId = this.extractPostId(postUrl);
             if (!postId) {
@@ -146,7 +148,9 @@ const InstagramGallery = {
             container.appendChild(item);
             
             // Load thumbnail in background
-            this.loadPostThumbnail(postId, index, item);
+            this.loadPostThumbnail(postId, index, item, () => {
+                successCount++;
+            });
             
             // Add click handler
             item.addEventListener('click', () => {
@@ -159,7 +163,7 @@ const InstagramGallery = {
     },
 
     // Load post thumbnail
-    loadPostThumbnail(postId, index, element) {
+    loadPostThumbnail(postId, index, element, onSuccess) {
         console.log('🖼️ Loading thumbnail for post:', postId);
         
         // Use Instagram's oembed API to get post metadata
@@ -172,7 +176,11 @@ const InstagramGallery = {
                 'Accept': 'application/json'
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('📡 Response status:', response.status);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return response.json();
+        })
         .then(data => {
             console.log('✓ Loaded post data:', data.id);
             
@@ -189,22 +197,26 @@ const InstagramGallery = {
                     </div>
                 `;
                 console.log('✓ Thumbnail loaded:', postId);
+                if (onSuccess) onSuccess();
             }
         })
         .catch(err => {
             console.warn('⚠️ Failed to load thumbnail:', postId, err.message);
+            console.warn('   Post URL checked: https://www.instagram.com/p/' + postId + '/');
             element.innerHTML = `
                 <div class="instagram-gallery-item-error">
                     <i class="bi bi-exclamation-circle"></i>
+                    <span style="font-size: 0.7rem; margin-top: 0.5rem;">Post unavailable</span>
                 </div>
             `;
         });
     },
 
-    // Extract post ID from Instagram URL
+    // Extract post ID from Instagram URL (handles both /p/ and /reel/ URLs)
     extractPostId(url) {
-        const match = url.match(/\/p\/([A-Za-z0-9_-]+)/);
-        return match ? match[1] : null;
+        // Match /p/ID or /reel/ID
+        const match = url.match(/\/(p|reel)\/([A-Za-z0-9_-]+)/);
+        return match ? match[2] : null;
     },
 
     // Open modal with post
@@ -244,18 +256,21 @@ const InstagramGallery = {
         container.innerHTML = `
             <div class="instagram-fallback">
                 <i class="bi bi-exclamation-circle"></i>
-                <p>No Instagram posts configured yet.</p>
+                <p>Instagram posts not loading.</p>
                 <div style="font-size: 0.85rem; color: #666; margin: 1rem 0; text-align: left; background: #f5f5f5; padding: 1rem; border-radius: 8px; border-left: 4px solid #d63384;">
-                    <strong>Add posts:</strong><br>
-                    Add post URLs to the gallery container:<br>
-                    <code style="font-size: 0.75rem;">data-posts='["https://www.instagram.com/p/POST_ID/", ...]'</code>
+                    <strong>To add your posts:</strong><br><br>
+                    1. Go to your Instagram profile<br>
+                    2. Click a post to open it<br>
+                    3. Copy the URL (e.g. instagram.com/p/ABC123/)<br>
+                    4. Edit this file and replace the post URLs in data-posts<br><br>
+                    <code style="font-size: 0.75rem; background: white; padding: 0.5rem; display: block; border-radius: 4px; margin-top: 0.5rem;">data-posts='["https://www.instagram.com/p/YOUR_POST_ID/", ...]'</code>
                 </div>
                 <a href="https://www.instagram.com/glamor_bybee/" target="_blank" class="btn btn-primary">
                     <i class="bi bi-instagram"></i> Visit Instagram
                 </a>
             </div>
         `;
-        console.log('✓ No posts message displayed');
+        console.log('✓ Fallback message displayed - add posts to gallery');
     }
 };
 

@@ -2267,11 +2267,12 @@ p {
 
 .instafeed-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
     width: 100%;
     margin: 3rem 0;
     padding: 0;
+    max-width: 100%;
 }
 
 /* Gallery Item */
@@ -2501,14 +2502,14 @@ p {
 /* Responsive Instafeed Gallery */
 @media (max-width: 1024px) {
     .instafeed-container {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         gap: 1.25rem;
     }
 }
 
 @media (max-width: 768px) {
     .instafeed-container {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
         margin: 2rem 0;
     }

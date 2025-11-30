@@ -218,21 +218,11 @@
         <div class="container-lg">
             <h2 id="galleryTitle">Our Work</h2>
             <p id="galleryDescription" class="text-center text-muted mb-4"></p>
-            <div class="gallery-wrapper">
-                <div class="instagram-embed-info">
-                    <p class="instagram-note" id="instagramNote"><i class="bi bi-info-circle-fill"></i> <span style="margin-left: 0.5rem;">Tap any post to view on Instagram</span></p>
-                </div>
-                <div class="instagram-embed-container" id="instagramContainer">
-                    <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/glamor_bybee/" data-instgrm-version="14">
-                        <p>Loading Instagram...</p>
-                    </blockquote>
-                </div>
-            </div>
-
-            <script async src="https://www.instagram.com/embed.js"></script>
             
-            <div class="gallery-grid" id="galleryGrid"></div>
-            <div class="text-center" style="margin-top: 0;">
+            <!-- Instafeed Gallery Container -->
+            <div id="instafeed" class="instafeed-container"></div>
+            
+            <div class="text-center" style="margin-top: 3rem;">
                 <a href="https://www.instagram.com/glamor_bybee/" target="_blank" class="btn btn-primary">
                     <i class="bi bi-instagram"></i> See More on Instagram
                 </a>
@@ -345,6 +335,12 @@
     <!-- Google Maps temporarily disabled - uncomment to re-enable -->
     <!-- <script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({key: "AIzaSyA01ZOLCo6o9QwT9ymTAHN24rH-C4itK7o", v: "weekly"});</script> -->
     <script src="js/form-service.js"></script>
+    <!-- Instafeed.js Library for Instagram Gallery -->
+    <script src="https://cdn.jsdelivr.net/npm/instafeed.js@2"></script>
+    
+    <!-- Instagram Gallery Module -->
+    <script src="js/modules/instagram-gallery.js"></script>
+    
     <script src="js/app.js"></script>
 </body>
 </html>

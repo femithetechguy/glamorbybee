@@ -4,6 +4,8 @@
 // Instagram posts in a responsive grid
 // ============================================
 
+console.log('📸 Instagram Gallery Module - Starting load');
+
 const InstagramGallery = {
     // Configuration
     config: {
@@ -19,15 +21,20 @@ const InstagramGallery = {
         console.log('   Container ID:', this.config.containerId);
         console.log('   Username:', this.config.username);
         
-        // Wait for Instafeed to be available
+        // Check if Instafeed is available
+        console.log('🔍 Checking for Instafeed library...');
+        console.log('   window.Instafeed:', typeof window.Instafeed);
+        console.log('   Instafeed:', typeof Instafeed);
+        
         if (typeof Instafeed === 'undefined') {
-            console.warn('⚠️ Instafeed library not loaded, retrying...');
+            console.warn('⚠️ Instafeed library not loaded yet, retrying in 500ms...');
             setTimeout(() => this.init(), 500);
             return;
         }
 
-        console.log('✓ Instafeed library loaded');
-        console.log('  Instafeed version:', typeof Instafeed.version !== 'undefined' ? Instafeed.version : 'unknown');
+        console.log('✓ Instafeed library loaded successfully');
+        console.log('  Instafeed type:', typeof Instafeed);
+        console.log('  Instafeed constructor:', Instafeed.constructor.name);
 
         // Create and start the feed
         this.createFeed();
@@ -38,8 +45,10 @@ const InstagramGallery = {
         try {
             console.log('🔧 Creating Instafeed instance...');
             
+            const accessToken = this.getAccessToken();
+            
             const config = {
-                accessToken: this.getAccessToken(),
+                accessToken: accessToken,
                 limit: this.config.limit,
                 sortBy: this.config.sortBy,
                 target: this.config.containerId,
@@ -50,32 +59,36 @@ const InstagramGallery = {
             };
             
             console.log('📋 Instafeed config:', {
-                hasAccessToken: !!config.accessToken,
+                hasAccessToken: accessToken && accessToken.length > 0,
                 limit: config.limit,
                 sortBy: config.sortBy,
-                target: config.target
+                target: config.target,
+                hasTemplate: !!config.template,
+                hasTransform: !!config.transform,
+                hasAfter: !!config.after,
+                hasError: !!config.error
             });
 
             const feed = new Instafeed(config);
 
             console.log('🚀 Starting Instagram Feed...');
+            console.log('   Feed object created:', !!feed);
             feed.run();
-            console.log('✓ Instagram Feed started successfully');
+            console.log('✓ Instagram Feed run() called successfully');
         } catch (error) {
             console.error('❌ Error initializing Instafeed:', error);
             console.error('   Error name:', error.name);
             console.error('   Error message:', error.message);
-            console.error('   Error stack:', error.stack);
+            console.error('   Stack:', error.stack);
             this.showFallback();
         }
     },
 
     // Get access token for public Instagram posts
     getAccessToken() {
-        // For public Instagram posts via Graph API, you need a valid token
-        // Without authentication, try using a public approach
         console.log('🔐 Checking for Instagram API token...');
-        // Return empty for now - Instafeed will try public API
+        // Instafeed.js v2 needs an access token for the Graph API
+        // For testing without a token, the library should handle the error gracefully
         return '';
     },
 
@@ -199,16 +212,25 @@ const InstagramGallery = {
 };
 
 // Initialize when DOM is ready
-if (document.readyState === 'loading') {
-    console.log('📄 DOM loading, waiting for DOMContentLoaded...');
-    document.addEventListener('DOMContentLoaded', () => {
-        console.log('✓ DOMContentLoaded fired');
-        InstagramGallery.init();
-    });
-} else {
-    console.log('📄 DOM already loaded, initializing immediately');
+console.log('📄 DOM readyState:', document.readyState);
+
+function initializeGallery() {
+    console.log('🎯 initializeGallery() called');
+    console.log('📄 Current DOM readyState:', document.readyState);
     InstagramGallery.init();
 }
 
-console.log('✓ Instagram Gallery Module loaded');
+if (document.readyState === 'loading') {
+    console.log('⏳ DOM still loading, adding DOMContentLoaded listener...');
+    document.addEventListener('DOMContentLoaded', initializeGallery);
+} else if (document.readyState === 'interactive') {
+    console.log('⏳ DOM interactive, waiting for complete state...');
+    // DOM is interactive but not complete, still wait a bit
+    setTimeout(initializeGallery, 100);
+} else {
+    console.log('✓ DOM already complete, initializing immediately');
+    initializeGallery();
+}
+
+console.log('✓ Instagram Gallery Module loaded and initialization scheduled');
 

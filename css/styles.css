@@ -2374,26 +2374,35 @@ p {
 
 .instagram-modal-content {
     position: relative;
+    width: 90vw;
+    height: 80vh;
     max-width: 500px;
-    width: 100%;
-    aspect-ratio: 4 / 5;
     background: white;
     border-radius: var(--radius);
-    padding: 2rem 2rem 1.5rem 2rem;
+    padding: 0;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    overflow: hidden;
 }
 
-/* Mobile: adjust padding and width */
+/* Mobile */
 @media (max-width: 768px) {
     .instagram-modal-content {
-        max-width: 95vw;
-        padding: 2.5rem 1rem 1rem 1rem;
-        max-height: 90vh;
-        overflow-y: auto;
+        width: 95vw;
+        height: 80vh;
+        flex-direction: column;
+    }
+    
+    .instagram-post-embed {
+        flex: 1;
+        min-height: 0;
+    }
+    
+    .instagram-iframe {
+        min-height: 100% !important;
+        height: 100% !important;
     }
 }
 
@@ -2409,32 +2418,40 @@ p {
 
 .instagram-modal-close {
     position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
+    top: 1rem;
+    right: 1rem;
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    min-height: 50px;
+    border-radius: 50%;
     background: var(--primary);
     border: none;
-    color: white;
     cursor: pointer;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     transition: all var(--transition);
-    z-index: 2001;
+    z-index: 2002;
     padding: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
 }
 
 .instagram-modal-close:hover {
     background: var(--secondary);
     transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.instagram-modal-close:focus {
+    outline: none;
 }
 
 .hamburger-x {
     position: relative;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2443,9 +2460,10 @@ p {
 .hamburger-x .line {
     position: absolute;
     width: 100%;
-    height: 2px;
+    height: 3px;
     background: white;
     transition: all var(--transition);
+    border-radius: 2px;
 }
 
 .hamburger-x .line-1 {
@@ -2456,67 +2474,67 @@ p {
     transform: rotate(-45deg);
 }
 
-.instagram-modal-close:hover .hamburger-x .line-1 {
-    transform: rotate(45deg) scale(1.15);
-}
-
-.instagram-modal-close:hover .hamburger-x .line-2 {
-    transform: rotate(-45deg) scale(1.15);
+.instagram-modal-close:hover .hamburger-x .line {
+    width: 110%;
 }
 
 .instagram-post-embed {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 500px;
+    flex: 1;
     width: 100%;
     background: #f5f5f5;
-    border-radius: 12px;
     overflow: hidden;
+    position: relative;
 }
 
 .instagram-iframe {
     width: 100% !important;
-    height: auto !important;
-    min-height: 600px !important;
+    height: 100% !important;
     border: none !important;
-    border-radius: 12px !important;
-    flex: 1 1 auto !important;
+    border-radius: 0 !important;
     display: block !important;
+    position: absolute;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    min-width: 300px;
+    min-height: 300px;
 }
 
 @media (max-width: 768px) {
     .instagram-iframe {
-        min-height: 500px !important;
-        height: auto !important;
+        width: 100% !important;
+        height: 100% !important;
     }
 }
 
 @media (max-width: 480px) {
     .instagram-iframe {
-        min-height: 400px !important;
-        height: auto !important;
+        width: 100% !important;
+        height: 100% !important;
     }
 }
 
 .instagram-modal-visit {
-    align-self: center;
-    padding: 0.75rem 1.5rem;
+    padding: 1rem;
     background: var(--primary);
     color: white;
     text-decoration: none;
-    border-radius: 8px;
+    border-radius: 0;
     font-weight: 600;
-    transition: all var(--transition);
-    display: inline-flex;
+    transition: background var(--transition);
+    display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
+    width: 100%;
+    border: none;
 }
 
 .instagram-modal-visit:hover {
     background: var(--secondary);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(214, 51, 132, 0.3);
 }
 
 /* Instagram Fallback Message */
@@ -2615,12 +2633,6 @@ p {
     .instagram-modal-content {
         padding: 1rem;
         border-radius: 12px;
-    }
-    
-    .instagram-modal-close {
-        width: 35px;
-        height: 35px;
-        font-size: 1rem;
     }
     
     .instagram-post-embed {

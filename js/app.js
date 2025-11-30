@@ -1140,25 +1140,33 @@ function setupInstagramEmbedHandler() {
     // Intercept Instagram links and open in same window (allow back button)
     const instagramContainer = document.getElementById('instagramContainer');
     if (instagramContainer) {
+        // Function to remove target="_blank" from all links
+        const removeTargetBlank = () => {
+            const links = instagramContainer.querySelectorAll('a[target="_blank"]');
+            links.forEach(link => {
+                link.removeAttribute('target');
+                console.log('🔗 Removed target="_blank" from Instagram link');
+            });
+        };
+        
+        // Remove target="_blank" immediately
+        removeTargetBlank();
+        
         // Set up observer to monitor for new links added by Instagram
         const observer = new MutationObserver(() => {
-            const links = instagramContainer.querySelectorAll('a');
-            links.forEach(link => {
-                // Remove target="_blank" to open in same window
-                link.removeAttribute('target');
-                // Links will now open in same window, allowing browser back button to work
-                link.addEventListener('click', (e) => {
-                    console.log('🔗 Instagram post clicked:', link.href);
-                }, { once: true });
-            });
+            // Check and remove target="_blank" on any new links
+            removeTargetBlank();
         });
         
         observer.observe(instagramContainer, {
             childList: true,
             subtree: true,
             attributes: true,
-            attributeFilter: ['target']
+            attributeFilter: ['target', 'href']
         });
+        
+        // Also run periodically in case Instagram updates links asynchronously
+        setInterval(removeTargetBlank, 500);
         
         console.log('✅ Instagram embed: Links open in same window - use browser back button to return');
     }

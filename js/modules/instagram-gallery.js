@@ -1,7 +1,7 @@
 // ============================================
 // INSTAGRAM GALLERY MODULE
-// Uses Instafeed.js to fetch and display
-// Instagram posts in a responsive grid
+// Fetches Instagram posts from public links
+// and displays them in a responsive modal
 // ============================================
 
 console.log('📸 Instagram Gallery Module - Starting load');
@@ -11,8 +11,11 @@ const InstagramGallery = {
     config: {
         username: 'glamor_bybee',
         containerId: 'instafeed',
-        limit: 12,
-        sortBy: 'most-recent'
+        posts: [
+            // Array of Instagram post URLs - add your public post links here
+            // Example: 'https://www.instagram.com/p/ABC123DEF456/'
+            // These will be fetched and displayed in the gallery
+        ]
     },
 
     // Initialize the gallery
@@ -21,229 +24,238 @@ const InstagramGallery = {
         console.log('   Container ID:', this.config.containerId);
         console.log('   Username:', this.config.username);
         
-        // Check if Instafeed is available
-        console.log('🔍 Checking for Instafeed library...');
-        console.log('   window.Instafeed:', typeof window.Instafeed);
-        console.log('   Instafeed:', typeof Instafeed);
+        // Create modal first
+        this.createModal();
         
-        if (typeof Instafeed === 'undefined') {
-            console.warn('⚠️ Instafeed library not loaded yet, retrying in 500ms...');
-            setTimeout(() => this.init(), 500);
-            return;
-        }
-
-        console.log('✓ Instafeed library loaded successfully');
-        console.log('  Instafeed type:', typeof Instafeed);
-        console.log('  Instafeed constructor:', Instafeed.constructor.name);
-
-        // Create and start the feed
-        this.createFeed();
+        // Get posts from config or data attribute
+        this.loadPosts();
     },
 
-    // Create the Instafeed instance
-    createFeed() {
-        try {
-            console.log('🔧 Creating Instafeed instance...');
-            
-            const accessToken = this.getAccessToken();
-            
-            const config = {
-                accessToken: accessToken,
-                limit: this.config.limit,
-                sortBy: this.config.sortBy,
-                target: this.config.containerId,
-                template: this.getTemplate(),
-                transform: (item) => this.transformItem(item),
-                after: () => this.onFeedReady(),
-                error: (err) => this.handleError(err)
-            };
-            
-            console.log('📋 Instafeed config:', {
-                hasAccessToken: accessToken && accessToken.length > 0,
-                limit: config.limit,
-                sortBy: config.sortBy,
-                target: config.target,
-                hasTemplate: !!config.template,
-                hasTransform: !!config.transform,
-                hasAfter: !!config.after,
-                hasError: !!config.error
-            });
-
-            const feed = new Instafeed(config);
-
-            console.log('🚀 Starting Instagram Feed...');
-            console.log('   Feed object created:', !!feed);
-            feed.run();
-            console.log('✓ Instagram Feed run() called successfully');
-        } catch (error) {
-            console.error('❌ Error initializing Instafeed:', error);
-            console.error('   Error name:', error.name);
-            console.error('   Error message:', error.message);
-            console.error('   Stack:', error.stack);
-            this.showFallback();
-        }
-    },
-
-    // Get access token for public Instagram posts
-    getAccessToken() {
-        console.log('🔐 Checking for Instagram API token...');
-        console.log('   ℹ️ Instafeed.js v2 requires an Instagram Graph API access token');
-        console.log('   ℹ️ Options to enable the gallery:');
-        console.log('      1. Get a Business Account access token from Meta');
-        console.log('      2. Use Instagram Basic Display API');
-        console.log('      3. Add token to environment: window.INSTAGRAM_TOKEN');
+    // Create the modal for displaying posts
+    createModal() {
+        console.log('🎬 Creating Instagram modal...');
         
-        // Check if token is set globally
-        if (typeof window.INSTAGRAM_TOKEN !== 'undefined' && window.INSTAGRAM_TOKEN) {
-            console.log('✓ Found token in window.INSTAGRAM_TOKEN');
-            return window.INSTAGRAM_TOKEN;
-        }
-        
-        // Check localStorage for dev token
-        const localToken = localStorage.getItem('instagram_token');
-        if (localToken) {
-            console.log('✓ Found token in localStorage');
-            return localToken;
-        }
-        
-        console.warn('⚠️ No access token found');
-        console.warn('   To enable the Instagram gallery, add your token:');
-        console.warn('   window.INSTAGRAM_TOKEN = "your_access_token_here"');
-        
-        return '';
-    },
-
-    // HTML template for each post
-    getTemplate() {
-        console.log('📐 Using Instagram post template');
-        return `
-            <a href="{{link}}" target="_blank" class="instagram-post" title="View on Instagram">
-                <img src="{{image}}" alt="Instagram Post" class="instagram-post-image" loading="lazy">
-                <div class="instagram-post-overlay">
-                    <div class="instagram-post-info">
-                        <i class="bi bi-heart-fill"></i>
-                        <span class="instagram-like-count">{{likes}}</span>
+        if (!document.getElementById('instagram-modal')) {
+            const modal = document.createElement('div');
+            modal.id = 'instagram-modal';
+            modal.className = 'instagram-modal';
+            modal.innerHTML = `
+                <div class="instagram-modal-content">
+                    <button class="instagram-modal-close" title="Close">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                    <div class="instagram-post-embed">
+                        <iframe id="instagram-embed" 
+                                title="Instagram Post" 
+                                src="" 
+                                class="instagram-iframe"
+                                allowtransparency="true" 
+                                allow="encrypted-media"
+                                scrolling="no">
+                        </iframe>
                     </div>
-                </div>
-            </a>
-        `;
-    },
-
-    // Transform API response data
-    transformItem(item) {
-        console.log('🔄 Transforming Instagram item:', {
-            mediaType: item.media_type,
-            hasImage: !!item.media_url || !!item.thumbnail_url,
-            hasCaption: !!item.caption,
-            likeCount: item.like_count
-        });
-        
-        return {
-            image: item.media_type === 'IMAGE' ? item.media_url : item.thumbnail_url,
-            link: item.permalink,
-            likes: this.formatNumber(item.like_count || 0),
-            caption: item.caption || ''
-        };
-    },
-
-    // Format large numbers (1000 -> 1K)
-    formatNumber(num) {
-        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-        if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-        return num.toString();
-    },
-
-    // Callback when feed is ready
-    onFeedReady() {
-        console.log('✅ Instagram Gallery loaded successfully');
-        
-        const posts = document.querySelectorAll('.instagram-post');
-        console.log('   Posts rendered:', posts.length);
-        
-        this.enhancePostInteractions();
-    },
-
-    // Add hover effects and interactions
-    enhancePostInteractions() {
-        const posts = document.querySelectorAll('.instagram-post');
-        console.log('🎨 Enhancing post interactions for', posts.length, 'posts');
-        
-        posts.forEach((post, index) => {
-            // Add smooth hover animation
-            post.addEventListener('mouseenter', () => {
-                post.style.transform = 'scale(1.02)';
-            });
-
-            post.addEventListener('mouseleave', () => {
-                post.style.transform = 'scale(1)';
-            });
-
-            // Mobile touch feedback
-            post.addEventListener('touchstart', () => {
-                post.style.opacity = '0.95';
-            });
-
-            post.addEventListener('touchend', () => {
-                post.style.opacity = '1';
-            });
-        });
-        
-        console.log('✓ Post interactions enhanced');
-    },
-
-    // Handle errors
-    handleError(err) {
-        console.error('❌ Instagram Gallery Error:', err);
-        console.error('   Error details:', {
-            message: err.message || 'Unknown error',
-            code: err.code || 'N/A',
-            type: err.type || typeof err
-        });
-        
-        console.log('📝 Why the gallery didn\'t load:');
-        console.log('   Instafeed.js v2 requires Instagram Graph API access token');
-        console.log('   ');
-        console.log('✅ SOLUTION - Setup in 3 steps:');
-        console.log('   1. Go to https://developers.facebook.com/');
-        console.log('   2. Create a Meta App with Instagram Graph API');
-        console.log('   3. Get your Business Account access token');
-        console.log('   4. Add to your page or config:');
-        console.log('      window.INSTAGRAM_TOKEN = "your_token_here"');
-        console.log('   ');
-        console.log('⚡ QUICK START (for testing):');
-        console.log('   Open browser console and paste:');
-        console.log('   localStorage.setItem("instagram_token", "your_token")');
-        console.log('   Then reload the page');
-        
-        this.showFallback();
-    },
-
-    // Show fallback message if API fails
-    showFallback() {
-        const container = document.getElementById(this.config.containerId);
-        console.log('🔌 Showing fallback message, container element:', !!container);
-        
-        if (container) {
-            container.innerHTML = `
-                <div class="instagram-fallback">
-                    <i class="bi bi-exclamation-circle"></i>
-                    <p>Instagram gallery requires API authentication to load.</p>
-                    <div style="font-size: 0.85rem; color: #666; margin: 1rem 0; text-align: left; background: #f5f5f5; padding: 1rem; border-radius: 8px; border-left: 4px solid #d63384;">
-                        <strong>To enable:</strong><br>
-                        1. Get Instagram Business Account<br>
-                        2. Create Meta App with Graph API<br>
-                        3. Set: <code style="font-size: 0.75rem;">window.INSTAGRAM_TOKEN = "token"</code><br>
-                        <a href="https://developers.facebook.com/docs/instagram-api/get-started" target="_blank" style="color: #d63384; font-weight: 600;">Learn more →</a>
-                    </div>
-                    <a href="https://www.instagram.com/glamor_bybee/" target="_blank" class="btn btn-primary">
-                        <i class="bi bi-instagram"></i> Visit Instagram
+                    <a href="https://www.instagram.com/glamor_bybee/" target="_blank" class="instagram-modal-visit">
+                        <i class="bi bi-instagram"></i> View More
                     </a>
                 </div>
             `;
-            console.log('✓ Fallback message displayed');
-        } else {
-            console.error('❌ Container element not found:', this.config.containerId);
+            document.body.appendChild(modal);
+            console.log('✓ Modal created');
+            
+            // Setup modal handlers
+            this.setupModalHandlers();
         }
+    },
+
+    // Setup modal open/close handlers
+    setupModalHandlers() {
+        console.log('🔧 Setting up modal handlers...');
+        
+        const modal = document.getElementById('instagram-modal');
+        const closeBtn = modal.querySelector('.instagram-modal-close');
+        
+        // Close on button click
+        closeBtn.addEventListener('click', () => this.closeModal());
+        
+        // Close on outside click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) this.closeModal();
+        });
+        
+        // Close on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') this.closeModal();
+        });
+        
+        console.log('✓ Modal handlers setup');
+    },
+
+    // Load posts from configuration
+    loadPosts() {
+        console.log('📂 Loading posts...');
+        
+        const container = document.getElementById(this.config.containerId);
+        if (!container) {
+            console.error('❌ Container not found:', this.config.containerId);
+            return;
+        }
+        
+        // Check if posts are in data attribute
+        const dataAttribute = container.getAttribute('data-posts');
+        if (dataAttribute) {
+            try {
+                this.config.posts = JSON.parse(dataAttribute);
+                console.log('✓ Loaded', this.config.posts.length, 'posts from data attribute');
+            } catch (err) {
+                console.error('❌ Error parsing data-posts:', err);
+            }
+        }
+        
+        if (this.config.posts.length === 0) {
+            console.warn('⚠️ No posts configured');
+            this.showNoPostsMessage();
+            return;
+        }
+        
+        // Render gallery grid
+        this.renderGallery();
+    },
+
+    // Render the gallery grid
+    renderGallery() {
+        console.log('🎨 Rendering gallery with', this.config.posts.length, 'posts');
+        
+        const container = document.getElementById(this.config.containerId);
+        container.innerHTML = '';
+        
+        this.config.posts.forEach((postUrl, index) => {
+            const postId = this.extractPostId(postUrl);
+            if (!postId) {
+                console.warn('⚠️ Invalid post URL:', postUrl);
+                return;
+            }
+            
+            const item = document.createElement('div');
+            item.className = 'instagram-gallery-item';
+            item.innerHTML = `
+                <div class="instagram-gallery-item-placeholder">
+                    <i class="bi bi-image"></i>
+                    <span>Loading...</span>
+                </div>
+            `;
+            container.appendChild(item);
+            
+            // Load thumbnail in background
+            this.loadPostThumbnail(postId, index, item);
+            
+            // Add click handler
+            item.addEventListener('click', () => {
+                console.log('👆 Clicked post:', postId);
+                this.openModal(postUrl);
+            });
+        });
+        
+        console.log('✓ Gallery rendered');
+    },
+
+    // Load post thumbnail
+    loadPostThumbnail(postId, index, element) {
+        console.log('🖼️ Loading thumbnail for post:', postId);
+        
+        // Use Instagram's oembed API to get post metadata
+        const oembedUrl = `https://www.instagram.com/oembed/?url=https://www.instagram.com/p/${postId}/`;
+        
+        fetch(oembedUrl, {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('✓ Loaded post data:', data.id);
+            
+            // Extract thumbnail from HTML
+            const parser = new DOMParser();
+            const html = parser.parseFromString(data.html, 'text/html');
+            const img = html.querySelector('img');
+            
+            if (img) {
+                element.innerHTML = `
+                    <img src="${img.src}" alt="Instagram Post" class="instagram-gallery-thumbnail">
+                    <div class="instagram-gallery-overlay">
+                        <i class="bi bi-play-circle"></i>
+                    </div>
+                `;
+                console.log('✓ Thumbnail loaded:', postId);
+            }
+        })
+        .catch(err => {
+            console.warn('⚠️ Failed to load thumbnail:', postId, err.message);
+            element.innerHTML = `
+                <div class="instagram-gallery-item-error">
+                    <i class="bi bi-exclamation-circle"></i>
+                </div>
+            `;
+        });
+    },
+
+    // Extract post ID from Instagram URL
+    extractPostId(url) {
+        const match = url.match(/\/p\/([A-Za-z0-9_-]+)/);
+        return match ? match[1] : null;
+    },
+
+    // Open modal with post
+    openModal(postUrl) {
+        console.log('🔓 Opening modal for:', postUrl);
+        
+        const modal = document.getElementById('instagram-modal');
+        const iframe = modal.querySelector('iframe');
+        
+        // Generate embed URL
+        const embedUrl = postUrl.replace(/\/?$/, '/embed/');
+        
+        iframe.src = embedUrl;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        console.log('✓ Modal opened with:', embedUrl);
+    },
+
+    // Close modal
+    closeModal() {
+        console.log('🔐 Closing modal');
+        
+        const modal = document.getElementById('instagram-modal');
+        const iframe = modal.querySelector('iframe');
+        
+        modal.classList.remove('active');
+        iframe.src = '';
+        document.body.style.overflow = '';
+        
+        console.log('✓ Modal closed');
+    },
+
+    // Show message when no posts configured
+    showNoPostsMessage() {
+        const container = document.getElementById(this.config.containerId);
+        container.innerHTML = `
+            <div class="instagram-fallback">
+                <i class="bi bi-exclamation-circle"></i>
+                <p>No Instagram posts configured yet.</p>
+                <div style="font-size: 0.85rem; color: #666; margin: 1rem 0; text-align: left; background: #f5f5f5; padding: 1rem; border-radius: 8px; border-left: 4px solid #d63384;">
+                    <strong>Add posts:</strong><br>
+                    Add post URLs to the gallery container:<br>
+                    <code style="font-size: 0.75rem;">data-posts='["https://www.instagram.com/p/POST_ID/", ...]'</code>
+                </div>
+                <a href="https://www.instagram.com/glamor_bybee/" target="_blank" class="btn btn-primary">
+                    <i class="bi bi-instagram"></i> Visit Instagram
+                </a>
+            </div>
+        `;
+        console.log('✓ No posts message displayed');
     }
 };
 
@@ -261,7 +273,6 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeGallery);
 } else if (document.readyState === 'interactive') {
     console.log('⏳ DOM interactive, waiting for complete state...');
-    // DOM is interactive but not complete, still wait a bit
     setTimeout(initializeGallery, 100);
 } else {
     console.log('✓ DOM already complete, initializing immediately');

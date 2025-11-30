@@ -87,8 +87,29 @@ const InstagramGallery = {
     // Get access token for public Instagram posts
     getAccessToken() {
         console.log('🔐 Checking for Instagram API token...');
-        // Instafeed.js v2 needs an access token for the Graph API
-        // For testing without a token, the library should handle the error gracefully
+        console.log('   ℹ️ Instafeed.js v2 requires an Instagram Graph API access token');
+        console.log('   ℹ️ Options to enable the gallery:');
+        console.log('      1. Get a Business Account access token from Meta');
+        console.log('      2. Use Instagram Basic Display API');
+        console.log('      3. Add token to environment: window.INSTAGRAM_TOKEN');
+        
+        // Check if token is set globally
+        if (typeof window.INSTAGRAM_TOKEN !== 'undefined' && window.INSTAGRAM_TOKEN) {
+            console.log('✓ Found token in window.INSTAGRAM_TOKEN');
+            return window.INSTAGRAM_TOKEN;
+        }
+        
+        // Check localStorage for dev token
+        const localToken = localStorage.getItem('instagram_token');
+        if (localToken) {
+            console.log('✓ Found token in localStorage');
+            return localToken;
+        }
+        
+        console.warn('⚠️ No access token found');
+        console.warn('   To enable the Instagram gallery, add your token:');
+        console.warn('   window.INSTAGRAM_TOKEN = "your_access_token_here"');
+        
         return '';
     },
 
@@ -179,12 +200,20 @@ const InstagramGallery = {
             type: err.type || typeof err
         });
         
-        console.log('📝 Possible causes:');
-        console.log('   1. Missing or invalid API token');
-        console.log('   2. Instagram account is private');
-        console.log('   3. API rate limit exceeded');
-        console.log('   4. Instagram username not found: @glamor_bybee');
-        console.log('   5. Network connectivity issue');
+        console.log('📝 Why the gallery didn\'t load:');
+        console.log('   Instafeed.js v2 requires Instagram Graph API access token');
+        console.log('   ');
+        console.log('✅ SOLUTION - Setup in 3 steps:');
+        console.log('   1. Go to https://developers.facebook.com/');
+        console.log('   2. Create a Meta App with Instagram Graph API');
+        console.log('   3. Get your Business Account access token');
+        console.log('   4. Add to your page or config:');
+        console.log('      window.INSTAGRAM_TOKEN = "your_token_here"');
+        console.log('   ');
+        console.log('⚡ QUICK START (for testing):');
+        console.log('   Open browser console and paste:');
+        console.log('   localStorage.setItem("instagram_token", "your_token")');
+        console.log('   Then reload the page');
         
         this.showFallback();
     },
@@ -198,7 +227,14 @@ const InstagramGallery = {
             container.innerHTML = `
                 <div class="instagram-fallback">
                     <i class="bi bi-exclamation-circle"></i>
-                    <p>Unable to load Instagram posts at the moment.</p>
+                    <p>Instagram gallery requires API authentication to load.</p>
+                    <div style="font-size: 0.85rem; color: #666; margin: 1rem 0; text-align: left; background: #f5f5f5; padding: 1rem; border-radius: 8px; border-left: 4px solid #d63384;">
+                        <strong>To enable:</strong><br>
+                        1. Get Instagram Business Account<br>
+                        2. Create Meta App with Graph API<br>
+                        3. Set: <code style="font-size: 0.75rem;">window.INSTAGRAM_TOKEN = "token"</code><br>
+                        <a href="https://developers.facebook.com/docs/instagram-api/get-started" target="_blank" style="color: #d63384; font-weight: 600;">Learn more →</a>
+                    </div>
                     <a href="https://www.instagram.com/glamor_bybee/" target="_blank" class="btn btn-primary">
                         <i class="bi bi-instagram"></i> Visit Instagram
                     </a>

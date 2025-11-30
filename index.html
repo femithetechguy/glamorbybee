@@ -181,9 +181,7 @@
                             <textarea id="notes" name="notes" placeholder="Any special requests? (optional)" rows="2"></textarea>
                             
                             <!-- Alerts -->
-                            <div id="successAlert" class="alert alert-success d-none">
-                                <i class="bi bi-check-circle-fill"></i> Booking confirmed! Check your email.
-                            </div>
+                            <!-- Success alert removed: now handled by modal only -->
                             <div id="errorAlert" class="alert alert-error d-none">
                                 <i class="bi bi-exclamation-circle-fill"></i> <span id="errorMsg"></span>
                             </div>
@@ -195,6 +193,25 @@
             </div>
         </div>
     </section>
+
+    <!-- Booking Confirmation Modal -->
+    <div class="modal fade" id="bookingConfirmationModal" tabindex="-1" aria-labelledby="bookingConfirmationLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookingConfirmationLabel">Booking Confirmed!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <i class="bi bi-check-circle-fill" style="color: #28a745; font-size: 2rem;"></i>
+                    <p id="bookingConfirmationMsg" style="margin-top: 1rem;">Your booking is confirmed! Check your email for details.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- GALLERY -->
     <section id="gallery" class="gallery-section">

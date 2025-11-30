@@ -78,7 +78,25 @@ class FormService {
             this.showError('⚠️ Please provide a phone number');
             return;
         }
-        
+
+        // Validate date
+        const dateInput = document.getElementById('date');
+        const dateValue = dateInput ? dateInput.value.trim() : '';
+        if (!dateValue) {
+            console.warn('⚠️ Date not selected');
+            this.showError('⚠️ Please select a date before booking');
+            return;
+        }
+
+        // Validate time
+        const timeSelect = document.getElementById('time');
+        const timeValue = timeSelect ? timeSelect.value.trim() : '';
+        if (!timeValue) {
+            console.warn('⚠️ Time not selected');
+            this.showError('⚠️ Please select a time before booking');
+            return;
+        }
+
         // Check if EmailJS is available
         if (typeof emailjs === 'undefined') {
             console.error('❌ EmailJS not available');
@@ -210,84 +228,160 @@ class FormService {
     }
 
     /**
-     * Show success message
+     * Show success message - using custom modal
      */
     showSuccess(message) {
         console.log('🎉 showSuccess called with message:', message);
         
-        const successAlert = document.getElementById('successAlert');
-        console.log('✓ successAlert element found:', !!successAlert);
-        
-        if (successAlert) {
-            console.log('📝 Setting innerHTML to:', message);
-            successAlert.innerHTML = `<i class="bi bi-check-circle-fill"></i> <strong>${message}</strong>`;
-            console.log('✓ innerHTML set successfully');
-            
-            console.log('🔴 Removing d-none class');
-            successAlert.classList.remove('d-none');
-            successAlert.style.display = 'flex';
-            successAlert.style.visibility = 'visible';
-            successAlert.style.opacity = '1';
-            successAlert.classList.add('celebrate-animation');
-            console.log('✓ d-none class removed, classes now:', successAlert.className);
-            
-            // Scroll the alert into view
-            console.log('📱 Scrolling alert into view');
-            setTimeout(() => {
-                successAlert.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
-            
-            // Keep visible for 12 seconds then dissolve out
-            console.log('⏱️ Setting timeout for 12 seconds');
-            setTimeout(() => {
-                console.log('⏰ Timeout reached, dissolving alert');
-                successAlert.classList.add('dissolve-out');
-                setTimeout(() => {
-                    successAlert.classList.add('d-none');
-                    successAlert.classList.remove('dissolve-out');
-                }, 600); // Match dissolve animation duration
-            }, 12000);
-        } else {
-            console.warn('⚠️ successAlert element NOT FOUND, using fallback alert');
-            alert(`✅ ${message}`);
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.id = 'bookingOverlay';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        `;
+
+        // Create modal content
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(214, 51, 132, 0.2);
+            animation: slideUp 0.3s ease-out;
+        `;
+
+        modal.innerHTML = `
+            <i class="bi bi-check-circle-fill" style="color: #10b981; font-size: 3rem; display: block; margin-bottom: 1rem;"></i>
+            <h3 style="color: #0f0f0f; margin-bottom: 0.5rem; font-family: 'Space Grotesk', sans-serif; font-weight: 700;">Booking Confirmed!</h3>
+            <p style="color: #666; margin-bottom: 1.5rem; line-height: 1.5;">${message}</p>
+            <button onclick="document.getElementById('bookingOverlay').remove()" style="
+                background: #d63384;
+                color: white;
+                border: none;
+                padding: 0.75rem 2rem;
+                border-radius: 8px;
+                font-weight: 600;
+                cursor: pointer;
+                font-size: 1rem;
+                transition: 0.3s;
+            " onmouseover="this.style.background='#c0227a'" onmouseout="this.style.background='#d63384'">OK</button>
+        `;
+
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        // Add animation keyframes if not already present
+        if (!document.getElementById('bookingAnimation')) {
+            const style = document.createElement('style');
+            style.id = 'bookingAnimation';
+            style.textContent = `
+                @keyframes slideUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
         }
+        
+        console.log('✓ Modal displayed successfully');
     }
 
     /**
-     * Show error message
+     * Show error message - using custom modal
      */
     showError(message) {
         console.log('❌ showError called with message:', message);
         
-        const errorAlert = document.getElementById('errorAlert');
-        const errorMsg = document.getElementById('errorMsg');
+        // Remove emoji prefix if present
+        const cleanMessage = message.replace(/^[⚠️❌]/g, '').trim();
         
-        console.log('✓ errorAlert element found:', !!errorAlert);
-        console.log('✓ errorMsg element found:', !!errorMsg);
-        
-        if (errorAlert && errorMsg) {
-            console.log('📝 Setting errorMsg innerHTML to:', message);
-            errorMsg.innerHTML = `<i class="bi bi-exclamation-circle-fill"></i> ${message}`;
-            console.log('✓ errorMsg innerHTML set successfully');
-            
-            console.log('🔴 Removing d-none class from errorAlert');
-            errorAlert.classList.remove('d-none');
-            console.log('✓ d-none class removed, classes now:', errorAlert.className);
-            
-            // Scroll into view
-            console.log('📱 Scrolling into view');
-            errorAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
-            // Keep visible for 10 seconds
-            console.log('⏱️ Setting timeout for 10 seconds');
-            setTimeout(() => {
-                console.log('⏰ Timeout reached, hiding alert');
-                errorAlert.classList.add('d-none');
-            }, 10000);
-        } else {
-            console.warn('⚠️ errorAlert or errorMsg element NOT FOUND, using fallback alert');
-            // Fallback: show alert if element not found
-            alert(`❌ ${message}`);
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.id = 'errorOverlay';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        `;
+
+        // Create modal content
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(239, 68, 68, 0.2);
+            border-left: 5px solid #ef4444;
+            animation: slideUp 0.3s ease-out;
+        `;
+
+        modal.innerHTML = `
+            <i class="bi bi-exclamation-circle-fill" style="color: #ef4444; font-size: 3rem; display: block; margin-bottom: 1rem;"></i>
+            <h3 style="color: #0f0f0f; margin-bottom: 0.5rem; font-family: 'Space Grotesk', sans-serif; font-weight: 700;">Oops!</h3>
+            <p style="color: #666; margin-bottom: 1.5rem; line-height: 1.5;">${cleanMessage}</p>
+            <button onclick="document.getElementById('errorOverlay').remove()" style="
+                background: #ef4444;
+                color: white;
+                border: none;
+                padding: 0.75rem 2rem;
+                border-radius: 8px;
+                font-weight: 600;
+                cursor: pointer;
+                font-size: 1rem;
+                transition: 0.3s;
+            " onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">Try Again</button>
+        `;
+
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        // Add animation keyframes if not already present
+        if (!document.getElementById('bookingAnimation')) {
+            const style = document.createElement('style');
+            style.id = 'bookingAnimation';
+            style.textContent = `
+                @keyframes slideUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
         }
+        
+        console.log('✓ Error modal displayed successfully');
     }
 }

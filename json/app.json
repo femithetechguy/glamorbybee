@@ -150,5 +150,43 @@
       "text": "Professional, talented, and so friendly! My photoshoot makeup came out flawless. Highly recommend GlamorByBee!",
       "rating": 5
     }
+  ],
+  "gallery": [
+    {
+      "id": 1,
+      "postUrl": "https://www.instagram.com/p/DO8_SITjlX2/",
+      "imageUrl": "img/post-1.jpg",
+      "title": "Glamorous Look"
+    },
+    {
+      "id": 2,
+      "postUrl": "https://www.instagram.com/p/DRdQyYXAVPp/",
+      "imageUrl": "img/post-2.jpg",
+      "title": "Makeup Look"
+    },
+    {
+      "id": 3,
+      "postUrl": "https://www.instagram.com/shamshamphotography/p/DOtvofEEitq/",
+      "imageUrl": "img/post-3.jpg",
+      "title": "Bridal Makeup"
+    },
+    {
+      "id": 4,
+      "postUrl": "https://www.instagram.com/reel/DQ43FqqAWgP/",
+      "imageUrl": "img/post-4.jpg",
+      "title": "Tutorial"
+    },
+    {
+      "id": 5,
+      "postUrl": "https://www.instagram.com/reel/DPxDxaeDcWc/",
+      "imageUrl": "img/post-5.jpg",
+      "title": "Transformation"
+    },
+    {
+      "id": 6,
+      "postUrl": "https://www.instagram.com/reel/DLqi21gxAkp/",
+      "imageUrl": "img/post-6.jpg",
+      "title": "Beauty Tips"
+    }
   ]
 }

@@ -92,7 +92,7 @@ const InstagramGallery = {
 
     // Load posts from configuration
     loadPosts() {
-        console.log('📂 Loading posts...');
+        console.log('📂 Loading posts from app.json...');
         
         const container = document.getElementById(this.config.containerId);
         if (!container) {
@@ -100,25 +100,29 @@ const InstagramGallery = {
             return;
         }
         
-        // Check if posts are in data attribute
-        const dataAttribute = container.getAttribute('data-posts');
-        if (dataAttribute) {
-            try {
-                this.config.posts = JSON.parse(dataAttribute);
-                console.log('✓ Loaded', this.config.posts.length, 'posts from data attribute');
-            } catch (err) {
-                console.error('❌ Error parsing data-posts:', err);
+        // Fetch gallery data from app.json
+        fetch('json/app.json')
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+            if (!data.gallery || !Array.isArray(data.gallery)) {
+                console.warn('⚠️ No gallery data found in app.json');
+                this.showNoPostsMessage();
+                return;
             }
-        }
-        
-        if (this.config.posts.length === 0) {
-            console.warn('⚠️ No posts configured');
+            
+            console.log('✓ Loaded', data.gallery.length, 'posts from app.json');
+            this.config.posts = data.gallery;
+            
+            // Render gallery grid
+            this.renderGallery();
+        })
+        .catch(err => {
+            console.error('❌ Error loading gallery data:', err);
             this.showNoPostsMessage();
-            return;
-        }
-        
-        // Render gallery grid
-        this.renderGallery();
+        });
     },
 
     // Render the gallery grid
@@ -126,36 +130,30 @@ const InstagramGallery = {
         console.log('🎨 Rendering gallery with', this.config.posts.length, 'posts');
         
         const container = document.getElementById(this.config.containerId);
-        container.innerHTML = '';
         
+        if (this.config.posts.length === 0) {
+            this.showNoPostsMessage();
+            return;
+        }
+        
+        container.innerHTML = '';
         let successCount = 0;
         
-        this.config.posts.forEach((postUrl, index) => {
-            const postId = this.extractPostId(postUrl);
-            if (!postId) {
-                console.warn('⚠️ Invalid post URL:', postUrl);
-                return;
-            }
-            
+        this.config.posts.forEach((post, index) => {
             const item = document.createElement('div');
             item.className = 'instagram-gallery-item';
-            item.innerHTML = `
-                <div class="instagram-gallery-item-placeholder">
-                    <i class="bi bi-image"></i>
-                    <span>Loading...</span>
-                </div>
-            `;
+            item.setAttribute('data-post', post.postUrl);
             container.appendChild(item);
             
-            // Load thumbnail in background
-            this.loadPostThumbnail(postId, index, item, () => {
+            // Load thumbnail from imageUrl
+            this.loadPostThumbnail(post, index, item, () => {
                 successCount++;
             });
             
             // Add click handler
             item.addEventListener('click', () => {
-                console.log('👆 Clicked post:', postId);
-                this.openModal(postUrl);
+                console.log('👆 Clicked post:', post.id);
+                this.openModal(post.postUrl);
             });
         });
         
@@ -163,10 +161,27 @@ const InstagramGallery = {
     },
 
     // Load post thumbnail
-    loadPostThumbnail(postId, index, element, onSuccess) {
-        console.log('🖼️ Loading thumbnail for post:', postId);
+    loadPostThumbnail(post, index, element, onSuccess) {
+        console.log('🖼️ Loading thumbnail for post:', post.id);
         
-        // Use a beautiful gradient placeholder that looks like Instagram content
+        // Use the local imageUrl from app.json
+        if (post.imageUrl) {
+            element.innerHTML = `
+                <img src="${post.imageUrl}" alt="${post.title}" class="instagram-gallery-thumbnail" loading="lazy" onerror="console.warn('Image failed to load: ${post.imageUrl}')">
+                <div class="instagram-gallery-overlay">
+                    <i class="bi bi-play-circle"></i>
+                </div>
+            `;
+            console.log('✓ Thumbnail loaded:', post.id, post.imageUrl);
+            if (onSuccess) onSuccess();
+        } else {
+            // Fallback to gradient if no imageUrl provided
+            this.loadGradientPlaceholder(index, element, onSuccess);
+        }
+    },
+    
+    // Fallback: Load beautiful gradient placeholder
+    loadGradientPlaceholder(index, element, onSuccess) {
         const gradients = [
             'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
@@ -196,7 +211,7 @@ const InstagramGallery = {
             </div>
         `;
         
-        console.log('✓ Placeholder loaded:', postId);
+        console.log('✓ Gradient placeholder loaded');
         if (onSuccess) onSuccess();
     },
 

@@ -2376,58 +2376,92 @@ p {
     position: relative;
     max-width: 500px;
     width: 100%;
+    aspect-ratio: 4 / 5;
     background: white;
     border-radius: var(--radius);
-    padding: 2rem;
+    padding: 2rem 2rem 1.5rem 2rem;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
-/* Desktop only: 4:5 aspect ratio */
-@media (min-width: 769px) {
-    .instagram-modal-content {
-        aspect-ratio: 4 / 5;
-    }
-}
-
-/* Mobile: constrain height */
+/* Mobile: adjust padding and width */
 @media (max-width: 768px) {
     .instagram-modal-content {
+        max-width: 95vw;
+        padding: 2.5rem 1rem 1rem 1rem;
         max-height: 90vh;
         overflow-y: auto;
     }
 }
 
+/* Extra small screens */
+@media (max-width: 480px) {
+    .instagram-modal-content {
+        padding: 1rem;
+        max-width: 98vw;
+    }
+}
+    }
+}
+
 .instagram-modal-close {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
     background: var(--primary);
-    border: 2px solid var(--primary);
+    border: none;
     color: white;
-    font-size: 1.5rem;
-    font-weight: bold;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all var(--transition);
     z-index: 2001;
-    box-shadow: 0 4px 12px rgba(214, 51, 132, 0.3);
+    padding: 0;
 }
 
 .instagram-modal-close:hover {
     background: var(--secondary);
-    border-color: var(--secondary);
-    color: white;
-    transform: rotate(90deg) scale(1.15);
-    box-shadow: 0 6px 16px rgba(111, 66, 193, 0.4);
+    transform: scale(1.1);
+}
+
+.hamburger-x {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hamburger-x .line {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: white;
+    transition: all var(--transition);
+}
+
+.hamburger-x .line-1 {
+    transform: rotate(45deg);
+}
+
+.hamburger-x .line-2 {
+    transform: rotate(-45deg);
+}
+
+.instagram-modal-close:hover .hamburger-x .line-1 {
+    transform: rotate(45deg) scale(1.15);
+}
+
+.instagram-modal-close:hover .hamburger-x .line-2 {
+    transform: rotate(-45deg) scale(1.15);
 }
 
 .instagram-post-embed {

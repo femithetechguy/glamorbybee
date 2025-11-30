@@ -42,7 +42,10 @@ const InstagramGallery = {
             modal.innerHTML = `
                 <div class="instagram-modal-content">
                     <button class="instagram-modal-close" title="Close">
-                        <i class="bi bi-x-lg"></i>
+                        <span class="hamburger-x">
+                            <span class="line line-1"></span>
+                            <span class="line line-2"></span>
+                        </span>
                     </button>
                     <div class="instagram-post-embed">
                         <iframe id="instagram-embed" 

@@ -2278,7 +2278,7 @@ p {
 /* Gallery Item */
 .instagram-gallery-item {
     position: relative;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 4 / 5;
     border-radius: var(--radius);
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -2374,7 +2374,7 @@ p {
 
 .instagram-modal-content {
     position: relative;
-    max-width: 600px;
+    max-width: 500px;
     width: 100%;
     background: white;
     border-radius: var(--radius);
@@ -2386,29 +2386,48 @@ p {
     gap: 1.5rem;
 }
 
+/* Desktop only: 4:5 aspect ratio */
+@media (min-width: 769px) {
+    .instagram-modal-content {
+        aspect-ratio: 4 / 5;
+    }
+}
+
+/* Mobile: constrain height */
+@media (max-width: 768px) {
+    .instagram-modal-content {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+}
+
 .instagram-modal-close {
     position: absolute;
     top: 1rem;
     right: 1rem;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.1);
-    border: none;
-    color: var(--text);
-    font-size: 1.2rem;
+    background: var(--primary);
+    border: 2px solid var(--primary);
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all var(--transition);
     z-index: 2001;
+    box-shadow: 0 4px 12px rgba(214, 51, 132, 0.3);
 }
 
 .instagram-modal-close:hover {
-    background: rgba(214, 51, 132, 0.2);
-    color: var(--primary);
-    transform: rotate(90deg) scale(1.1);
+    background: var(--secondary);
+    border-color: var(--secondary);
+    color: white;
+    transform: rotate(90deg) scale(1.15);
+    box-shadow: 0 6px 16px rgba(111, 66, 193, 0.4);
 }
 
 .instagram-post-embed {
@@ -2424,10 +2443,26 @@ p {
 
 .instagram-iframe {
     width: 100% !important;
-    height: 100% !important;
-    min-height: 500px !important;
+    height: auto !important;
+    min-height: 600px !important;
     border: none !important;
     border-radius: 12px !important;
+    flex: 1 1 auto !important;
+    display: block !important;
+}
+
+@media (max-width: 768px) {
+    .instagram-iframe {
+        min-height: 500px !important;
+        height: auto !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .instagram-iframe {
+        min-height: 400px !important;
+        height: auto !important;
+    }
 }
 
 .instagram-modal-visit {
@@ -2525,10 +2560,6 @@ p {
     
     .instagram-post-embed {
         min-height: 400px;
-    }
-    
-    .instagram-iframe {
-        min-height: 400px !important;
     }
 }
 

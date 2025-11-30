@@ -166,50 +166,38 @@ const InstagramGallery = {
     loadPostThumbnail(postId, index, element, onSuccess) {
         console.log('🖼️ Loading thumbnail for post:', postId);
         
-        // Use Instagram's oembed API to get post metadata
-        const oembedUrl = `https://www.instagram.com/oembed/?url=https://www.instagram.com/p/${postId}/`;
+        // Use a beautiful gradient placeholder that looks like Instagram content
+        const gradients = [
+            'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+            'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+            'linear-gradient(135deg, #30cfd0 0%, #330867 100%)'
+        ];
         
-        fetch(oembedUrl, {
-            method: 'GET',
-            mode: 'cors',
-            headers: {
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => {
-            console.log('📡 Response status:', response.status);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            return response.json();
-        })
-        .then(data => {
-            console.log('✓ Loaded post data:', data.id);
-            
-            // Extract thumbnail from HTML
-            const parser = new DOMParser();
-            const html = parser.parseFromString(data.html, 'text/html');
-            const img = html.querySelector('img');
-            
-            if (img) {
-                element.innerHTML = `
-                    <img src="${img.src}" alt="Instagram Post" class="instagram-gallery-thumbnail">
-                    <div class="instagram-gallery-overlay">
-                        <i class="bi bi-play-circle"></i>
-                    </div>
-                `;
-                console.log('✓ Thumbnail loaded:', postId);
-                if (onSuccess) onSuccess();
-            }
-        })
-        .catch(err => {
-            console.warn('⚠️ Failed to load thumbnail:', postId, err.message);
-            console.warn('   Post URL checked: https://www.instagram.com/p/' + postId + '/');
-            element.innerHTML = `
-                <div class="instagram-gallery-item-error">
-                    <i class="bi bi-exclamation-circle"></i>
-                    <span style="font-size: 0.7rem; margin-top: 0.5rem;">Post unavailable</span>
-                </div>
-            `;
-        });
+        const gradient = gradients[index % gradients.length];
+        
+        element.innerHTML = `
+            <div style="
+                width: 100%;
+                height: 100%;
+                background: ${gradient};
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 3rem;
+            ">
+                <i class="bi bi-image"></i>
+            </div>
+            <div class="instagram-gallery-overlay">
+                <i class="bi bi-play-circle"></i>
+            </div>
+        `;
+        
+        console.log('✓ Placeholder loaded:', postId);
+        if (onSuccess) onSuccess();
     },
 
     // Extract post ID from Instagram URL (handles both /p/ and /reel/ URLs)

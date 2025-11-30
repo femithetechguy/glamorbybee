@@ -1255,25 +1255,61 @@ document.addEventListener('click', (e) => {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         setupInstagramEmbedHandler();
-        
-        // Add click handler to Instagram posts to open modal instead of new tab
-        const instagramContainer = document.getElementById('instagramContainer');
-        if (instagramContainer) {
-            instagramContainer.addEventListener('click', (e) => {
-                // Check if click is on an Instagram post link
-                let link = e.target.closest('a[href*="instagram.com"]');
-                
-                if (link && link.href.includes('/p/')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    // Open in modal instead
-                    openInstagramModal(link.href);
-                }
-            });
-        }
+        setupInstagramModalInterceptor();
     }, 1000);
 });
+
+// Setup interceptor for Instagram links
+function setupInstagramModalInterceptor() {
+    const instagramContainer = document.getElementById('instagramContainer');
+    if (!instagramContainer) return;
+    
+    console.log('🔗 Setting up Instagram modal interceptor');
+    
+    // Wait for Instagram embed to render and add links
+    let attempts = 0;
+    const checkAndIntercept = setInterval(() => {
+        attempts++;
+        
+        // Find all links in Instagram container (including in iframes indirectly)
+        const links = instagramContainer.querySelectorAll('a');
+        console.log('🔍 Attempt ' + attempts + ': Found ' + links.length + ' links');
+        
+        if (links.length > 0) {
+            // Found links - now add click handlers to all of them
+            links.forEach((link, index) => {
+                if (!link.dataset.instagramModalHandled) {
+                    console.log('🔗 Linking handler to:', link.href);
+                    
+                    link.dataset.instagramModalHandled = 'true';
+                    link.removeAttribute('target'); // Remove target="_blank"
+                    
+                    link.addEventListener('click', (e) => {
+                        console.log('📱 Instagram link clicked:', link.href);
+                        
+                        if (link.href.includes('instagram.com')) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            e.stopImmediatePropagation();
+                            
+                            openInstagramModal(link.href);
+                            return false;
+                        }
+                    }, true); // Capturing phase
+                }
+            });
+            
+            // Stop checking after 2 seconds of finding links
+            if (attempts > 5) {
+                clearInterval(checkAndIntercept);
+                console.log('✅ Instagram modal interceptor ready');
+            }
+        }
+    }, 200);
+    
+    // Stop after 10 seconds max
+    setTimeout(() => clearInterval(checkAndIntercept), 10000);
+}
 
 /* ============================================
    TABLE HEADER FILTERS

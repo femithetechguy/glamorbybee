@@ -1127,7 +1127,7 @@ function showErrorAlert(message) {
     }
 }
 
-// Handle Instagram Embed - Opens in same window so user can use back button
+// Handle Instagram Embed - Opens in same window with back button support
 function setupInstagramEmbedHandler() {
     console.log('🔍 setupInstagramEmbedHandler called');
     
@@ -1146,10 +1146,9 @@ function setupInstagramEmbedHandler() {
             links.forEach(link => {
                 // Remove target="_blank" to open in same window
                 link.removeAttribute('target');
-                // Add click handler to prevent navigation if needed and log
+                // Links will now open in same window, allowing browser back button to work
                 link.addEventListener('click', (e) => {
-                    console.log('🔗 Instagram link clicked:', link.href);
-                    // Let the link navigate naturally in same window
+                    console.log('🔗 Instagram post clicked:', link.href);
                 }, { once: true });
             });
         });
@@ -1161,7 +1160,7 @@ function setupInstagramEmbedHandler() {
             attributeFilter: ['target']
         });
         
-        console.log('✅ Instagram embed handler: Links will open in same window with back button support');
+        console.log('✅ Instagram embed: Links open in same window - use browser back button to return');
     }
 }
 

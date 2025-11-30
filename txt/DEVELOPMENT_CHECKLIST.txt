@@ -1,0 +1,599 @@
+# GlamorByBee - Development Checklist & Testing Guide
+**Date:** November 29, 2025 | **Phase:** Current Development
+
+---
+
+## ✅ COMPLETED FEATURES
+
+### Core Infrastructure
+- [x] Hierarchical JSON data structure (8 component files + master)
+- [x] Single-line domain configuration system
+- [x] Modular component architecture
+- [x] Bootstrap 5.3.0 responsive design
+- [x] ES6+ JavaScript organization
+
+### Client Management Module
+- [x] Client list with stats dashboard
+- [x] Add new client functionality
+- [x] Edit client information
+- [x] Delete client with confirmation
+- [x] Address linked to clients
+- [x] Header-level filter row (7 filters)
+- [x] Multi-field search capability
+- [x] Total clients stat
+- [x] Total visits stat
+- [x] New clients this month stat
+- [x] Average loyalty points stat
+
+### Services Management Module
+- [x] Service catalog with 8 predefined services
+- [x] Grid view (service cards)
+- [x] Table view (detailed list)
+- [x] Service images
+- [x] Dynamic pricing
+- [x] Add service functionality
+- [x] Edit service information
+- [x] Delete service
+- [x] Header-level filter row (5 filters)
+- [x] Toggle between grid/table view
+
+### Appointments Management Module ⭐
+- [x] Dedicated appointments interface
+- [x] Appointments list with full details
+- [x] Create new appointment modal
+- [x] Edit appointment functionality
+- [x] Delete appointment with confirmation
+- [x] Client selection dropdown (auto-populated)
+- [x] Service selection dropdown (auto-populated)
+- [x] Staff selection dropdown (auto-populated)
+- [x] Date/time picker
+- [x] Location selection (studio|home)
+- [x] Status tracking (pending|confirmed|completed|cancelled)
+- [x] Auto-generated ID system (APT00XXX)
+- [x] Header-level filter row (8 filters)
+- [x] Real-time search by client name
+- [x] Status filter dropdown
+- [x] Responsive Bootstrap UI
+
+### Invoice Module
+- [x] Invoice list display
+- [x] Invoice creation
+- [x] Dynamic service pricing
+- [x] Client selection
+- [x] Tax calculation
+- [x] Total amount calculation
+- [x] Payment status tracking
+- [x] Header-level filter row (6 filters)
+- [x] Invoice ID search
+- [x] Client name search
+
+### Schedule Module
+- [x] Staff availability display
+- [x] Working hours management
+- [x] Appointment timeline integration
+- [x] Header-level filter row (6 filters)
+- [x] Date-based filtering
+- [x] Staff name filtering
+- [x] Location display
+
+### Admin Module
+- [x] Configuration access
+- [x] Component registry
+- [x] Domain management
+
+### Filtering System
+- [x] Header-level filter row on all tables
+- [x] Real-time filtering (text inputs)
+- [x] Date picker filters
+- [x] Number/amount filters
+- [x] Dropdown select filters
+- [x] Debouncing for performance
+- [x] Multi-filter AND logic
+- [x] Case-insensitive search
+- [x] Filter row styling
+- [x] Responsive filter design
+
+### Documentation
+- [x] PROJECT_SUMMARY.txt (comprehensive overview)
+- [x] DATA_ARCHITECTURE.txt (data model guide)
+- [x] QUICK_REFERENCE.txt (quick lookup)
+- [x] FILTER_SYSTEM.txt (filter documentation)
+- [x] DEVELOPMENT_CHECKLIST.txt (this file)
+
+---
+
+## 🧪 TESTING CHECKLIST
+
+### Setup Testing
+- [ ] Local server running: `python -m http.server 5500`
+- [ ] Main site accessible: `http://localhost:5500`
+- [ ] All modules accessible in browser
+- [ ] No console errors (F12 → Console)
+- [ ] JSON files valid (no syntax errors)
+
+### Client Module Tests
+
+#### CRUD Operations
+- [ ] **Create:** Add new client successfully
+  - [ ] Form accepts all fields
+  - [ ] ID auto-generates (CUST0XXX)
+  - [ ] Client appears in list immediately
+  - [ ] Data persists in clients.json
+
+- [ ] **Read:** View client list
+  - [ ] All 30+ clients display
+  - [ ] Stats dashboard shows correct numbers
+  - [ ] Client details visible
+  - [ ] Address linked correctly
+
+- [ ] **Update:** Edit client information
+  - [ ] Edit form pre-populates correctly
+  - [ ] Changes save to clients.json
+  - [ ] List updates immediately
+  - [ ] Address updates reflect
+
+- [ ] **Delete:** Remove client
+  - [ ] Confirmation modal appears
+  - [ ] Client removed from list
+  - [ ] Data removed from JSON
+  - [ ] Can't recover (permanent)
+
+#### Filtering Tests
+- [ ] **Name filter:** Type name → shows only matching clients
+- [ ] **Email filter:** Type email → case-insensitive search
+- [ ] **Phone filter:** Type phone → partial match works
+- [ ] **Date filter:** Pick date → shows clients registered on that date
+- [ ] **Visits filter:** Enter number → exact match
+- [ ] **Loyalty filter:** Enter points → exact match
+- [ ] **Contact Pref filter:** Select option → shows only that preference
+- [ ] **Multiple filters:** Combine filters → AND logic works
+
+#### Performance Tests
+- [ ] Filters respond smoothly (no lag)
+- [ ] No console errors while filtering
+- [ ] Page doesn't freeze with 30+ records
+- [ ] Scrolling smooth with filters active
+
+### Services Module Tests
+
+#### Display Tests
+- [ ] **Grid View:**
+  - [ ] 8 service cards display
+  - [ ] Images load correctly
+  - [ ] Price visible
+  - [ ] Layout responsive on mobile
+
+- [ ] **Table View:**
+  - [ ] All service columns visible
+  - [ ] Sort works (if implemented)
+  - [ ] Responsive on small screens
+
+#### Filtering Tests
+- [ ] **Name filter:** Search service → contains match
+- [ ] **Description filter:** Search description
+- [ ] **Price filters:** Min/max price ranges
+- [ ] **Active filter:** Filter by active status
+- [ ] **Multiple filters:** Combine filters work
+
+#### CRUD Tests
+- [ ] **Add Service:**
+  - [ ] Modal opens
+  - [ ] All fields required
+  - [ ] Saves to services.json
+  - [ ] Appears in dropdowns immediately
+
+- [ ] **Edit Service:**
+  - [ ] Prices update
+  - [ ] Description changes
+  - [ ] Reflected in appointments/invoices
+
+- [ ] **Delete Service:**
+  - [ ] Confirmation required
+  - [ ] Removes from list
+  - [ ] Can't select in new appointments (ideally)
+
+### Appointments Module Tests ⭐
+
+#### Display Tests
+- [ ] Appointments list shows all entries
+- [ ] All columns visible (ID, Client, Service, Date, Staff, Location, Status)
+- [ ] Dates format correctly (YYYY-MM-DD HH:MM)
+- [ ] Status shows with appropriate styling
+
+#### CRUD Tests
+
+- [ ] **Create Appointment:**
+  - [ ] Modal form opens
+  - [ ] Client dropdown populated from clients.json
+  - [ ] Service dropdown populated from services.json
+  - [ ] Staff dropdown populated from staff.json
+  - [ ] Date/time picker works
+  - [ ] Location select has studio/home options
+  - [ ] Form submits successfully
+  - [ ] ID auto-generates (APT00XXX)
+  - [ ] Appears in list immediately
+  - [ ] Invoice auto-created
+
+- [ ] **Edit Appointment:**
+  - [ ] Form pre-populates correctly
+  - [ ] Can change any field
+  - [ ] Changes save to appointments.json
+  - [ ] List updates immediately
+
+- [ ] **Delete Appointment:**
+  - [ ] Confirmation modal appears
+  - [ ] Can confirm delete
+  - [ ] Removed from list
+  - [ ] Related invoice not affected (verify)
+
+#### Filtering Tests
+- [ ] **ID filter:** Search "APT" → finds appointments
+- [ ] **Client filter:** Search client name → shows appointments
+- [ ] **Service filter:** Search service → shows appointments
+- [ ] **Date filter:** Pick date → shows appointments on that date
+- [ ] **Staff filter:** Search staff name
+- [ ] **Location filter:** Select studio/home
+- [ ] **Status filter:** Filter by status (pending, confirmed, etc.)
+- [ ] **Multiple filters:** Combine filters (AND logic)
+
+#### Integration Tests
+- [ ] Appointment client links to correct client record
+- [ ] Appointment service displays correct pricing
+- [ ] Staff member shows correct details
+- [ ] Schedule reflects new appointments
+- [ ] Invoice references correct appointment
+
+### Invoice Module Tests
+
+#### Display Tests
+- [ ] Invoice list shows all records
+- [ ] All columns visible
+- [ ] Amounts display correctly
+- [ ] Status shows (paid/pending/overdue)
+
+#### Filtering Tests
+- [ ] **Invoice ID filter:** Search invoice
+- [ ] **Client filter:** Search client name
+- [ ] **Amount filter:** Filter by amount
+- [ ] **Date filters:** Filter by invoice date / due date
+- [ ] **Status filter:** Filter by payment status
+
+#### Calculation Tests
+- [ ] **Subtotal:** Correct sum
+- [ ] **Tax:** Correctly calculated (%)
+- [ ] **Total:** subtotal + tax = correct
+- [ ] Service pricing pulls correctly
+
+#### CRUD Tests
+- [ ] **Create Invoice:**
+  - [ ] Modal opens
+  - [ ] Client dropdown works
+  - [ ] Service selection calculates price
+  - [ ] Tax automatically calculates
+  - [ ] Total updates
+  - [ ] Saves to invoices.json
+
+- [ ] **Edit Invoice:**
+  - [ ] Can modify amounts
+  - [ ] Totals recalculate
+  - [ ] Status updates
+
+- [ ] **Delete Invoice:**
+  - [ ] Removes from list
+  - [ ] Related appointment unaffected
+
+### Schedule Module Tests
+
+#### Display Tests
+- [ ] Staff availability displays
+- [ ] Working hours shown correctly
+- [ ] Days of week labeled
+- [ ] Timeline layout clear
+
+#### Filtering Tests
+- [ ] **Date filter:** Select date → shows that day's schedule
+- [ ] **Staff filter:** Search staff → shows their hours
+- [ ] **Time filter:** Search time slot
+- [ ] **Capacity filter:** Filter by available slots
+
+#### Integration Tests
+- [ ] Appointments appear on schedule
+- [ ] Booked times show appointment details
+- [ ] Available slots calculate correctly
+- [ ] Can see conflict if appointment overlaps
+
+### Data Integration Tests
+
+#### Cross-Module References
+- [ ] Client appointments link to correct client
+- [ ] Service prices consistent across modules
+- [ ] Staff assignments valid
+- [ ] Address links to correct client
+- [ ] Invoice references appointment
+
+#### Data Consistency
+- [ ] Updating client updates all references
+- [ ] Deleting service prevents new appointments
+- [ ] Appointments reflected in schedule
+- [ ] Invoice totals match appointment services
+
+### Filter System Tests
+
+#### Text Filters
+- [ ] Case-insensitive search
+- [ ] Partial matches work
+- [ ] Empty filter shows all
+- [ ] Special characters handled
+
+#### Date Filters
+- [ ] Date picker opens
+- [ ] Format: YYYY-MM-DD
+- [ ] Selects correct date
+- [ ] Empty = shows all dates
+
+#### Number Filters
+- [ ] Accepts only numbers
+- [ ] Exact match filtering
+- [ ] Negative numbers handled (if applicable)
+
+#### Select Filters
+- [ ] Dropdown shows options
+- [ ] Selection filters correctly
+- [ ] "All" option shows all rows
+- [ ] Multiple selects work (if multi-select)
+
+#### Performance
+- [ ] Debouncing works (300ms delay)
+- [ ] Smooth typing (no lag)
+- [ ] Large datasets filter quickly
+- [ ] No memory leaks
+
+### Responsive Design Tests
+
+#### Desktop (1200px+)
+- [ ] All content visible
+- [ ] Tables fully displayed
+- [ ] No horizontal scroll needed
+- [ ] Layout optimal
+
+#### Tablet (768px-1199px)
+- [ ] Content readable
+- [ ] Tables may have horizontal scroll
+- [ ] Buttons accessible
+- [ ] Forms layout properly
+
+#### Mobile (< 768px)
+- [ ] Content stacks vertically
+- [ ] Buttons large enough to tap
+- [ ] Modals responsive
+- [ ] No content cut off
+- [ ] Filter row compact
+
+### Browser Compatibility
+- [ ] Chrome latest
+- [ ] Firefox latest
+- [ ] Safari latest
+- [ ] Edge latest
+
+### Performance Tests
+
+#### Load Time
+- [ ] Homepage loads < 2 seconds
+- [ ] Modules load < 1 second
+- [ ] JSON files load quickly
+- [ ] No 404 errors
+
+#### Runtime Performance
+- [ ] Scrolling smooth
+- [ ] Filtering responsive
+- [ ] No freezing/lag
+- [ ] CPU usage reasonable
+
+#### Memory Usage
+- [ ] No memory leaks
+- [ ] Browser memory < 100MB
+- [ ] Large dataset handling
+
+### Error Handling
+
+#### Network Errors
+- [ ] Missing JSON file → friendly error message
+- [ ] Network timeout → retry option
+- [ ] 404 error → handled gracefully
+
+#### User Errors
+- [ ] Invalid form input → validation message
+- [ ] Duplicate ID → handled
+- [ ] Empty required fields → message
+
+#### Browser Errors
+- [ ] No console errors (F12)
+- [ ] No undefined variables
+- [ ] No null reference errors
+
+---
+
+## 🚀 PRE-DEPLOYMENT CHECKLIST
+
+### Code Quality
+- [ ] No console errors or warnings
+- [ ] All functions documented
+- [ ] Code follows conventions
+- [ ] No hardcoded values (use config)
+- [ ] Comments for complex logic
+
+### Security Review
+- [ ] No sensitive data in code
+- [ ] Input validation implemented
+- [ ] XSS prevention (sanitize inputs)
+- [ ] CSRF tokens (if form-based)
+- [ ] No credentials in JSON files
+
+### Testing Complete
+- [ ] All unit tests pass
+- [ ] All integration tests pass
+- [ ] All user workflows tested
+- [ ] Edge cases covered
+- [ ] Performance acceptable
+
+### Documentation
+- [ ] README.md updated
+- [ ] API documentation complete
+- [ ] Configuration documented
+- [ ] Deployment instructions clear
+- [ ] Known issues listed
+
+### Assets
+- [ ] Images optimized
+- [ ] CSS minified (optional)
+- [ ] JavaScript minified (optional)
+- [ ] No broken links
+- [ ] All fonts loaded
+
+### Configuration
+- [ ] Production domain set
+- [ ] Environment variables configured
+- [ ] API endpoints verified
+- [ ] Database connection working
+- [ ] Email service configured
+
+### Backups
+- [ ] Database backup created
+- [ ] Code backup created
+- [ ] Configuration backed up
+- [ ] Rollback plan documented
+
+---
+
+## 🔧 COMMON ISSUES & SOLUTIONS
+
+### Issue: Filters not appearing
+**Solution:**
+1. Check filter row exists in HTML
+2. Verify CSS is loading
+3. Open console (F12) for errors
+4. Reload page
+
+### Issue: Data not loading
+**Solution:**
+1. Check JSON file exists in `/json` folder
+2. Verify file names match fetch calls
+3. Check network tab (F12) for 404s
+4. Validate JSON (jsonlint.com)
+
+### Issue: Add/Edit/Delete not working
+**Solution:**
+1. Check form validation
+2. Verify localStorage working
+3. Check file permissions
+4. Review console for errors
+
+### Issue: Filters very slow
+**Solution:**
+1. Increase debounce delay (300ms → 500ms)
+2. Reduce dataset size
+3. Implement pagination
+4. Check browser memory usage
+
+### Issue: Responsive layout broken
+**Solution:**
+1. Check viewport meta tag
+2. Verify Bootstrap CSS loaded
+3. Check media queries
+4. Test different screen sizes
+
+---
+
+## 📝 TESTING REPORT TEMPLATE
+
+**Date:** _________________
+**Tester:** _________________
+**Version:** November 29, 2025
+
+### Summary
+- Total Tests: _____
+- Passed: _____
+- Failed: _____
+- Blocked: _____
+
+### Failures
+```
+Test Name: ___________
+Module: ___________
+Expected: ___________
+Actual: ___________
+Steps to Reproduce: ___________
+Severity: Critical|Major|Minor
+```
+
+### Recommendations
+___________________________________________
+
+### Sign-off
+Tested by: ___________  Date: ___________
+
+---
+
+## 🎯 TESTING PRIORITIES
+
+### Critical (Must Test)
+1. Create/Edit/Delete operations on all modules
+2. All filters work correctly
+3. Data persists properly
+4. No console errors
+5. Mobile responsive design
+
+### High (Should Test)
+1. Cross-module data references
+2. Calculations (tax, total)
+3. Status updates
+4. Search functionality
+5. Pagination (if implemented)
+
+### Medium (Nice to Test)
+1. Browser compatibility
+2. Performance metrics
+3. Accessibility
+4. Animations
+5. Error messages
+
+### Low (Can Test Later)
+1. Extreme dataset sizes
+2. Internationalization
+3. Dark mode
+4. Advanced features
+
+---
+
+## ✨ NEXT PHASE ITEMS
+
+### Phase 2: Backend Integration
+- [ ] Set up database (MongoDB/PostgreSQL)
+- [ ] Create REST API endpoints
+- [ ] Implement server-side validation
+- [ ] Add authentication/authorization
+- [ ] Set up error logging
+
+### Phase 3: Additional Features
+- [ ] Email notifications (appointments, invoices)
+- [ ] SMS notifications
+- [ ] Payment processing (Stripe/PayPal)
+- [ ] Customer portal login
+- [ ] Appointment reminders
+- [ ] Analytics dashboard
+- [ ] Report generation
+- [ ] Multi-user support
+
+### Phase 4: Polish & Optimization
+- [ ] Performance optimization
+- [ ] Caching strategy
+- [ ] CDN setup
+- [ ] SSL certificate
+- [ ] Domain configuration
+- [ ] Backup & disaster recovery
+
+---
+
+**Keep this checklist handy during development and testing!**
+
+**Last Updated:** November 29, 2025

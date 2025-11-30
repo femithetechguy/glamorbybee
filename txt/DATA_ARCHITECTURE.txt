@@ -1,0 +1,395 @@
+# GlamorByBee - Data Architecture Guide
+**Date:** November 29, 2025
+
+---
+
+## 📊 DATA MODEL OVERVIEW
+
+### Master Data File
+**File:** `json/master_data.json`
+**Purpose:** Complete backup containing all application data
+**Size:** ~4000 lines
+
+**Arrays in master_data.json:**
+1. customers (30+)
+2. addresses (30+)
+3. appointments (100+)
+4. invoices (100+)
+5. staff (5)
+6. schedules (14)
+
+---
+
+## 📁 COMPONENT JSON FILES
+
+### 1. clients.json
+**Purpose:** Customer/client data
+**Fields per record:**
+- customer_id (CUST0001, CUST0002, etc.)
+- first_name
+- last_name
+- email
+- phone
+- date_registered (YYYY-MM-DD)
+- total_visits (number)
+- loyalty_points (number)
+- preferred_contact (email|phone|sms)
+- notes
+
+**Used By:**
+- Client module (main data source)
+- Appointments module (client_id lookup)
+- Invoice module (customer selection)
+
+**Sample Size:** 30 records
+
+---
+
+### 2. services.json
+**Purpose:** Service catalog
+**Fields per record:**
+- id (celebrant, party, soft-glam, etc.)
+- name (Service Name)
+- description
+- image (img path)
+- price ($100, $150, etc.)
+
+**Used By:**
+- Services module (main data source)
+- Appointments module (service selection)
+- Invoice module (service selection)
+- Booking form (service selection)
+
+**Sample Size:** 8 services
+
+---
+
+### 3. appointments.json
+**Purpose:** Customer appointment bookings
+**Fields per record:**
+- appointment_id (APT00001, etc.)
+- customer_id (reference to clients.json)
+- service_id (reference to services.json)
+- staff_id (reference to staff.json)
+- appointment_datetime (ISO 8601 format)
+- location (studio|home)
+- status (pending|confirmed|completed|cancelled)
+- notes
+
+**Used By:**
+- Appointments module (main data source)
+- Schedule module (timeline view)
+- Client module (client history)
+
+**Sample Size:** 100+ appointments
+
+---
+
+### 4. schedule.json
+**Purpose:** Staff working hours and availability
+**Fields per record:**
+- schedule_id (SCHED0001, etc.)
+- staff_id (reference to staff.json)
+- staff_name
+- day_of_week (Monday, Tuesday, etc.)
+- start_time (HH:MM)
+- end_time (HH:MM)
+- is_working (true|false)
+
+**Used By:**
+- Schedule module (main data source)
+- Availability checking
+
+**Sample Size:** 14 schedules (7 days × 2 staff)
+
+---
+
+### 5. invoices.json
+**Purpose:** Invoice records
+**Fields per record:**
+- invoice_id (INV00001, etc.)
+- appointment_id (reference)
+- customer_id (reference)
+- invoice_date (YYYY-MM-DD)
+- due_date (YYYY-MM-DD)
+- subtotal (number)
+- tax (number)
+- total (number)
+- status (paid|pending|overdue)
+- payment_date (or null)
+- notes
+
+**Used By:**
+- Invoice module (main data source)
+- Payment tracking
+
+**Sample Size:** 100+ invoices
+
+---
+
+### 6. addresses.json
+**Purpose:** Customer address information
+**Fields per record:**
+- address_id (ADDR001, etc.)
+- customer_id (reference to clients.json)
+- address_line1
+- address_line2
+- city
+- state
+- zip_code
+- country
+- address_type (home|work|other)
+
+**Used By:**
+- Client module (linked to customer)
+
+**Sample Size:** 30 addresses
+
+---
+
+### 7. staff.json
+**Purpose:** Staff/artist information
+**Fields per record:**
+- staff_id (STAFF0001, etc.)
+- first_name
+- last_name
+- role (Makeup Artist|Operations Manager)
+- email
+- phone
+- hire_date (YYYY-MM-DD)
+- is_active (true|false)
+- specialties (string list)
+- hourly_rate (number)
+
+**Used By:**
+- Appointments module (staff assignment)
+- Schedule module (availability)
+
+**Sample Size:** 5 staff members
+
+---
+
+### 8. app.json
+**Purpose:** Application configuration
+**Sections:**
+1. site - Company info, contact, EmailJS config
+2. appdev - Developer/company info
+3. components - All module configurations
+4. about - About section content
+5. booking - Booking system settings
+6. gallery - Instagram config
+7. team - Team members
+8. testimonials - Client testimonials
+
+**Key Component Config:**
+```json
+"appointments": {
+  "name": "Appointments Management",
+  "dev_domain": "https://dev-appointments.glamorbybee.com/",
+  "prod_domain": "https://appointments.glamorbybee.com/",
+  "local_domain": "http://localhost:5500/appointments/index.html",
+  "current_domain": "dev_domain"  ← Change to switch environment
+}
+```
+
+---
+
+## 🔄 DATA RELATIONSHIPS
+
+### Customer Journey
+```
+New Booking (Client)
+    ↓
+Create Client Record (clients.json)
+    ↓
+Create Appointment (appointments.json)
+    ├→ customer_id links to Client
+    ├→ service_id links to Service
+    └→ staff_id links to Staff
+    ↓
+Create Invoice (invoices.json)
+    ├→ customer_id links to Client
+    └→ appointment_id links to Appointment
+    ↓
+Track Payment Status
+```
+
+### Data Lookup Pattern
+```javascript
+// Find appointment's customer
+const appointment = appointments.find(a => a.appointment_id === 'APT00001');
+const customer = clients.find(c => c.customer_id === appointment.customer_id);
+
+// Find appointment's service
+const service = services.find(s => s.id === appointment.service_id);
+
+// Find appointment's staff
+const staff = staffMembers.find(s => s.staff_id === appointment.staff_id);
+```
+
+---
+
+## 📥 HOW MODULES LOAD DATA
+
+### Client Module
+```javascript
+// Parallel loading from 3 sources
+const [clientsRes, addressesRes, appointmentsRes] = await Promise.all([
+    fetch('../json/clients.json'),
+    fetch('../json/addresses.json'),
+    fetch('../json/appointments.json')
+]);
+```
+
+### Appointments Module
+```javascript
+// Parallel loading from 5 sources
+const [appointmentsRes, clientsRes, servicesRes, staffRes, addressesRes] = await Promise.all([
+    fetch('../json/appointments.json'),
+    fetch('../json/clients.json'),
+    fetch('../json/services.json'),
+    fetch('../json/staff.json'),
+    fetch('../json/addresses.json')
+]);
+```
+
+### Invoice Module
+```javascript
+// Loads from 3 sources
+const [servicesRes, invoicesRes, clientsRes] = await Promise.all([
+    fetch('../json/services.json'),
+    fetch('../json/invoices.json'),
+    fetch('../json/clients.json')
+]);
+```
+
+---
+
+## 🔑 ID GENERATION PATTERNS
+
+### Client ID
+- Pattern: CUST0001, CUST0002, ...
+- Max number tracked in master_data.json
+
+### Appointment ID
+- Pattern: APT00001, APT00002, ...
+- Generated based on max existing ID
+
+### Invoice ID
+- Pattern: INV00001, INV00002, ...
+
+### Address ID
+- Pattern: ADDR001, ADDR002, ...
+
+### Schedule ID
+- Pattern: SCHED0001, SCHED0002, ...
+
+---
+
+## 💾 DATA PERSISTENCE NOTES
+
+### Current State (JSON Files)
+- ✅ Easy to read/edit
+- ✅ Version controllable
+- ✅ Portable
+- ❌ No real persistence (browser memory)
+- ❌ Data lost on page refresh
+- ❌ No multi-user support
+
+### Future: Database Migration
+Recommend moving to:
+- MongoDB (flexible schema)
+- PostgreSQL (relational)
+- Firebase (real-time + backend)
+
+---
+
+## 🔐 DATA VALIDATION
+
+### Client Data
+- Email: Valid format
+- Phone: Valid format
+- date_registered: Valid date <= today
+- total_visits: Number >= 0
+- loyalty_points: Number >= 0
+
+### Appointment Data
+- appointment_datetime: Future date
+- location: studio|home only
+- status: Valid status value
+- customer_id: References existing client
+- service_id: References existing service
+- staff_id: References existing staff
+
+### Invoice Data
+- invoice_date: Valid date
+- due_date: >= invoice_date
+- subtotal: Number > 0
+- tax: Number >= 0
+- total: Calculated correctly
+- status: Valid status value
+
+---
+
+## 📈 SAMPLE DATA DISTRIBUTION
+
+### Clients by Registration Date
+- October 2024: 2 clients
+- November 2024: 1 client
+- December 2024: 2 clients
+- January-August 2025: 15 clients
+- September-November 2025: 10 clients
+
+### Appointments by Status
+- Pending: 30%
+- Confirmed: 40%
+- Completed: 25%
+- Cancelled: 5%
+
+### Invoices by Status
+- Paid: 60%
+- Pending: 30%
+- Overdue: 10%
+
+---
+
+## 🚀 PERFORMANCE CONSIDERATIONS
+
+### Data Size
+- Total data: ~500KB in JSON files
+- Clients load entire dataset into browser memory
+- Filtering/searching happens client-side (fast)
+
+### Optimization Tips
+1. Use debouncing on filters (already implemented)
+2. Lazy-load data if file grows beyond 1MB
+3. Implement pagination for large datasets
+4. Consider IndexedDB for larger datasets
+
+---
+
+## 📝 MIGRATION CHECKLIST
+
+If migrating to database:
+
+**Phase 1: Setup**
+- [ ] Design database schema
+- [ ] Set up backend API
+- [ ] Create authentication system
+- [ ] Set up database indexes
+
+**Phase 2: Migration**
+- [ ] Export JSON data to database
+- [ ] Create API endpoints for each resource
+- [ ] Update fetch calls to use API
+- [ ] Implement error handling
+
+**Phase 3: Validation**
+- [ ] Test all CRUD operations
+- [ ] Verify data integrity
+- [ ] Performance testing
+- [ ] Multi-user testing
+
+---
+
+**Last Updated:** November 29, 2025

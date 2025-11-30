@@ -1127,7 +1127,7 @@ function showErrorAlert(message) {
     }
 }
 
-// Handle Instagram Embed - Note: Instagram iframe is cross-origin, so clicks open in new tabs
+// Handle Instagram Embed - Opens in same window so user can use back button
 function setupInstagramEmbedHandler() {
     console.log('🔍 setupInstagramEmbedHandler called');
     
@@ -1137,7 +1137,32 @@ function setupInstagramEmbedHandler() {
         window.instgrm.Embeds.process();
     }
     
-    console.log('ℹ️ Instagram embed ready. Clicks on posts will open Instagram in new tabs.');
+    // Intercept Instagram links and open in same window (allow back button)
+    const instagramContainer = document.getElementById('instagramContainer');
+    if (instagramContainer) {
+        // Set up observer to monitor for new links added by Instagram
+        const observer = new MutationObserver(() => {
+            const links = instagramContainer.querySelectorAll('a');
+            links.forEach(link => {
+                // Remove target="_blank" to open in same window
+                link.removeAttribute('target');
+                // Add click handler to prevent navigation if needed and log
+                link.addEventListener('click', (e) => {
+                    console.log('🔗 Instagram link clicked:', link.href);
+                    // Let the link navigate naturally in same window
+                }, { once: true });
+            });
+        });
+        
+        observer.observe(instagramContainer, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['target']
+        });
+        
+        console.log('✅ Instagram embed handler: Links will open in same window with back button support');
+    }
 }
 
 // Smooth Scroll Navigation

@@ -1187,6 +1187,19 @@ p {
     margin: 0;
     width: 100%;
     max-width: 500px;
+    position: relative;
+}
+
+.instagram-loading {
+    display: none;
+}
+
+.instagram-loading p {
+    display: none;
+}
+
+.spinner {
+    display: none;
 }
 
 .instagram-profile-link {
@@ -1227,12 +1240,13 @@ p {
     max-width: 500px;
     height: 490px;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .instagram-embed-container iframe:hover {
-    box-shadow: 0 12px 35px rgba(214, 51, 132, 0.25);
+    box-shadow: 0 16px 48px rgba(214, 51, 132, 0.3);
+    transform: translateY(-2px);
 }
 
 /* Instagram Blockquote Embed Styling */
@@ -1240,21 +1254,35 @@ p {
     background: white;
     border: 0;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     margin: 0 auto;
     padding: 0;
     width: 100%;
     max-width: 500px;
-    transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .instagram-embed-container blockquote.instagram-media:hover {
-    box-shadow: 0 12px 35px rgba(214, 51, 132, 0.25);
+    box-shadow: 0 16px 48px rgba(214, 51, 132, 0.3);
+    transform: translateY(-2px);
 }
 
 .instagram-embed-container blockquote.instagram-media img {
     cursor: pointer;
     transition: filter 0.3s ease;
+    border-radius: 12px 12px 0 0;
 }
 
 .instagram-embed-container blockquote.instagram-media img:hover {
@@ -1287,8 +1315,8 @@ p {
 
 .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
     width: 100%;
     margin-top: 3rem;
     margin-bottom: 0;

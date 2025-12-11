@@ -9,6 +9,16 @@ import createBookingApi from './booking.js';
 // Load environment variables
 dotenv.config({ path: '.env.local' });
 
+console.log('🚀 API handler initializing...');
+console.log('Environment variables loaded:', {
+    EMAIL_HOST: process.env.EMAIL_HOST ? '✓' : '✗',
+    EMAIL_PORT: process.env.EMAIL_PORT ? '✓' : '✗',
+    EMAIL_USER: process.env.EMAIL_USER ? '✓' : '✗',
+    EMAIL_PASSWORD: process.env.EMAIL_PASSWORD ? '✓' : '✗',
+    EMAIL_SECURE: process.env.EMAIL_SECURE ? '✓' : '✗',
+    ADMIN_EMAIL: process.env.ADMIN_EMAIL ? '✓' : '✗'
+});
+
 // Initialize booking API using factory function
 let bookingApi;
 let emailServiceReady = false;
@@ -18,14 +28,17 @@ try {
     bookingApi = createBookingApi();
     console.log('✅ BookingApi created successfully');
     
-    // Initialize email service
-    bookingApi.init().then(() => {
-        emailServiceReady = true;
-        console.log('✅ Email service initialized successfully');
-    }).catch(error => {
-        console.error('❌ Failed to initialize email service:', error.message);
-        initError = error;
-    });
+    // Initialize email service asynchronously without blocking
+    bookingApi.init()
+        .then(() => {
+            emailServiceReady = true;
+            console.log('✅ Email service initialized successfully');
+        })
+        .catch(error => {
+            console.error('❌ Failed to initialize email service:', error.message);
+            initError = error;
+            // Don't set emailServiceReady to true, but keep bookingApi available for health checks
+        });
 } catch (error) {
     console.error('❌ Failed to create BookingApi:', error);
     console.error('Error details:', error.message, error.stack);
@@ -62,16 +75,26 @@ export default function handler(req, res) {
                 });
             }
             
-            bookingApi.healthCheck().then(health => {
-                res.status(200).json(health);
-            }).catch(error => {
-                console.error('Health check error:', error);
-                res.status(500).json({
+            if (!emailServiceReady) {
+                return res.status(503).json({
                     status: 'error',
-                    message: 'Health check failed',
-                    error: error.message
+                    message: 'Email service is still initializing',
+                    ready: false
                 });
-            });
+            }
+            
+            bookingApi.healthCheck()
+                .then(health => {
+                    res.status(200).json(health);
+                })
+                .catch(error => {
+                    console.error('Health check error:', error);
+                    res.status(500).json({
+                        status: 'error',
+                        message: 'Health check failed',
+                        error: error.message
+                    });
+                });
             return;
         }
 
@@ -88,21 +111,23 @@ export default function handler(req, res) {
             if (!emailServiceReady) {
                 return res.status(503).json({
                     success: false,
-                    error: 'Email service is not ready. Please try again in a moment.'
+                    error: 'Email service is not ready yet. Please try again in a moment.'
                 });
             }
 
-            bookingApi.handleBooking(req.body).then(result => {
-                const statusCode = result.success ? 200 : 400;
-                res.status(statusCode).json(result);
-            }).catch(error => {
-                console.error('API error:', error);
-                res.status(500).json({
-                    success: false,
-                    error: 'Server error. Please try again later.',
-                    details: error.message
+            bookingApi.handleBooking(req.body)
+                .then(result => {
+                    const statusCode = result.success ? 200 : 400;
+                    res.status(statusCode).json(result);
+                })
+                .catch(error => {
+                    console.error('API error:', error);
+                    res.status(500).json({
+                        success: false,
+                        error: 'Server error. Please try again later.',
+                        details: error.message
+                    });
                 });
-            });
             return;
         }
 

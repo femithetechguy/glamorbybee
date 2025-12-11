@@ -1,11 +1,17 @@
 {
+  "buildCommand": "npm install",
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs20.x"
+    }
+  },
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "/api/:path*.js"
+      "source": "/api/(.*)",
+      "destination": "/api/$1.js"
     },
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ],

@@ -131,58 +131,72 @@ class FormService {
 
             console.log('🚀 Sending booking request to API...', payload);
 
-            // Send to API
-            const response = await fetch(this.config.apiEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
+            // Create fetch with timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+            
+            try {
+                const response = await fetch(this.config.apiEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload),
+                    signal: controller.signal
+                });
 
-            const result = await response.json();
+                clearTimeout(timeoutId);
+                const result = await response.json();
 
-            if (!response.ok) {
-                throw new Error(result.error || 'Failed to submit booking');
-            }
-
-            if (!result.success) {
-                throw new Error(result.error || 'Booking submission failed');
-            }
-
-            console.log('✅ Booking submitted successfully:', result);
-            
-            // Reset form first
-            this.form.reset();
-            document.querySelectorAll('.service-pill').forEach(pill => {
-                pill.classList.remove('active');
-            });
-            if (typeof selectedService !== 'undefined') {
-                selectedService = null;
-            }
-            
-            // Show success message
-            const email = formData.get('email');
-            const phone = formData.get('phone');
-            let contactMessage = 'Our staff will get in touch with you shortly at ';
-            
-            if (email && phone) {
-                contactMessage += `${email} or ${phone}`;
-            } else if (email) {
-                contactMessage += email;
-            } else if (phone) {
-                contactMessage += phone;
-            }
-            
-            this.showSuccess(`Your Glam Session has been booked! ${contactMessage}`);
-            
-            // Add animation effect after 6 seconds
-            setTimeout(() => {
-                const successAlert = document.getElementById('successAlert');
-                if (successAlert) {
-                    successAlert.style.animation = 'pulse 1.5s ease-in-out infinite';
+                if (!response.ok) {
+                    throw new Error(result.error || `Server error: ${response.status}`);
                 }
-            }, 6000);
+
+                if (!result.success) {
+                    throw new Error(result.error || 'Booking submission failed');
+                }
+
+                console.log('✅ Booking submitted successfully:', result);
+                
+                // Reset form first
+                this.form.reset();
+                document.querySelectorAll('.service-pill').forEach(pill => {
+                    pill.classList.remove('active');
+                });
+                if (typeof selectedService !== 'undefined') {
+                    selectedService = null;
+                }
+                
+                // Show success message
+                const email = formData.get('email');
+                const phone = formData.get('phone');
+                let contactMessage = 'Our staff will get in touch with you shortly at ';
+                
+                if (email && phone) {
+                    contactMessage += `${email} or ${phone}`;
+                } else if (email) {
+                    contactMessage += email;
+                } else if (phone) {
+                    contactMessage += phone;
+                }
+                
+                this.showSuccess(`Your Glam Session has been booked! ${contactMessage}`);
+                
+                // Add animation effect after 6 seconds
+                setTimeout(() => {
+                    const successAlert = document.getElementById('successAlert');
+                    if (successAlert) {
+                        successAlert.style.animation = 'pulse 1.5s ease-in-out infinite';
+                    }
+                }, 6000);
+            } catch (fetchError) {
+                clearTimeout(timeoutId);
+                
+                if (fetchError.name === 'AbortError') {
+                    throw new Error('Request timeout - Please check your internet connection');
+                }
+                throw fetchError;
+            }
 
         } catch (error) {
             console.error('✗ Error submitting booking:', error);

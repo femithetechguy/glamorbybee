@@ -15,7 +15,7 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import BookingApi from './api/booking.js';
+import createBookingApi from './api/booking.js';
 
 // Load environment variables
 dotenv.config({ path: '.env.local' });
@@ -29,12 +29,12 @@ app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
-// Initialize booking API
+// Initialize booking API using factory function
 let bookingApi;
 try {
-    bookingApi = new BookingApi();
+    bookingApi = createBookingApi();
 } catch (error) {
-    console.error('Failed to instantiate BookingApi:', error);
+    console.error('Failed to create BookingApi:', error);
     bookingApi = null;
 }
 

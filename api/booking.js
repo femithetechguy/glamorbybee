@@ -99,6 +99,7 @@ export default async function handler(req, res) {
         setImmediate(async () => {
             try {
                 console.log(`⏳ Processing booking: ${reference}`);
+                console.log(`   Customer: ${body.name} <${body.email}>`);
                 
                 // Initialize email service
                 await ensureEmailServiceReady();
@@ -112,7 +113,8 @@ export default async function handler(req, res) {
                     console.warn(`⚠️ Booking processing returned error: ${result.error}`);
                 }
             } catch (error) {
-                console.error(`❌ Background processing failed (${reference}):`, error.message);
+                console.error(`❌ CRITICAL Background processing failed (${reference}):`, error.message);
+                console.error('   Full error:', error);
             }
         });
 

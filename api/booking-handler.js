@@ -127,7 +127,8 @@ function createBookingApi() {
                         await this.emailService.sendBookingEmails(bookingDetails);
                         console.log('✅ Booking emails sent successfully');
                     } catch (error) {
-                        console.error('❌ Failed to send booking emails:', error.message);
+                        console.error('❌ CRITICAL: Failed to send booking emails:', error.message);
+                        console.error('   Details:', error);
                     }
                 });
 

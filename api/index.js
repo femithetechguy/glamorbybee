@@ -130,36 +130,29 @@ export default async function handler(req, res) {
 
             const reference = `GBB-${Date.now()}`;
             
-            // Return success immediately to client
+            // Return success immediately to client (CRITICAL for Vercel)
             res.status(200).json({
                 success: true,
-                message: 'Booking received! We\'ll send you a confirmation email shortly.',
+                message: 'Your booking has been received! Check your email for confirmation.',
                 reference
             });
 
-            // Process booking asynchronously in background (don't wait)
-            // This prevents timeout issues on Vercel
-            (async () => {
+            // Process booking asynchronously in background WITHOUT waiting
+            // This is critical for Vercel's timeout constraints
+            setImmediate(async () => {
                 try {
                     console.log(`📧 Processing booking in background: ${reference}`);
                     
-                    // Initialize email service if needed
+                    // Initialize email service if needed (should be fast since no verification)
                     await ensureEmailServiceReady();
                     
-                    // Send booking with extended timeout
-                    await Promise.race([
-                        bookingApi.handleBooking(req.body),
-                        new Promise((_, reject) => 
-                            setTimeout(() => reject(new Error('Booking processing timeout')), 25000)
-                        )
-                    ]);
+                    // Handle booking (emails sent in background from handleBooking)
+                    await bookingApi.handleBooking(req.body);
                     
-                    console.log(`✅ Booking processed successfully: ${reference}`);
+                    console.log(`✅ Booking queued for processing: ${reference}`);
                 } catch (error) {
                     console.error(`❌ Background booking error (${reference}): ${error.message}`);
                 }
-            })().catch(error => {
-                console.error(`❌ Async error in background processing: ${error.message}`);
             });
             
             return;

@@ -119,8 +119,17 @@ function createBookingApi() {
                     specialRequests: data.notes?.trim() || data.specialRequests?.trim() || ''
                 };
 
-                // Send emails
-                await this.emailService.sendBookingEmails(bookingDetails);
+                // Send emails asynchronously without waiting
+                // This prevents timeout issues on Vercel
+                setImmediate(async () => {
+                    try {
+                        console.log('📧 Sending booking emails in background...');
+                        await this.emailService.sendBookingEmails(bookingDetails);
+                        console.log('✅ Booking emails sent successfully');
+                    } catch (error) {
+                        console.error('❌ Failed to send booking emails:', error.message);
+                    }
+                });
 
                 return {
                     success: true,

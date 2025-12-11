@@ -340,15 +340,46 @@ function populateServicesGrid() {
         return;
     }
 
+    // Service icon mapping - Bootstrap Icons
+    const serviceIcons = {
+        'bridal': 'bi-heart-fill',
+        'party': 'bi-star-fill',
+        'photoshoot': 'bi-camera-fill',
+        'wedding': 'bi-ring',
+        'makeup': 'bi-palette-fill',
+        'training': 'bi-mortarboard-fill',
+        'consultation': 'bi-chat-dots-fill',
+        'touch-up': 'bi-pencil-square',
+        'airbrush': 'bi-droplet-fill',
+        'contouring': 'bi-brush-fill',
+        'lashes': 'bi-eye-fill',
+        'eyebrow': 'bi-eyebrow',
+        'glam': 'bi-sparkles',
+        'soft': 'bi-cloud-fill',
+        'owanbe': 'bi-gem',
+        'celebrant': 'bi-heart-fill',
+        'luxury': 'bi-award-fill'
+    };
+
+    // Function to get icon for service name
+    const getIcon = (serviceName) => {
+        const nameKey = serviceName.toLowerCase().replace(/\s+/g, '-');
+        for (let key in serviceIcons) {
+            if (nameKey.includes(key)) {
+                return serviceIcons[key];
+            }
+        }
+        return 'bi-palette-fill'; // Default icon
+    };
+
     servicesGrid.innerHTML = '';
     
     appData.services.forEach(service => {
         const card = document.createElement('div');
         card.className = 'service-card';
+        const iconClass = getIcon(service.name);
         card.innerHTML = `
-            <div class="service-image-wrapper">
-                <img src="${service.image}" alt="${service.name}" class="service-image" loading="lazy">
-            </div>
+            <div class="service-icon"><i class="bi ${iconClass}"></i></div>
             <div class="service-body">
                 <h4 class="service-name">${service.name}</h4>
                 <p class="service-desc">${service.description}</p>

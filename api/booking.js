@@ -105,16 +105,17 @@ function createBookingApi() {
                     };
                 }
 
-                // Prepare booking details
+                // Prepare booking details with correct key mapping for email service
                 const bookingDetails = {
-                    name: data.name.trim(),
-                    email: data.email.trim(),
-                    phone: data.phone.trim(),
-                    service: data.service_name.trim(),
-                    date: data.date.trim(),
-                    time: data.time.trim(),
-                    location: data.location.trim(),
-                    address: data.serviceAddress?.trim() || '',
+                    customerName: data.name.trim(),
+                    customerEmail: data.email.trim(),
+                    customerPhone: data.phone.trim(),
+                    serviceSelected: data.service_name.trim(),
+                    bookingDate: data.date.trim(),
+                    bookingTime: data.time.trim(),
+                    visitType: data.location.trim(),
+                    serviceLocation: data.location.trim(),
+                    serviceAddress: data.serviceAddress?.trim() || '',
                     specialRequests: data.notes?.trim() || data.specialRequests?.trim() || ''
                 };
 

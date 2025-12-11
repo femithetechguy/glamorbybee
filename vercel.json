@@ -3,11 +3,6 @@
   "devCommand": "npm run dev",
   "framework": null,
   "public": true,
-  "functions": {
-    "server.js": {
-      "runtime": "nodejs20.x"
-    }
-  },
   "rewrites": [
     {
       "source": "/api/:path*",

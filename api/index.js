@@ -137,8 +137,9 @@ export default async function handler(req, res) {
                 reference
             });
 
-            // Process booking asynchronously in background
-            setImmediate(async () => {
+            // Process booking asynchronously in background (fire and forget)
+            // Don't wait for this to complete
+            (async () => {
                 try {
                     await ensureEmailServiceReady();
                     await bookingApi.handleBooking(req.body);
@@ -146,6 +147,8 @@ export default async function handler(req, res) {
                 } catch (error) {
                     console.error(`❌ Background booking error: ${error.message}`);
                 }
+            })().catch(error => {
+                console.error(`❌ Async error in background processing: ${error.message}`);
             });
             
             return;

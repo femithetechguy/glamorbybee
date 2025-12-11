@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Booking - GlamorByBee Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f7ff;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #d63384 0%, #c02d70 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.95;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .alert {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+        
+        .alert p {
+            color: #856404;
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .info-item {
+            background: #f8f7ff;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        
+        .info-label {
+            font-size: 12px;
+            color: #999;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-value {
+            font-size: 16px;
+            color: #333;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+        
+        .info-value a {
+            color: #d63384;
+            text-decoration: none;
+        }
+        
+        .info-value a:hover {
+            text-decoration: underline;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .reference {
+            background: linear-gradient(135deg, #d63384 0%, #c02d70 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin: 30px 0;
+            border-radius: 4px;
+        }
+        
+        .reference-label {
+            font-size: 12px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .reference-number {
+            font-size: 20px;
+            font-weight: 700;
+            margin-top: 8px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .special-requests {
+            background: #f0f8ff;
+            border-left: 4px solid #0084ff;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        
+        .special-requests-content {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+            font-style: italic;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #d63384 0%, #c02d70 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .footer {
+            background: #f8f7ff;
+            padding: 30px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .footer-item {
+            margin-bottom: 10px;
+        }
+        
+        .timestamp {
+            font-size: 12px;
+            color: #bbb;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        @media (max-width: 600px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📅 New Booking Received</h1>
+            <p>A new glam session has been booked</p>
+        </div>
+        
+        <!-- Content -->
+        <div class="content">
+            <!-- Alert -->
+            <div class="alert">
+                <p>⏰ <strong>Booking Submitted:</strong> {{submissionTime}}</p>
+            </div>
+            
+            <!-- Customer Information -->
+            <div class="section">
+                <div class="section-title">👤 Customer Information</div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Name</div>
+                        <div class="info-value">{{name}}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Email</div>
+                        <div class="info-value">
+                            <a href="mailto:{{email}}">{{email}}</a>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Phone</div>
+                        <div class="info-value">
+                            <a href="tel:{{phone}}">{{phone}}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Booking Details -->
+            <div class="section">
+                <div class="section-title">✨ Booking Details</div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Service</div>
+                        <div class="info-value">{{service}}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Date</div>
+                        <div class="info-value">{{date}}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Time</div>
+                        <div class="info-value">{{time}}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Location Type</div>
+                        <div class="info-value">{{visitType}}</div>
+                    </div>
+                    <div class="info-item full-width">
+                        <div class="info-label">Service Location</div>
+                        <div class="info-value">{{location}}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Booking Reference -->
+            <div class="reference">
+                <div class="reference-label">Reference Number</div>
+                <div class="reference-number">{{reference}}</div>
+            </div>
+            
+            <!-- Special Requests -->
+            <div class="section">
+                <div class="section-title">📝 Special Requests</div>
+                <div class="special-requests">
+                    <div class="special-requests-content">{{specialRequests}}</div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="mailto:{{email}}" class="btn btn-primary">Reply to Customer</a>
+                <a href="https://glamorbybee.com/admin" class="btn btn-secondary">View in Dashboard</a>
+            </div>
+            
+            <div class="timestamp">
+                Submitted on {{submissionTime}} • Reference: {{reference}}
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-item">
+                📧 This is an automated notification from GlamorByBee
+            </div>
+            <div class="footer-item">
+                💾 Save this email for your records and reference
+            </div>
+            <div class="footer-item">
+                © {{year}} GlamorByBee. All rights reserved.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

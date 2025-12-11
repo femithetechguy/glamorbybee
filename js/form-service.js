@@ -1,29 +1,26 @@
 /**
- * Form Service - EmailJS Integration
+ * Form Service - Nodemailer API Integration
  * 
- * Handles all form submission logic with EmailJS
- * - Loads EmailJS library dynamically if needed
- * - Initializes EmailJS with credentials
- * - Handles form submission and validation
- * - Shows success/error messages
+ * Handles all form submission logic with Nodemailer backend
+ * - Validates form data before submission
+ * - Sends data to /api/booking endpoint
+ * - Handles success/error responses
+ * - Shows success/error messages to user
  */
 class FormService {
     constructor(config) {
         this.config = {
             formSelector: '#bookingForm',
-            emailJSServiceId: 'fttg_service',
-            emailJSTemplateId: 'template_glamorbybee',
-            emailJSPublicKey: 'ANmN0gWxEnEHgUCXx',
+            apiEndpoint: '/api/booking',
             ...config
         };
         this.form = null;
-        this.emailjsLoaded = false;
+        this.isSubmitting = false;
     }
 
     /**
      * Initialize FormService
      * - Setup form event listeners
-     * - EmailJS is already initialized in HTML script tag
      */
     async init() {
         console.log('📧 FormService initializing...');
@@ -40,15 +37,16 @@ class FormService {
     }
 
     /**
-     * Initialize EmailJS with public key
-     */
-    // EmailJS is already initialized in HTML script tag
-
-    /**
      * Handle form submission
      */
     async handleSubmit(e) {
         e.preventDefault();
+        
+        // Prevent double submission
+        if (this.isSubmitting) {
+            console.warn('⚠️  Form submission already in progress');
+            return;
+        }
         
         console.log('✉️ Form submitted');
         
@@ -97,19 +95,13 @@ class FormService {
             return;
         }
 
-        // Check if EmailJS is available
-        if (typeof emailjs === 'undefined') {
-            console.error('❌ EmailJS not available');
-            this.showError('Email service is loading. Please try again in a moment.');
-            return;
-        }
-
         const submitBtn = this.form.querySelector('[type="submit"]');
         if (!submitBtn) return;
 
         // Disable submit button
         submitBtn.disabled = true;
         submitBtn.textContent = 'Sending...';
+        this.isSubmitting = true;
 
         try {
             // Sync time from external select to hidden field (failsafe)
@@ -122,53 +114,43 @@ class FormService {
             // Get form data
             const formData = new FormData(this.form);
             
-            console.log('📧 Form data captured, preparing email...');
+            console.log('📧 Form data captured, sending to server...');
             
-            // Prepare template parameters
-            // Format date as Month Day, Year (e.g., December 26, 2025)
-            const dateStr = formData.get('date');
-            let formattedDate = '';
-            if (dateStr) {
-                const dateObj = new Date(dateStr + 'T00:00:00');
-                formattedDate = dateObj.toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                });
-            }
-            
-            // Add timezone to time (e.g., 2:00 PM CST)
-            const timeStr = formData.get('time');
-            const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            const tzAbbr = new Date().toLocaleDateString('en-US', { timeZoneName: 'short' }).split(' ').pop();
-            const formattedTime = timeStr ? `${timeStr} ${tzAbbr}` : '';
-            
-            const templateParams = {
-                recipient_email: formData.get('email'), // Customer email - primary recipient
-                reply_to_email: formData.get('email'), // Where replies go (back to customer)
-                from_name: `${formData.get('name')}: ${formattedDate} - ${formData.get('location') === 'studio' ? 'Studio Visit' : 'Home Service'}`, // From name with details
-                customer_name: formData.get('name'),
-                customer_email: formData.get('email'),
-                staff_email: appData?.site?.emailjs?.staffEmail || 'femithetechguy@gmail.com', // Staff receives BCC
-                selected_service: formData.get('service_name') || 'Not selected',
-                booking_date: formattedDate,
-                booking_time: formattedTime,
-                visit_type: formData.get('location') === 'studio' ? 'Studio Visit' : 'Home Service',
-                service_location: formData.get('location') === 'home' ? (formData.get('serviceAddress') || '') : 'N/A (Studio Visit)',
-                customer_phone: formData.get('phone'),
-                special_requests: formData.get('notes') || 'No special requests'
+            // Prepare payload for API
+            const payload = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                service_name: formData.get('service_name') || '',
+                date: formData.get('date'),
+                time: formData.get('time'),
+                location: formData.get('location') || 'studio',
+                serviceAddress: formData.get('serviceAddress') || '',
+                notes: formData.get('notes') || ''
             };
 
-            console.log('🚀 Sending email with params:', templateParams);
+            console.log('🚀 Sending booking request to API...', payload);
 
-            // Send email
-            const response = await emailjs.send(
-                this.config.emailJSServiceId,
-                this.config.emailJSTemplateId,
-                templateParams
-            );
+            // Send to API
+            const response = await fetch(this.config.apiEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
 
-            console.log('✅ Email sent successfully:', response);
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to submit booking');
+            }
+
+            if (!result.success) {
+                throw new Error(result.error || 'Booking submission failed');
+            }
+
+            console.log('✅ Booking submitted successfully:', result);
             
             // Reset form first
             this.form.reset();
@@ -179,7 +161,7 @@ class FormService {
                 selectedService = null;
             }
             
-            // Show success message BEFORE scrolling
+            // Show success message
             const email = formData.get('email');
             const phone = formData.get('phone');
             let contactMessage = 'Our staff will get in touch with you shortly at ';
@@ -203,20 +185,12 @@ class FormService {
             }, 6000);
 
         } catch (error) {
-            console.error('✗ Error sending email:', error);
-            console.error('📋 Error details:', {
-                message: error.message,
-                status: error.status,
-                text: error.text,
-                name: error.name
-            });
+            console.error('✗ Error submitting booking:', error);
             
-            // Provide specific error message based on error type
+            // Provide user-friendly error message
             let errorMsg = '❌ Oops! Something went wrong. Please check your information and try again.';
-            if (error.message && error.message.includes('service')) {
-                errorMsg = '❌ Email service error. Please try again in a moment.';
-            } else if (error.status) {
-                errorMsg = `❌ Error (${error.status}): Please try again.`;
+            if (error.message) {
+                errorMsg = `❌ ${error.message}`;
             }
             
             this.showError(errorMsg);
@@ -224,6 +198,7 @@ class FormService {
             // Re-enable submit button
             submitBtn.disabled = false;
             submitBtn.textContent = 'Book Your Look';
+            this.isSubmitting = false;
         }
     }
 

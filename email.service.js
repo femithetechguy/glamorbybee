@@ -93,9 +93,7 @@ class EmailService {
                 bookingDate,
                 bookingTime,
                 visitType,
-                bookingReference,
-                serviceAddress,
-                specialRequests
+                bookingReference
             } = customerData;
 
             const template = await this.getTemplate('customer-email');
@@ -107,8 +105,6 @@ class EmailService {
                 date: bookingDate,
                 time: bookingTime,
                 visitType: visitType,
-                address: serviceAddress || 'N/A',
-                specialRequests: specialRequests || 'None',
                 reference: bookingReference,
                 year: new Date().getFullYear()
             };

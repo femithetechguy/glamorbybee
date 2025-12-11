@@ -18,7 +18,7 @@ import { fileURLToPath } from 'url';
 import BookingApi from './api/booking.js';
 
 // Load environment variables
-dotenv.config();
+dotenv.config({ path: '.env.local' });
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();

@@ -15,7 +15,7 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import createBookingApi from './api/booking.js';
+import createBookingApi from './api/booking-handler.js';
 
 // Load environment variables
 dotenv.config({ path: '.env.local' });

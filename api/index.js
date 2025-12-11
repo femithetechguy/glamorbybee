@@ -1,10 +1,10 @@
 /**
- * Vercel Serverless API Handler
- * Handles both /api/booking and /api/health requests
+ * Vercel Serverless API Handler - Main Router
+ * Routes all API requests to appropriate handlers
  */
 
 import dotenv from 'dotenv';
-import createBookingApi from './booking.js';
+import createBookingApi from './booking-handler.js';
 
 // Load environment variables
 dotenv.config({ path: '.env.local' });
@@ -21,24 +21,12 @@ console.log('Environment variables loaded:', {
 
 // Initialize booking API using factory function
 let bookingApi;
-let emailServiceReady = false;
+let emailServiceInitPromise = null;
 let initError = null;
 
 try {
     bookingApi = createBookingApi();
     console.log('✅ BookingApi created successfully');
-    
-    // Initialize email service asynchronously without blocking
-    bookingApi.init()
-        .then(() => {
-            emailServiceReady = true;
-            console.log('✅ Email service initialized successfully');
-        })
-        .catch(error => {
-            console.error('❌ Failed to initialize email service:', error.message);
-            initError = error;
-            // Don't set emailServiceReady to true, but keep bookingApi available for health checks
-        });
 } catch (error) {
     console.error('❌ Failed to create BookingApi:', error);
     console.error('Error details:', error.message, error.stack);
@@ -46,8 +34,38 @@ try {
     initError = error;
 }
 
-export default function handler(req, res) {
+// Function to ensure email service is initialized
+async function ensureEmailServiceReady() {
+    if (emailServiceInitPromise) {
+        return emailServiceInitPromise;
+    }
+    
+    if (!bookingApi) {
+        throw new Error('BookingApi not initialized');
+    }
+    
+    emailServiceInitPromise = bookingApi.init().catch(error => {
+        console.error('❌ Failed to initialize email service:', error.message);
+        initError = error;
+        throw error;
+    });
+    
+    return emailServiceInitPromise;
+}
+
+export default async function handler(req, res) {
     try {
+        // Parse JSON body if needed
+        let body = req.body;
+        if (typeof body === 'string') {
+            try {
+                body = JSON.parse(body);
+            } catch (e) {
+                body = {};
+            }
+        }
+        req.body = body || {};
+
         // Enable CORS
         res.setHeader('Access-Control-Allow-Credentials', 'true');
         res.setHeader('Access-Control-Allow-Origin', '*');
@@ -75,15 +93,10 @@ export default function handler(req, res) {
                 });
             }
             
-            if (!emailServiceReady) {
-                return res.status(503).json({
-                    status: 'error',
-                    message: 'Email service is still initializing',
-                    ready: false
-                });
-            }
-            
-            bookingApi.healthCheck()
+            ensureEmailServiceReady()
+                .then(() => {
+                    return bookingApi.healthCheck();
+                })
                 .then(health => {
                     res.status(200).json(health);
                 })
@@ -100,34 +113,48 @@ export default function handler(req, res) {
 
         // Booking submission endpoint
         if (pathname === '/api/booking' && req.method === 'POST') {
+            // Validate request body exists
+            if (!req.body || !req.body.name) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Invalid booking data'
+                });
+            }
+
             if (!bookingApi) {
                 return res.status(503).json({
                     success: false,
-                    error: 'Booking service is not initialized. Please try again later.',
-                    details: initError?.message || 'Unknown error'
+                    error: 'Service not initialized'
                 });
             }
 
-            if (!emailServiceReady) {
-                return res.status(503).json({
-                    success: false,
-                    error: 'Email service is not ready yet. Please try again in a moment.'
-                });
-            }
+            const reference = `GBB-${Date.now()}`;
+            
+            // Return success immediately to client (CRITICAL for Vercel)
+            res.status(200).json({
+                success: true,
+                message: 'Your booking has been received! Check your email for confirmation.',
+                reference
+            });
 
-            bookingApi.handleBooking(req.body)
-                .then(result => {
-                    const statusCode = result.success ? 200 : 400;
-                    res.status(statusCode).json(result);
-                })
-                .catch(error => {
-                    console.error('API error:', error);
-                    res.status(500).json({
-                        success: false,
-                        error: 'Server error. Please try again later.',
-                        details: error.message
-                    });
-                });
+            // Process booking asynchronously in background WITHOUT waiting
+            // This is critical for Vercel's timeout constraints
+            setImmediate(async () => {
+                try {
+                    console.log(`📧 Processing booking in background: ${reference}`);
+                    
+                    // Initialize email service if needed (should be fast since no verification)
+                    await ensureEmailServiceReady();
+                    
+                    // Handle booking (emails sent in background from handleBooking)
+                    await bookingApi.handleBooking(req.body);
+                    
+                    console.log(`✅ Booking queued for processing: ${reference}`);
+                } catch (error) {
+                    console.error(`❌ Background booking error (${reference}): ${error.message}`);
+                }
+            });
+            
             return;
         }
 

@@ -53,8 +53,19 @@ async function ensureEmailServiceReady() {
     return emailServiceInitPromise;
 }
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
     try {
+        // Parse JSON body if needed
+        let body = req.body;
+        if (typeof body === 'string') {
+            try {
+                body = JSON.parse(body);
+            } catch (e) {
+                body = {};
+            }
+        }
+        req.body = body || {};
+
         // Enable CORS
         res.setHeader('Access-Control-Allow-Credentials', 'true');
         res.setHeader('Access-Control-Allow-Origin', '*');
@@ -102,34 +113,41 @@ export default function handler(req, res) {
 
         // Booking submission endpoint
         if (pathname === '/api/booking' && req.method === 'POST') {
-            if (!bookingApi) {
-                return res.status(503).json({
+            // Validate request body exists
+            if (!req.body || !req.body.name) {
+                return res.status(400).json({
                     success: false,
-                    error: 'Booking service is not initialized. Please try again later.',
-                    details: initError?.message || 'Unknown error'
+                    error: 'Invalid booking data'
                 });
             }
 
-            // Process booking asynchronously - return response immediately
-            // Email sending happens in background
-            (async () => {
-                try {
-                    await ensureEmailServiceReady();
-                    // Send emails in background without waiting
-                    bookingApi.handleBooking(req.body).catch(error => {
-                        console.error('Background booking error:', error);
-                    });
-                } catch (error) {
-                    console.error('Email service init error:', error);
-                }
-            })();
+            if (!bookingApi) {
+                return res.status(503).json({
+                    success: false,
+                    error: 'Service not initialized'
+                });
+            }
 
-            // Return success immediately to client
+            const reference = `GBB-${Date.now()}`;
+            
+            // Return success immediately - emails sent in background
             res.status(200).json({
                 success: true,
-                message: 'Booking received! We\'re processing your request...',
-                reference: `GBB-${Date.now()}`
+                message: 'Booking received!',
+                reference
             });
+
+            // Process booking asynchronously in background
+            setImmediate(async () => {
+                try {
+                    await ensureEmailServiceReady();
+                    await bookingApi.handleBooking(req.body);
+                    console.log(`✅ Background booking processed: ${reference}`);
+                } catch (error) {
+                    console.error(`❌ Background booking error: ${error.message}`);
+                }
+            });
+            
             return;
         }
 

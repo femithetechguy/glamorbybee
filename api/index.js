@@ -1,10 +1,10 @@
 /**
- * Vercel Serverless API Handler
- * Handles both /api/booking and /api/health requests
+ * Vercel Serverless API Handler - Main Router
+ * Routes all API requests to appropriate handlers
  */
 
 import dotenv from 'dotenv';
-import createBookingApi from './booking.js';
+import createBookingApi from './booking-handler.js';
 
 // Load environment variables
 dotenv.config({ path: '.env.local' });

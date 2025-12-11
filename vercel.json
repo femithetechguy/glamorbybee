@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "/api/index.js"
+      "destination": "/api/:path*.js"
     },
     {
       "source": "/:path*",
@@ -11,11 +11,28 @@
   ],
   "headers": [
     {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type"
+        }
+      ]
+    },
+    {
       "source": "/json/:path*",
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
-          "value": "https://glamorbybee.com, https://dev-admin.glamorbybee.com, https://admin.glamorbybee.com"
+          "value": "*"
         },
         {
           "key": "Access-Control-Allow-Methods",
@@ -29,3 +46,4 @@
     }
   ]
 }
+

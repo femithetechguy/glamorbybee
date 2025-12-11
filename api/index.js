@@ -21,29 +21,36 @@ console.log('Environment variables loaded:', {
 
 // Initialize booking API using factory function
 let bookingApi;
-let emailServiceReady = false;
+let emailServiceInitPromise = null;
 let initError = null;
 
 try {
     bookingApi = createBookingApi();
     console.log('✅ BookingApi created successfully');
-    
-    // Initialize email service asynchronously without blocking
-    bookingApi.init()
-        .then(() => {
-            emailServiceReady = true;
-            console.log('✅ Email service initialized successfully');
-        })
-        .catch(error => {
-            console.error('❌ Failed to initialize email service:', error.message);
-            initError = error;
-            // Don't set emailServiceReady to true, but keep bookingApi available for health checks
-        });
 } catch (error) {
     console.error('❌ Failed to create BookingApi:', error);
     console.error('Error details:', error.message, error.stack);
     bookingApi = null;
     initError = error;
+}
+
+// Function to ensure email service is initialized
+async function ensureEmailServiceReady() {
+    if (emailServiceInitPromise) {
+        return emailServiceInitPromise;
+    }
+    
+    if (!bookingApi) {
+        throw new Error('BookingApi not initialized');
+    }
+    
+    emailServiceInitPromise = bookingApi.init().catch(error => {
+        console.error('❌ Failed to initialize email service:', error.message);
+        initError = error;
+        throw error;
+    });
+    
+    return emailServiceInitPromise;
 }
 
 export default function handler(req, res) {
@@ -75,15 +82,10 @@ export default function handler(req, res) {
                 });
             }
             
-            if (!emailServiceReady) {
-                return res.status(503).json({
-                    status: 'error',
-                    message: 'Email service is still initializing',
-                    ready: false
-                });
-            }
-            
-            bookingApi.healthCheck()
+            ensureEmailServiceReady()
+                .then(() => {
+                    return bookingApi.healthCheck();
+                })
                 .then(health => {
                     res.status(200).json(health);
                 })
@@ -108,20 +110,17 @@ export default function handler(req, res) {
                 });
             }
 
-            if (!emailServiceReady) {
-                return res.status(503).json({
-                    success: false,
-                    error: 'Email service is not ready yet. Please try again in a moment.'
-                });
-            }
-
-            bookingApi.handleBooking(req.body)
+            // Ensure email service is initialized before processing booking
+            ensureEmailServiceReady()
+                .then(() => {
+                    return bookingApi.handleBooking(req.body);
+                })
                 .then(result => {
                     const statusCode = result.success ? 200 : 400;
                     res.status(statusCode).json(result);
                 })
                 .catch(error => {
-                    console.error('API error:', error);
+                    console.error('Booking error:', error);
                     res.status(500).json({
                         success: false,
                         error: 'Server error. Please try again later.',

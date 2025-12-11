@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "/api/route.js"
+      "destination": "/api/index.js"
     },
     {
       "source": "/:path*",

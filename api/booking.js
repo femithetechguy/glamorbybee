@@ -88,35 +88,37 @@ export default async function handler(req, res) {
         console.log(`   Service: ${body.service_name}`);
         console.log(`   Date: ${body.date} at ${body.time}`);
 
-        // Return success immediately
-        res.status(200).json({
-            success: true,
-            message: 'Your booking has been received! Check your email for confirmation.',
-            reference
-        });
-
-        // Process booking in background (don't wait)
-        setImmediate(async () => {
-            try {
-                console.log(`⏳ Processing booking: ${reference}`);
-                console.log(`   Customer: ${body.name} <${body.email}>`);
-                
-                // Initialize email service
-                await ensureEmailServiceReady();
-                
-                // Handle booking (emails sent asynchronously)
-                const result = await bookingApi.handleBooking(body);
-                
-                if (result.success) {
-                    console.log(`✅ Booking processed: ${reference}`);
-                } else {
-                    console.warn(`⚠️ Booking processing returned error: ${result.error}`);
-                }
-            } catch (error) {
-                console.error(`❌ CRITICAL Background processing failed (${reference}):`, error.message);
-                console.error('   Full error:', error);
+        try {
+            // Initialize email service
+            await ensureEmailServiceReady();
+            
+            // Handle booking and wait for emails to be sent
+            const result = await bookingApi.handleBooking(body);
+            
+            if (result.success) {
+                console.log(`✅ Booking processed: ${reference}`);
+                return res.status(200).json({
+                    success: true,
+                    message: result.message || 'Your booking has been received! Check your email for confirmation.',
+                    reference
+                });
+            } else {
+                console.warn(`⚠️ Booking processing error: ${result.error}`);
+                return res.status(400).json({
+                    success: false,
+                    error: result.error || 'Failed to process booking',
+                    errors: result.errors
+                });
             }
-        });
+        } catch (error) {
+            console.error(`❌ Booking processing failed (${reference}):`, error.message);
+            console.error('   Full error:', error);
+            return res.status(500).json({
+                success: false,
+                error: 'Failed to process booking',
+                message: error instanceof Error ? error.message : 'Unknown error'
+            });
+        }
 
     } catch (error) {
         console.error('❌ Handler error:', error);

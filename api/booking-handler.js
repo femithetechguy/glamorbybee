@@ -119,18 +119,18 @@ function createBookingApi() {
                     specialRequests: data.notes?.trim() || data.specialRequests?.trim() || ''
                 };
 
-                // Send emails asynchronously without waiting
-                // This prevents timeout issues on Vercel
-                setImmediate(async () => {
-                    try {
-                        console.log('📧 Sending booking emails in background...');
-                        await this.emailService.sendBookingEmails(bookingDetails);
-                        console.log('✅ Booking emails sent successfully');
-                    } catch (error) {
-                        console.error('❌ CRITICAL: Failed to send booking emails:', error.message);
-                        console.error('   Details:', error);
-                    }
-                });
+                // Send emails and wait for completion
+                // On Vercel, we must wait before function execution ends
+                try {
+                    console.log('📧 Sending booking emails...');
+                    await this.emailService.sendBookingEmails(bookingDetails);
+                    console.log('✅ Booking emails sent successfully');
+                } catch (error) {
+                    console.error('❌ CRITICAL: Failed to send booking emails:', error.message);
+                    console.error('   Details:', error);
+                    // Don't throw - still return success since booking was created
+                    // User was notified via response message
+                }
 
                 return {
                     success: true,

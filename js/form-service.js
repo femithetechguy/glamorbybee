@@ -131,9 +131,9 @@ class FormService {
 
             console.log('🚀 Sending booking request to API...', payload);
 
-            // Create fetch with timeout
+            // Create fetch with extended timeout (30 seconds for Vercel cold start)
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
             
             try {
                 const response = await fetch(this.config.apiEndpoint, {
@@ -193,7 +193,7 @@ class FormService {
                 clearTimeout(timeoutId);
                 
                 if (fetchError.name === 'AbortError') {
-                    throw new Error('Request timeout - Please check your internet connection');
+                    throw new Error('Server is taking too long to respond. Your booking may still be processed. Please check your email.');
                 }
                 throw fetchError;
             }

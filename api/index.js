@@ -130,49 +130,39 @@ export default async function handler(req, res) {
 
             const reference = `GBB-${Date.now()}`;
             
-            // Process booking with timeout to prevent Vercel cold start issues
-            try {
-                // Initialize email service if needed
-                await Promise.race([
-                    ensureEmailServiceReady(),
-                    new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('Email service initialization timeout')), 8000)
-                    )
-                ]);
-                
-                // Send booking with timeout
-                await Promise.race([
-                    bookingApi.handleBooking(req.body),
-                    new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('Booking processing timeout')), 12000)
-                    )
-                ]);
-                
-                console.log(`✅ Booking processed successfully: ${reference}`);
-                
-                return res.status(200).json({
-                    success: true,
-                    message: 'Booking submitted successfully! Check your email for confirmation.',
-                    reference
-                });
-            } catch (error) {
-                console.error(`❌ Booking error: ${error.message}`);
-                
-                // If it's a timeout error, return acceptable message since we may have sent
-                if (error.message.includes('timeout')) {
-                    return res.status(200).json({
-                        success: true,
-                        message: 'Booking submitted! Email processing may take a moment. Check your inbox.',
-                        reference
-                    });
+            // Return success immediately to client
+            res.status(200).json({
+                success: true,
+                message: 'Booking received! We\'ll send you a confirmation email shortly.',
+                reference
+            });
+
+            // Process booking asynchronously in background (don't wait)
+            // This prevents timeout issues on Vercel
+            (async () => {
+                try {
+                    console.log(`📧 Processing booking in background: ${reference}`);
+                    
+                    // Initialize email service if needed
+                    await ensureEmailServiceReady();
+                    
+                    // Send booking with extended timeout
+                    await Promise.race([
+                        bookingApi.handleBooking(req.body),
+                        new Promise((_, reject) => 
+                            setTimeout(() => reject(new Error('Booking processing timeout')), 25000)
+                        )
+                    ]);
+                    
+                    console.log(`✅ Booking processed successfully: ${reference}`);
+                } catch (error) {
+                    console.error(`❌ Background booking error (${reference}): ${error.message}`);
                 }
-                
-                return res.status(400).json({
-                    success: false,
-                    error: error.message || 'Failed to process booking',
-                    reference
-                });
-            }
+            })().catch(error => {
+                console.error(`❌ Async error in background processing: ${error.message}`);
+            });
+            
+            return;
         }
 
         // Not found

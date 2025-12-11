@@ -30,21 +30,29 @@ app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
 // Initialize booking API
-const bookingApi = new BookingApi();
+let bookingApi;
+try {
+    bookingApi = new BookingApi();
+} catch (error) {
+    console.error('Failed to instantiate BookingApi:', error);
+    bookingApi = null;
+}
 
 // Initialize email service on startup
 let emailServiceReady = false;
-(async () => {
-    try {
-        await bookingApi.init();
-        emailServiceReady = true;
-        console.log('✅ Email service initialized successfully');
-    } catch (error) {
-        console.error('❌ Failed to initialize email service:', error.message);
-        console.log('⚠️  Server will still start but email functionality will not work.');
-        console.log('💡 Make sure environment variables are set correctly in .env.local');
-    }
-})();
+if (bookingApi) {
+    (async () => {
+        try {
+            await bookingApi.init();
+            emailServiceReady = true;
+            console.log('✅ Email service initialized successfully');
+        } catch (error) {
+            console.error('❌ Failed to initialize email service:', error.message);
+            console.log('⚠️  Server will still start but email functionality will not work.');
+            console.log('💡 Make sure environment variables are set correctly');
+        }
+    })();
+}
 
 // Serve static files from root directory
 app.use(express.static(path.join(__dirname)));
@@ -52,6 +60,12 @@ app.use(express.static(path.join(__dirname)));
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
     try {
+        if (!bookingApi) {
+            return res.status(503).json({
+                status: 'error',
+                message: 'Service not initialized'
+            });
+        }
         const health = await bookingApi.healthCheck();
         res.json(health);
     } catch (error) {
@@ -65,6 +79,14 @@ app.get('/api/health', async (req, res) => {
 // Booking submission endpoint
 app.post('/api/booking', async (req, res) => {
     try {
+        // Check if BookingApi is initialized
+        if (!bookingApi) {
+            return res.status(503).json({
+                success: false,
+                error: 'Booking service is not initialized. Please try again later.'
+            });
+        }
+
         // Check if email service is ready
         if (!emailServiceReady) {
             return res.status(503).json({

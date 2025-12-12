@@ -1,30 +1,30 @@
-# Plivo SMS Integration Setup Guide
+# Twilio SMS Integration Setup Guide
 
 ## Overview
 SMS notifications have been integrated modularly into the booking system. Customers and admin receive text confirmations when bookings are completed.
 
 ## Architecture
-- **SMS Service Module**: `/lib/sms.service.js` - Plivo client and message formatting
+- **SMS Service Module**: `/lib/sms.service.js` - Twilio client and message formatting
 - **Integration Point**: `api/booking-handler.js` - Calls SMS after email confirmation
 - **Feature Flag**: `SMS_ENABLED` environment variable (can be enabled/disabled without code changes)
 
 ## Setup Steps
 
-### 1. Get Plivo Credentials
-1. Sign up at [plivo.com](https://plivo.com)
-2. Navigate to Dashboard → Phone Numbers
-3. Get your **Auth ID** and **Auth Token**
-4. Get your **From Number** (Plivo phone number for sending SMS)
+### 1. Get Twilio Credentials
+1. Sign up at [twilio.com](https://www.twilio.com)
+2. Navigate to Console → Account Info
+3. Copy your **Account SID** and **Auth Token**
+4. Go to Phone Numbers section and get your **From Number** (or buy a new one)
 
 ### 2. Add Environment Variables to Vercel
 Go to Vercel Dashboard → Project Settings → Environment Variables and add:
 
 ```
 SMS_ENABLED=true
-PLIVO_AUTH_ID=your_auth_id_here
-PLIVO_AUTH_TOKEN=your_auth_token_here
-PLIVO_FROM_NUMBER=+1234567890    (Your Plivo phone number)
-ADMIN_PHONE=+1214XXXXXXX         (Your phone number for notifications)
+TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+TWILIO_AUTH_TOKEN=your_auth_token_here
+TWILIO_FROM_NUMBER=+1234567890
+ADMIN_PHONE=+1214XXXXXXX
 ```
 
 ### 3. Local Development (.env.local)
@@ -32,9 +32,9 @@ Add to `/Users/fttg/fttg_workspace/glamorbybee_modern/.env.local`:
 
 ```
 SMS_ENABLED=true
-PLIVO_AUTH_ID=your_auth_id_here
-PLIVO_AUTH_TOKEN=your_auth_token_here
-PLIVO_FROM_NUMBER=+1234567890
+TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+TWILIO_AUTH_TOKEN=your_auth_token_here
+TWILIO_FROM_NUMBER=+1234567890
 ADMIN_PHONE=+1214XXXXXXX
 ```
 
@@ -47,7 +47,7 @@ Then submit a booking form. Check logs for SMS confirmation.
 ### 5. Deploy to Vercel
 ```bash
 git add .
-git commit -m "feat: add Plivo SMS notifications"
+git commit -m "feat: switch to Twilio SMS notifications"
 git push origin phone_service_for_notification
 ```
 
@@ -100,7 +100,7 @@ SMS_ENABLED=true
 ### Test SMS locally:
 ```bash
 # Add test numbers to .env.local
-PLIVO_FROM_NUMBER=+1234567890
+TWILIO_FROM_NUMBER=+1234567890
 ADMIN_PHONE=+1214XXXXXXX
 
 # Run local server
@@ -112,28 +112,28 @@ npm run dev
 ### Check logs:
 ```bash
 # Should see:
-✅ Plivo SMS service initialized
+✅ Twilio SMS service initialized
 📱 Sending SMS to customer: +1234567890
-✅ Customer SMS sent (Message ID: xxx)
+✅ Customer SMS sent (Message SID: SM...)
 📱 Sending SMS to admin: +1214XXXXXXX
-✅ Admin SMS sent (Message ID: xxx)
+✅ Admin SMS sent (Message SID: SM...)
 ```
 
 ## Troubleshooting
 
-### "SMS service disabled: Missing Plivo credentials"
-- Check all 3 Plivo env vars are set (AUTH_ID, AUTH_TOKEN, FROM_NUMBER)
+### "SMS service disabled: Missing Twilio credentials"
+- Check all 3 Twilio env vars are set (ACCOUNT_SID, AUTH_TOKEN, FROM_NUMBER)
 - Verify they're deployed to Vercel
 
 ### SMS not received
-- Verify phone numbers are in correct format: `+1214XXXXXXX`
-- Check Plivo account has credits
-- Verify FROM_NUMBER is your actual Plivo phone number
-- Check Plivo logs at plivo.com/logs
+- Verify phone numbers are in correct format: `+1214XXXXXXX` (country code required)
+- Check Twilio account has credits and trial period not expired
+- Verify FROM_NUMBER is your actual Twilio phone number
+- Check Twilio logs at console.twilio.com/logs
 
 ### SMS only to customer, not admin
 - Check ADMIN_PHONE is set
-- Verify phone number format
+- Verify phone number format includes country code
 
 ## Rollback (Remove SMS)
 
@@ -144,7 +144,9 @@ If you need to remove SMS entirely:
 
 ## Cost Consideration
 
-Plivo charges per SMS sent. Consider:
+Twilio charges per SMS sent (typically $0.0075 per SMS). Consider:
 - Each booking sends 2 SMS (customer + admin) = cost per booking
-- Monitor SMS usage in Plivo dashboard
+- Monitor SMS usage in Twilio Console
 - Option to disable SMS during testing with feature flag
+- Twilio free trial includes $15 credit
+

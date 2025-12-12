@@ -5,28 +5,33 @@
  * - Validates required fields and email format
  * - Validates contact type and booking details
  * - Calls email service to send confirmation emails
+ * - Calls SMS service to send booking notifications (if enabled)
  * - Returns success/error response
  */
 
 import EmailService from '../lib/email.service.js';
+import SMSService from '../lib/sms.service.js';
 
 /**
  * Factory function to create BookingApi instance
  */
 function createBookingApi() {
     const emailService = new EmailService();
+    const smsService = new SMSService();
 
     return {
         emailService,
+        smsService,
 
         /**
-         * Initialize email service
+         * Initialize email and SMS services
          */
         async init() {
             try {
                 await this.emailService.init();
+                await this.smsService.init();
             } catch (error) {
-                console.error('Failed to initialize email service:', error);
+                console.error('Failed to initialize services:', error);
                 throw error;
             }
         },
@@ -130,6 +135,18 @@ function createBookingApi() {
                     console.error('   Details:', error);
                     // Don't throw - still return success since booking was created
                     // User was notified via response message
+                }
+
+                // Send SMS notifications (non-blocking failure)
+                try {
+                    if (this.smsService && process.env.SMS_ENABLED === 'true') {
+                        console.log('📱 Sending SMS notifications...');
+                        await this.smsService.sendBookingSMS(bookingDetails);
+                        console.log('✅ SMS notifications sent');
+                    }
+                } catch (error) {
+                    // SMS is supplementary - log but don't fail the booking
+                    console.warn('⚠️ SMS notification failed (non-critical):', error.message);
                 }
 
                 return {

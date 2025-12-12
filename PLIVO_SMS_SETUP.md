@@ -1,29 +1,28 @@
-# Twilio SMS Integration Setup Guide
+# Telnyx SMS Integration Setup Guide
 
 ## Overview
 SMS notifications have been integrated modularly into the booking system. Customers and admin receive text confirmations when bookings are completed.
 
 ## Architecture
-- **SMS Service Module**: `/lib/sms.service.js` - Twilio client and message formatting
+- **SMS Service Module**: `/lib/sms.service.js` - Telnyx client and message formatting
 - **Integration Point**: `api/booking-handler.js` - Calls SMS after email confirmation
 - **Feature Flag**: `SMS_ENABLED` environment variable (can be enabled/disabled without code changes)
 
 ## Setup Steps
 
-### 1. Get Twilio Credentials
-1. Sign up at [twilio.com](https://www.twilio.com)
-2. Navigate to Console → Account Info
-3. Copy your **Account SID** and **Auth Token**
-4. Go to Phone Numbers section and get your **From Number** (or buy a new one)
+### 1. Get Telnyx Credentials
+1. Sign up at [telnyx.com](https://telnyx.com)
+2. Navigate to Console → API Keys
+3. Copy your **API Key**
+4. Go to Phone Numbers section and get your **Phone Number** (or buy a new one)
 
 ### 2. Add Environment Variables to Vercel
 Go to Vercel Dashboard → Project Settings → Environment Variables and add:
 
 ```
 SMS_ENABLED=true
-TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-TWILIO_AUTH_TOKEN=your_auth_token_here
-TWILIO_FROM_NUMBER=+1234567890
+TELNYX_API_KEY=your_api_key_here
+TELNYX_FROM_NUMBER=+1234567890
 ADMIN_PHONE=+1214XXXXXXX
 ```
 
@@ -32,9 +31,8 @@ Add to `/Users/fttg/fttg_workspace/glamorbybee_modern/.env.local`:
 
 ```
 SMS_ENABLED=true
-TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-TWILIO_AUTH_TOKEN=your_auth_token_here
-TWILIO_FROM_NUMBER=+1234567890
+TELNYX_API_KEY=your_api_key_here
+TELNYX_FROM_NUMBER=+1234567890
 ADMIN_PHONE=+1214XXXXXXX
 ```
 
@@ -47,7 +45,7 @@ Then submit a booking form. Check logs for SMS confirmation.
 ### 5. Deploy to Vercel
 ```bash
 git add .
-git commit -m "feat: switch to Twilio SMS notifications"
+git commit -m "feat: switch to Telnyx SMS notifications"
 git push origin phone_service_for_notification
 ```
 
@@ -99,8 +97,9 @@ SMS_ENABLED=true
 
 ### Test SMS locally:
 ```bash
-# Add test numbers to .env.local
-TWILIO_FROM_NUMBER=+1234567890
+# Add your credentials to .env.local
+TELNYX_API_KEY=your_api_key
+TELNYX_FROM_NUMBER=+1234567890
 ADMIN_PHONE=+1214XXXXXXX
 
 # Run local server
@@ -112,24 +111,24 @@ npm run dev
 ### Check logs:
 ```bash
 # Should see:
-✅ Twilio SMS service initialized
+✅ Telnyx SMS service initialized
 📱 Sending SMS to customer: +1234567890
-✅ Customer SMS sent (Message SID: SM...)
+✅ Customer SMS sent (Message ID: xxx)
 📱 Sending SMS to admin: +1214XXXXXXX
-✅ Admin SMS sent (Message SID: SM...)
+✅ Admin SMS sent (Message ID: xxx)
 ```
 
 ## Troubleshooting
 
-### "SMS service disabled: Missing Twilio credentials"
-- Check all 3 Twilio env vars are set (ACCOUNT_SID, AUTH_TOKEN, FROM_NUMBER)
+### "SMS service disabled: Missing Telnyx credentials"
+- Check TELNYX_API_KEY and TELNYX_FROM_NUMBER are set
 - Verify they're deployed to Vercel
 
 ### SMS not received
 - Verify phone numbers are in correct format: `+1214XXXXXXX` (country code required)
-- Check Twilio account has credits and trial period not expired
-- Verify FROM_NUMBER is your actual Twilio phone number
-- Check Twilio logs at console.twilio.com/logs
+- Check Telnyx account has credits and SMS purchased
+- Verify FROM_NUMBER is your actual Telnyx phone number
+- Check Telnyx logs at portal.telnyx.com
 
 ### SMS only to customer, not admin
 - Check ADMIN_PHONE is set
@@ -144,9 +143,10 @@ If you need to remove SMS entirely:
 
 ## Cost Consideration
 
-Twilio charges per SMS sent (typically $0.0075 per SMS). Consider:
+Telnyx charges per SMS sent (typically $0.008-$0.01 per SMS). Consider:
 - Each booking sends 2 SMS (customer + admin) = cost per booking
-- Monitor SMS usage in Twilio Console
+- Monitor SMS usage in Telnyx Portal
 - Option to disable SMS during testing with feature flag
-- Twilio free trial includes $15 credit
+- Telnyx has generous free tier with trials
+
 

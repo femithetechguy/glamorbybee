@@ -7,6 +7,7 @@
 
 import dotenv from 'dotenv';
 import createBookingApi from './booking-handler.js';
+import { saveAppointment } from './appointments.js';
 
 // Load environment variables
 dotenv.config({ path: '.env.local' });
@@ -81,7 +82,9 @@ export default async function handler(req, res) {
             });
         }
 
-        const reference = `GBB-${Date.now()}`;
+        const timestampDigits = Date.now().toString().slice(-3);
+        const randomDigit = Math.floor(Math.random() * 10);
+        const reference = `GBB-${timestampDigits}${randomDigit}`;
         
         console.log(`📅 Booking request received: ${reference}`);
         console.log(`   Customer: ${body.name} <${body.email}>`);
@@ -97,6 +100,35 @@ export default async function handler(req, res) {
             
             if (result.success) {
                 console.log(`✅ Booking processed: ${reference}`);
+                
+                // Save to appointments with the same reference as ID
+                try {
+                    const appointmentData = {
+                        id: reference,
+                        name: body.name,
+                        email: body.email,
+                        phone: body.phone,
+                        service_name: body.service_name,
+                        appointment_date: body.date,
+                        appointment_time: body.time,
+                        location: body.location,
+                        address: body.serviceAddress || body.address || '',
+                        notes: body.notes || '',
+                        status: 'pending',
+                        total_amount: body.total_amount || 0,
+                        deposit_paid: body.deposit_paid || 0,
+                        payment_method: body.payment_method || ''
+                    };
+                    
+                    const appointmentResult = await saveAppointment(appointmentData);
+                    if (appointmentResult.success) {
+                        console.log(`📅 Appointment saved: ${appointmentResult.appointment.id}`);
+                    }
+                } catch (apptError) {
+                    console.error(`⚠️ Failed to save appointment (${reference}):`, apptError.message);
+                    // Don't fail the booking - continue anyway
+                }
+                
                 return res.status(200).json({
                     success: true,
                     message: result.message || 'Your booking has been received! Check your email for confirmation.',

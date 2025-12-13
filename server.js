@@ -16,6 +16,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import createBookingApi from './api/booking-handler.js';
+import { getAppointments, saveAppointment, updateAppointment, deleteAppointment } from './api/appointments.js';
 
 // Load environment variables
 dotenv.config({ path: '.env.local' });
@@ -106,6 +107,62 @@ app.post('/api/booking', async (req, res) => {
         res.status(500).json({
             success: false,
             error: 'Server error. Please try again later.'
+        });
+    }
+});
+
+// Appointments API endpoints
+// GET all appointments
+app.get('/api/appointments', async (req, res) => {
+    try {
+        const result = await getAppointments();
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Failed to retrieve appointments'
+        });
+    }
+});
+
+// POST new appointment
+app.post('/api/appointments', async (req, res) => {
+    try {
+        const result = await saveAppointment(req.body);
+        const statusCode = result.success ? 201 : 400;
+        res.status(statusCode).json(result);
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Failed to save appointment'
+        });
+    }
+});
+
+// PUT update appointment
+app.put('/api/appointments/:id', async (req, res) => {
+    try {
+        const result = await updateAppointment(req.params.id, req.body);
+        const statusCode = result.success ? 200 : 400;
+        res.status(statusCode).json(result);
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Failed to update appointment'
+        });
+    }
+});
+
+// DELETE appointment
+app.delete('/api/appointments/:id', async (req, res) => {
+    try {
+        const result = await deleteAppointment(req.params.id);
+        const statusCode = result.success ? 200 : 400;
+        res.status(statusCode).json(result);
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Failed to delete appointment'
         });
     }
 });
